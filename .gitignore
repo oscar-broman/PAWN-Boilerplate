@@ -6,3 +6,5 @@ Desktop.lnk
 *.amx
 *.lst
 *.asm
+server_log.txt
+*.log
