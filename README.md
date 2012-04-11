@@ -61,13 +61,15 @@ The main purpose of these prefixes is to allow modules to use the same variable/
 
 Say we have 2 modules, one called ExampleModule and one called AnotherModule. We could do this to communicate between them.
 
-    // In ExampleModule/header.inc
-    new this.someVariable = 20;
-    
-    // In AnotherModule/functions.inc
-    stock this.PrintSomeOtherVariable() {
-        printf("%d", ExampleModule.someVariable);
-    }
+```C++
+// In ExampleModule/header.inc
+new this.someVariable = 20;
+
+// In AnotherModule/functions.inc
+stock this.PrintSomeOtherVariable() {
+    printf("%d", ExampleModule.someVariable);
+}
+```
 
 
 ###Creating a module
