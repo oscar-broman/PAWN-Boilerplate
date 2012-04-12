@@ -1,5 +1,5 @@
 /*!
- * Groups/header.inc
+ * StaticGroups/header.inc
  *
  > Priority: 10
  */
@@ -18,7 +18,7 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 // Re-define YCMD to support the new syntax, while keeping support for the normal one.
 #undef YCMD
 #define YCMD%1:  _pC@();_YCMD_0%1:_YCMD_1:_YCMD_2:
-#define _pC@();_YCMD_0(%1):_YCMD_1:_YCMD_2:%2(  @pC_%2();@pC_%2()Groups.SetCommandPermissions(#%2, %1);_YCMD_0:_YCMD_1:_YCMD_2:%2(
+#define _pC@();_YCMD_0(%1):_YCMD_1:_YCMD_2:%2(  @pC_%2();@pC_%2()StaticGroups.SetCommandPermissions(#%2, %1);_YCMD_0:_YCMD_1:_YCMD_2:%2(
 
 // Macros for creation declaration of static groups
 #define StaticGroup<%1>%2=%3"%4" \
@@ -33,6 +33,7 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 #define _@pG_more()%1, _@pG_nomore(); new 
 #define _@pG_more_2:_@pG_more();
 
+// Declare some core groups
 new
 	StaticGroup<MANAGEMENT> = "Management",
 	StaticGroup<ADMIN>      = "Administrators",

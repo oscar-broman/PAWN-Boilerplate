@@ -1,5 +1,5 @@
 /*!
- * Groups/callbacks/OnGameModeInit.inc
+ * StaticGroups/callbacks/OnGameModeInit.inc
  *
  * OnGameModeInit()
  *
