@@ -119,6 +119,7 @@ The StaticGroups module extends the functionality of y\_commands and y\_groups.
 
 ####<a name="creating-static-groups" href="#creating-static-groups">Creating static groups</a>
 You can now declare groups as global variables with the following syntax:
+
 ```C++
 new StaticGroup<MY\_GROUP> = "My Group";
 
@@ -129,6 +130,7 @@ new StaticGroup<MY\_GROUP> = "My Group";
 
 ####<a name="creating-commands-exclusively-for-static-groups" href="#creating-commands-exclusively-for-static-groups">Creating commands exclusively for static groups</a>
 Here's how you'd create a command only accessible for players in the `ADMIN` group:
+
 ```C++
 // In your module's header.inc
 new StaticGroup<ADMIN> = "Administrator";
