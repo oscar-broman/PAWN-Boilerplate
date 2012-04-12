@@ -129,14 +129,15 @@ new StaticGroup<MY_GROUP> = "My Group";
 ```
 
 ####<a name="creating-commands-exclusively-for-static-groups" href="#creating-commands-exclusively-for-static-groups">Creating commands exclusively for static groups</a>
-Here's how you'd create a command only accessible for players in the `ADMIN` group:
+Here's how you'd create a command only accessible for players in the `ADMIN` and `VIP` groups:
 
 ```C++
 // In your module's header.inc
 new StaticGroup<ADMIN> = "Administrator";
+new StaticGroup<VIP>   = "VIPs";
 
 // In your module's commands.inc
-YCMD(ADMIN):kick(playerid, params[], help) {
+YCMD(ADMIN, VIP):kick(playerid, params[], help) {
 	// ...
 }
 ```
