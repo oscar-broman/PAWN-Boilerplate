@@ -25,7 +25,7 @@ The main difference from a plain PAWN script is PBP consist of a module structur
 
 ##<a name="modules" href="#modules">Modules</a>
 
-###<a name="files" href="#files">Files</a>
+###<a name="module-files" href="#module-files">Files</a>
 
 The module structure looks like this:
 
