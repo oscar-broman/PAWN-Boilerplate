@@ -19,6 +19,12 @@ class PBP {
 	
 	private function generate_main() {
 		$this->syntax_intel = new SyntaxIntel();
+		$this->syntax_intel->parse_directory('include/YSI', array());
+		
+		foreach ($this->syntax_intel->data->publics as $public => $args) {
+			if (isset($this->syntax_intel->data->callbacks[$public]))
+				unset($this->syntax_intel->data->callbacks[$public]);
+		}
 		
 		$this->syntax_intel->parse_directory('include', array(
 			'ignore' => array('YSI', 'a_npc.inc')
@@ -48,6 +54,7 @@ class PBP {
 			$this->syntax_intel->parse_file($file);
 		
 		$callbacks = $this->syntax_intel->data->callbacks;
+		
 		$callbacks['main'] = '';
 		
 		foreach ($modules as $module_index => $module) {
