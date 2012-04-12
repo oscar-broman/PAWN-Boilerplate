@@ -29,10 +29,12 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #endif
 
 // YSI
+#define YSI_NO_X11
+
 #include <YSI\y_commands>
 #include <YSI\y_utils>
 #include <YSI\y_classes>
-#include <YSI\y_colors>
+#include <YSI\y_colours>
 #include <YSI\y_groups>
 #include <YSI\y_amx>
 #include <YSI\y_hooks>
