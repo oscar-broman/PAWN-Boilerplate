@@ -1,3 +1,28 @@
+#Contents
+
+- <a href="#pawn-boilerplate">PAWN Boilerplate</a>
+- <a href="#compiling">Compiling</a>
+    - <a href="#wine">Wine</a>
+- <a href="#code-structure">Code structure</a>
+    - <a href="#modules">Modules</a>
+        - <a href="#module-files">Files</a>
+            - <a href="#header-inc">`header.inc`</a>
+            - <a href="#callbacks-inc">`callbacks.inc`</a>
+            - <a href="#functions-inc">`functions.inc`</a>
+            - <a href="#commands-inc">`commands.inc`</a>
+            - <a href="#callbacks-">`callbacks/`</a>
+        - <a href="#prefixes">Prefixes</a>
+        - <a href="#creating-a-module">Creating a module</a>
+    - <a href="#callbacks">Callbacks</a>
+    - <a href="#file-headers">File headers</a>
+        - <a href="#priority">Priority</a>
+        - <a href="#requires">Requires</a>
+    - <a href="#example-file-header">Example file header</a>
+    - <a href="#default-modules">Default modules</a>
+        - <a href="#staticgroups">StaticGroups</a>
+            - <a href="#creating-static-groups">Creating static groups</a>
+            - <a href="#creating-commands-exclusively-for-static-groups">Creating commands exclusively for static groups</a>
+
 #<a name="pawn-boilerplate" href="#pawn-boilerplate">\#</a>PAWN Boilerplate
 
 Please note that this project is not yet officially released.
@@ -39,19 +64,19 @@ The module structure looks like this:
         - `OnPlayerConnect.inc`
         - `OnSomethingSomething.inc`
 
-###<a name="header-inc" href="#header-inc">\#</a>`header.inc`
+####<a name="header-inc" href="#header-inc">\#</a>`header.inc`
 This file should contain variable declarations, macros, and such.
 
-###<a name="callbacks-inc" href="#callbacks-inc">\#</a>`callbacks.inc`
+####<a name="callbacks-inc" href="#callbacks-inc">\#</a>`callbacks.inc`
 This file should contain forwards for callbacks (do **not** put public functions here, only forward them). The pre-compiler will scan this file in all modules and add support for the forwarded functions inside.
 
-###<a name="functions-inc" href="#functions-inc">\#</a>`functions.inc`
+####<a name="functions-inc" href="#functions-inc">\#</a>`functions.inc`
 This file should contain functions related to the class (creating forwarded, public functions for timers is acceptable).
 
-###<a name="commands-inc" href="#commands-inc">\#</a>`commands.inc`
+####<a name="commands-inc" href="#commands-inc">\#</a>`commands.inc`
 This file should contain YCMD commands. You can read about those [here](http://forum.sa-mp.com/showthread.php?t=169029).
 
-###<a name="callbacks-" href="#callbacks-">\#</a>`callbacks/`
+####<a name="callbacks-" href="#callbacks-">\#</a>`callbacks/`
 This folder should contain code to be executed inside callbacks. For example, if you create a file called `OnGameModeInit.inc`, any code inside that file will be executed when OnGameModeInit is called by the server.
 
 ###<a name="prefixes" href="#prefixes">\#</a>Prefixes
