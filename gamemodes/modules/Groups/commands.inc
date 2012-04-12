@@ -22,3 +22,15 @@
 	}
 	return 1;
 }*/
+
+YCMD:test(playerid, params[], help) {
+	SendClientMessage(playerid, -1, "test");
+	
+	return 1;
+}
+
+YCMD(VIP, MODERATOR):test2(playerid, params[], help) {
+	SendClientMessage(playerid, -1, "test2");
+	
+	return 1;
+}

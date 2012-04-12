@@ -7,31 +7,23 @@
  */
 
 {
-	for (new i = 0; i < sizeof(this.StaticGroups); i++)
-		this.StaticGroups[i][Group] = Group_Create(this.StaticGroups[i][Name]);
-	
-	for (new buf[32], idx; (idx = AMX_GetPublicName(idx, buf, !"@pC_")); ) {
+	for (new buf[32], idx; (idx = AMX_GetPublicName(idx, buf, !"@pG_")); ) {
 		new
-			permissions = CallLocalFunction(buf, ""),
-			cmd
+			      name[MAX_GROUP_NAME char],
+			Group:group
 		;
 		
-		strdel(buf, 0, 4);
-		strunpack(buf, buf);
+		group = Group_Create(NULL);
 		
-		cmd = Command_GetID(buf);
+		// Load the group name and set the global variable's value
+		CallLocalFunctionExt(buf, "si", name, group);
 		
-		if (cmd == COMMAND_NOT_FOUND) {
-			printf("(Groups) WARNING: Unable to find the command \"%s\".", buf);
-			
-			continue;
-		}
-		
-		Group_SetGlobalCommand(cmd, false);
-		
-		for (new i = 0; i < sizeof(this.StaticGroups); i++) {
-			if (permissions & 1 << i)
-				Group_SetCommand(this.StaticGroups[i][Group], cmd, true);
-		}
+		Group_SetName(group, name);
+	}
+	
+	// Search for permission setting functions
+	for (new buf[32], idx; (idx = AMX_GetPublicName(idx, buf, !"@pC_")); ) {
+		// Calling the function will set up the permissions for that command (see the YCMD re-definition).
+		CallLocalFunction(buf, "");
 	}
 }
