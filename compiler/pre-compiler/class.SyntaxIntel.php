@@ -4,11 +4,12 @@ class SyntaxIntel {
 	
 	public function __construct() {
 		$this->data = (object) array(
-			'callbacks' => array()
+			'callbacks' => array(),
+			'publics' => array()
 		);
 	}
 	
-	public function parse_directory($dirname, $settings) {
+	public function parse_directory($dirname, array $settings = array()) {
 		if (false === ($dirname = realpath($dirname)) || !is_dir($dirname))
 			trigger_error('Invalid directory given to parse_directory.', E_USER_ERROR);
 		
@@ -57,6 +58,15 @@ class SyntaxIntel {
 			$callbacks[$match[1]] = $match[2];
 		
 		$this->data->callbacks = array_merge($this->data->callbacks, $callbacks);
+		
+		preg_match_all('/\bpublic\s+([a-z0-9_@]+)\s*\(\s*(.*?)\s*\)\s*(\<.*?\>)?\s*\{/i', $text, $matches, PREG_SET_ORDER);
+		
+		$publics = array();
+		
+		foreach ($matches as $match)
+			$publics[$match[1]] = $match[2];
+		
+		$this->data->publics = array_merge($this->data->publics, $publics);
 	}
 	
 	private function get_directory_files($dirname, $pattern = '*', $recursive = false, array $ignore = array()) {
