@@ -71,6 +71,18 @@ class PBP {
 					'Priority' => 0
 				));
 				
+				if (!empty($info['Requires'])) {
+					$requires = preg_split('/\s*,\s*/', $info['Requires']);
+					
+					foreach ($requires as $module) {
+						if (!in_array($module, $modules)) {
+							echo "PBP Error: Non-existing module \"$module\" is required by file: \"modules/$module/$incfile.inc\".";
+							
+							exit;
+						}
+					}
+				}
+				
 				$module_includes[$incfile][] = (object) array(
 					'module'       => $module_index,
 					'include_path' => "modules\\$module\\$incfile",
@@ -121,6 +133,18 @@ class PBP {
 				), array(
 					"$callback({$callbacks[$callback]})"
 				));
+				
+				if (!empty($info['Requires'])) {
+					$requires = preg_split('/\s*,\s*/', $info['Requires']);
+					
+					foreach ($requires as $module) {
+						if (!in_array($module, $modules)) {
+							echo "PBP Error: Non-existing module \"$module\" is required by file: \"modules/$module/callbacks/$callback.inc\".";
+							
+							exit;
+						}
+					}
+				}
 				
 				if (!isset($callback_includes[$callback]))
 					$callback_includes[$callback] = array();
