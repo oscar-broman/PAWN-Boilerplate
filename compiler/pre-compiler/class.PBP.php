@@ -36,7 +36,15 @@ class PBP {
 			if (!is_dir($dir))
 				continue;
 			
-			$modules[] = basename($dir);
+			$basename = basename($dir);
+			
+			if (!preg_match('/^[a-z@_][a-z0-9_@]*$/i', $basename)) {
+				echo "PBP Error: Invalid module name: \"$basename\".";
+				
+				exit;
+			}
+			
+			$modules[] = $basename;
 		}
 		
 		$this->modules = $modules;
