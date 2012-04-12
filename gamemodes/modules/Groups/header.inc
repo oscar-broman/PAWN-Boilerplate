@@ -4,7 +4,7 @@
  > Priority: 10
  */
 
-// Make sure the YCMD define is what we expect it to be
+// Make sure the YCMD define is what we expect it to be.
 #if !defined YCMD
 	#error y_commands is required.
 #endif
