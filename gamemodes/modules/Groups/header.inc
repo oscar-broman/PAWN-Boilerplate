@@ -18,33 +18,24 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 // Re-define YCMD to support the new syntax, while keeping support for the normal one.
 #undef YCMD
 #define YCMD%1:  _pC@();_YCMD_0%1:_YCMD_1:_YCMD_2:
-#define _pC@();_YCMD_0(%1):_YCMD_1:_YCMD_2:%2(  @pC_%2();@pC_%2()return _:_@pG:%1;_YCMD_0:_YCMD_1:_YCMD_2:%2(
-#define _@pG:                  _@pG1:_@pG2:
-#define _@pG1:_@pG2:%1,  %1 | _:_@pG:
+#define _pC@();_YCMD_0(%1):_YCMD_1:_YCMD_2:%2(  @pC_%2();@pC_%2()Groups.SetCommandPermissions(#%2, %1);_YCMD_0:_YCMD_1:_YCMD_2:%2(
 
-enum e_STATIC_GROUPS {
-	      Name[MAX_GROUP_NAME],
-	Group:Group
-};
+// Macros for creation declaration of static groups
+#define StaticGroup<%1>%2=%3"%4" \
+	Group:%1; \
+	@pG_%1(name[], Group:group); \
+	@pG_%1(name[], Group:group) { \
+		strpack(name, #%4, MAX_GROUP_NAME char); \
+		(%1 = group) && %1; \
+	}_@pG_more_2:_@pG_more()
 
-// This enum must be in sync with the array below
-enum (<<= 1) {
-	SUPER_ADMIN = 1,
-	ADMIN,
-	MODERATOR,
-	VIP,
-	
-	this.STATIC_GROUPS
-};
+// Replace a trailing comma, if any, with another "new" keyword.
+#define _@pG_more()%1, _@pG_nomore(); new 
+#define _@pG_more_2:_@pG_more();
 
 new
-	this.StaticGroups[][e_STATIC_GROUPS] = {
-		{"Super Admin", Group:0},
-		{"Admin"      , Group:0},
-		{"Moderator"  , Group:0},
-		{"VIP"        , Group:0}
-	}
+	StaticGroup<MANAGEMENT> = "Management",
+	StaticGroup<ADMIN>      = "Administrators",
+	StaticGroup<MODERATOR>  = "Moderators",
+	StaticGroup<VIP>        = "VIPs"
 ;
-
-// If this fails, the above array is not in sync with the enum
-#assert _:this.STATIC_GROUPS == 1 << sizeof(this.StaticGroups)

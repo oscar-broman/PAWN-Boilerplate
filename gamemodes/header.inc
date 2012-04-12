@@ -37,6 +37,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <YSI\y_colours>
 #include <YSI\y_groups>
 #include <YSI\y_amx>
+#include <YSI\y_debug>
 #include <YSI\y_hooks>
 
 // Misc.
