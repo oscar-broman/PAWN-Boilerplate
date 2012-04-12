@@ -121,11 +121,11 @@ The StaticGroups module extends the functionality of y\_commands and y\_groups.
 You can now declare groups as global variables with the following syntax:
 
 ```C++
-new StaticGroup<MY\_GROUP> = "My Group";
+new StaticGroup<MY_GROUP> = "My Group";
 
 // In functions and such:
 	// Add "playerid" to the group
-	Group\_SetPlayer(MY\_GROUP, playerid, true);
+	Group_SetPlayer(MY_GROUP, playerid, true);
 ```
 
 ####<a name="creating-commands-exclusively-for-static-groups" href="#creating-commands-exclusively-for-static-groups">Creating commands exclusively for static groups</a>
