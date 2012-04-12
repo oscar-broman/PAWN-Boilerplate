@@ -7,6 +7,7 @@
  */
 
 {
+	
 	// Reset the player info
 	memset(Player.Info[playerid], sizeof(Player.Info[]), 0);
 	

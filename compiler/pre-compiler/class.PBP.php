@@ -216,8 +216,6 @@ class PBP {
 	#error You must use the compile script in the "compiler" folder.
 #endif
 
-const COMPILATION_TIMESTAMP = $timestamp;
-
 EOD;
 		$module_name_max = 0;
 		$num_modules = count($modules);
@@ -351,6 +349,8 @@ EOD;
 
 #define PBP.  PBP_
 #define PBP_DEFAULT_RETURN<%1>  DR@%1
+
+const PBP.COMPILATION_TIMESTAMP = $timestamp;
 
 enum PBP.e_MODULE {
 	Name[$module_name_max]
