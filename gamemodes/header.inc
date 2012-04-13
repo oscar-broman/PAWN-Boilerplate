@@ -55,9 +55,9 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <formatex>
 #include <pointers>
 
+#include "lib\macros"
 #include "lib\util"
 #include "lib\samp"
-#include "lib\macros"
 
 /* ----------------------------------------------------------------------------
     Add tags to the constants below, without changing their values
