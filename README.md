@@ -12,9 +12,8 @@ To make this work, a pre-compiler has been created. The pre-compiler will automa
 The recommended way to download PBP is via Git. Note, however, that in order to get the complete package you must do a **recursive clone** (see below).
 
 To clone the repository via command-line simply do this:
-```bash
-git clone --recursive https://github.com/oscar-broman/PAWN-Boilerplate.git
-```
+
+    git clone --recursive https://github.com/oscar-broman/PAWN-Boilerplate.git
 
 Alternatively, use a GUI tool. Follow the guide [here](http://help.github.com/set-up-git-redirect) for that.
 
@@ -152,3 +151,20 @@ YCMD(ADMIN, VIP):kick(playerid, params[], help) {
 	// ...
 }
 ```
+
+###<a name="player" href="#player">\#</a>Player
+The Player module provides easier interaction with players.
+
+####<a name="new-callbacks" href="#new-callbacks">\#</a>New callbacks
+The Player module also brings the following new callbacks to PBP:
+
+    OnPlayerRconLogin(playerid)
+    OnPlayerPositionUpdate(playerid, Float:x, Float:y, Float:z)
+    OnPlayerVelocityUpdate(playerid, Float:vx, Float:vy, Float:vz)
+    OnPlayerWeaponChange(playerid, weapon, previous_weapon)
+    OnPlayerAmmoChange(playerid, ammo, previous_ammo)
+    OnPlayerWeaponStateChange(playerid, weaponstate, previous_weaponstate)
+    OnPlayerMoneyChange(playerid, money, previous_money)
+    OnPlayerPingChange(playerid, ping, previous_ping)
+    OnPlayerSpecialActnChange(playerid, special_action, previous_special_action)
+    OnPlayerCameraModeChange(playerid, camera_mode, previous_camera_mode)
