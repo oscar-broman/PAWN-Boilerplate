@@ -1,3 +1,8 @@
+// Buffer used within this file
+static stock
+	gs_Buffer[256]
+;
+
 // Modified version from YSI/y_utils
 stock GetIPFromString(const ip[])
 {
@@ -13,7 +18,63 @@ stock GetIPFromString(const ip[])
 	return ipv;
 }
 
-// Improved, slightly slower version of CallLocalFunction
+// Allows use of formatex in y_va functions.
+#if defined va_args && defined formatex
+	stock va_formatex(output[], size = sizeof(output), fmat[], va_:STATIC_ARGS) {
+		new
+			num_args,
+			arg_start,
+			arg_end;
+		// Get the pointer to the number of arguments to the last function.
+		#emit LOAD.S.pri   0
+		#emit ADD.C        8
+		#emit MOVE.alt
+		// Get the number of arguments.
+		#emit LOAD.I
+		#emit STOR.S.pri   num_args
+		// Get the variable arguments (end).
+		#emit ADD
+		#emit STOR.S.pri   arg_end
+		// Get the variable arguments (start).
+		#emit LOAD.S.pri   STATIC_ARGS
+		#emit SMUL.C       4
+		#emit ADD
+		#emit STOR.S.pri   arg_start
+		// Using an assembly loop here screwed the code up as the labels added some
+		// odd stack/frame manipulation code...
+		while (arg_end != arg_start)
+		{
+			#emit MOVE.pri
+			#emit LOAD.I
+			#emit PUSH.pri
+			#emit CONST.pri    4
+			#emit SUB.alt
+			#emit STOR.S.pri   arg_end
+		}
+		// Push the additional parameters.
+		#emit PUSH.S       fmat
+		#emit PUSH.S       size
+		#emit PUSH.S       output
+		// Push the argument count.
+		#emit LOAD.S.pri   num_args
+		#emit ADD.C        12
+		#emit LOAD.S.alt   STATIC_ARGS
+		#emit XCHG
+		#emit SMUL.C       4
+		#emit SUB.alt
+		#emit PUSH.pri
+		#emit MOVE.alt
+		// Push the return address.
+		#emit LCTRL        6
+		#emit ADD.C        28
+		#emit PUSH.pri
+		// Call formatex
+		#emit CONST.pri    formatex
+		#emit SCTRL        6
+	}
+#endif
+
+// Improved version of CallLocalFunction
 #if defined GLOBAL_TAG_TYPES
 	stock CallLocalFunctionExt(const szFunction[], const szFormat[], GLOBAL_TAG_TYPES:...) {
 #else
