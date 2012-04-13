@@ -24,6 +24,6 @@
 	this.CB_OnPlayerWeaponStateChg   = GetPublicAddressByName("OnPlayerWeaponStateChange");
 	this.CB_OnPlayerMoneyChange      = GetPublicAddressByName("OnPlayerMoneyChange");
 	this.CB_OnPlayerPingChange       = GetPublicAddressByName("OnPlayerPingChange");
-	this.CB_OnPlayerSpecialActionChg = GetPublicAddressByName("OnPlayerSpecialActnChange");
+	this.CB_OnPlayerSpecialActionChg = GetPublicAddressByName("OnPlayerSpecialActionChange");
 	this.CB_OnPlayerCameraModeChange = GetPublicAddressByName("OnPlayerCameraModeChange");
 }

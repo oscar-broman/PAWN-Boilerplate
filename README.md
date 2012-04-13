@@ -166,5 +166,5 @@ The Player module also brings the following new callbacks to PBP:
     OnPlayerWeaponStateChange(playerid, weaponstate, previous_weaponstate)
     OnPlayerMoneyChange(playerid, money, previous_money)
     OnPlayerPingChange(playerid, ping, previous_ping)
-    OnPlayerSpecialActnChange(playerid, special_action, previous_special_action)
+    OnPlayerSpecialActionChange(playerid, special_action, previous_special_action)
     OnPlayerCameraModeChange(playerid, camera_mode, previous_camera_mode)

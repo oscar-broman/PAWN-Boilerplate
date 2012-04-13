@@ -311,13 +311,15 @@ $pub$callback({$callbacks[$callback]}) {
 EOD;
 			
 			foreach ($callback_include as $k => &$v) {
+				$incdef = '_inc_' . substr($callback, 0, 25);
+				
 				$public_functions .= <<<EOD
 	#define this. {$modules[$v->module]}.
-	#if defined _inc_$callback
-		#undef _inc_$callback
+	#if defined $incdef
+		#undef $incdef
 	#endif
 	#include "$v->include_path"
-	#undef _inc_$callback
+	#undef $incdef
 	#undef this
 
 EOD;

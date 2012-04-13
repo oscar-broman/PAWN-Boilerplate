@@ -14,5 +14,5 @@ forward OnPlayerAmmoChange(playerid, ammo, previous_ammo);
 forward OnPlayerWeaponStateChange(playerid, weaponstate, previous_weaponstate);
 forward OnPlayerMoneyChange(playerid, money, previous_money);
 forward OnPlayerPingChange(playerid, ping, previous_ping);
-forward OnPlayerSpecialActnChange(playerid, special_action, previous_special_action);
+forward OnPlayerSpecialActionChange(playerid, special_action, previous_special_action);
 forward OnPlayerCameraModeChange(playerid, camera_mode, previous_camera_mode);
