@@ -1,28 +1,3 @@
-#Contents
-
-- <a href="#pawn-boilerplate">PAWN Boilerplate</a>
-- <a href="#compiling">Compiling</a>
-    - <a href="#wine">Wine</a>
-- <a href="#code-structure">Code structure</a>
-    - <a href="#modules">Modules</a>
-        - <a href="#module-files">Files</a>
-            - <a href="#header-inc">`header.inc`</a>
-            - <a href="#callbacks-inc">`callbacks.inc`</a>
-            - <a href="#functions-inc">`functions.inc`</a>
-            - <a href="#commands-inc">`commands.inc`</a>
-            - <a href="#callbacks-">`callbacks/`</a>
-        - <a href="#prefixes">Prefixes</a>
-        - <a href="#creating-a-module">Creating a module</a>
-    - <a href="#callbacks">Callbacks</a>
-    - <a href="#file-headers">File headers</a>
-        - <a href="#priority">Priority</a>
-        - <a href="#requires">Requires</a>
-    - <a href="#example-file-header">Example file header</a>
-    - <a href="#default-modules">Default modules</a>
-        - <a href="#staticgroups">StaticGroups</a>
-            - <a href="#creating-static-groups">Creating static groups</a>
-            - <a href="#creating-commands-exclusively-for-static-groups">Creating commands exclusively for static groups</a>
-
 #<a name="pawn-boilerplate" href="#pawn-boilerplate">\#</a>PAWN Boilerplate
 
 Please note that this project is not yet officially released.
@@ -31,6 +6,17 @@ PAWN Boilerplate, or PBP, is a solid base for rapidly developing large gamemodes
 Everything is organized into modules, which are very easy to create and get started with.
 
 To make this work, a pre-compiler has been created. The pre-compiler will automatically generate a main file linked to all the modules and their contents.
+
+#Setting up PBP
+
+The recommended way to download PBP is via Git. Note, however, that in order to get the complete package you must do a **recursive clone** (see below).
+
+To clone the repository via command-line simply do this:
+```bash
+git clone --recursive https://github.com/oscar-broman/PAWN-Boilerplate.git
+```
+
+Alternatively, use a GUI tool. Follow the guide [here](http://help.github.com/set-up-git-redirect) for that.
 
 #<a name="compiling" href="#compiling">\#</a>Compiling
 
@@ -126,7 +112,7 @@ The recommended range of priority values is -10 - 10.
 ###<a name="requires" href="#requires">\#</a>Requires
 You can specify which other modules a file depends on (preferably `header.inc`). To do this, simply add a new line in the file header (below ` > Prefix: x`) containing a comma-separated list of other module names (case-sensitive).
 
-##<a name="example-file-header" href="#example-file-header">\#</a>Example file header
+###<a name="example-file-header" href="#example-file-header">\#</a>Example file header
 ```C++
 /*!
  * Groups/header.inc
