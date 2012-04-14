@@ -1,3 +1,6 @@
 [submodule "include/amx_assembly"]
 	path = include/amx_assembly
 	url = git://github.com/Zeex/amx_assembly.git
+[submodule "YSI"]
+	path = YSI
+	url = git://github.com/Y-Less/YSI.git

@@ -13,8 +13,20 @@ class PBP {
 	public function __construct() {
 		$this->is_windows = (strpos(PHP_OS, 'WIN') !== false);
 		
+		// Move YSI into position
+		rename('YSI/pawno/include/YSI.inc', 'include/YSI.inc');
+		rename('YSI/pawno/include/YSI', 'include/YSI');
+		
+		// Make sure it'll be moved back
+		register_shutdown_function(array($this, 'move_YSI_back'));
+		
 		foreach (array('compiler', 'gamemodes', 'gamemodes/modules', 'include') as $dir)
 			if (!is_dir($dir)) trigger_error("Unable to locate essential directory: $dir", E_USER_ERROR);
+	}
+	
+	public function move_YSI_back() {
+		@rename('include/YSI.inc', 'YSI/pawno/include/YSI.inc');
+		@rename('include/YSI', 'YSI/pawno/include/YSI');
 	}
 	
 	private function generate_main() {
