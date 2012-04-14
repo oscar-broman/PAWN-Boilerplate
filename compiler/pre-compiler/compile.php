@@ -59,8 +59,8 @@ if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
 		    $success = $zip->extractTo(realpath('.'), $files);
 			
 		    $zip->close();
-		
-			unlink(SERVER_DL_FILE);
+			
+			@unlink(SERVER_DL_FILE);
 			
 			if ($success) {
 				rename('pawno/pawnc.dll', 'compiler/bin/pawnc.dll');
