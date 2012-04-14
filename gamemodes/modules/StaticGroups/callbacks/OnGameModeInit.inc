@@ -3,7 +3,7 @@
  *
  * OnGameModeInit()
  *
- > Priority: 0
+ > Priority: 10
  */
 
 {
