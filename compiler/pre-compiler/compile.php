@@ -231,15 +231,11 @@ if (!file_exists('YSI/pawno/include/YSI.inc')) {
 			recursiveDelete('YSI');
 		
 		rename($folder, 'YSI');
-		
-		echo "$folder\n";
 	} else {
 		echo "Unable to open the zip archive.\n";
 
 		exit;
 	}
-	
-	exit;
 }
 
 require 'class.PBP.php';
