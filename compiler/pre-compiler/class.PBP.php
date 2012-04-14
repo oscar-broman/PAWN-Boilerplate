@@ -385,6 +385,34 @@ enum PBP.e_MODULE {
 stock const
 	PBP.Modules[][PBP.e_MODULE] = {{$module_array}}
 ;
+
+#include <string>
+
+stock PBP.ResolveSymbolName(name[], maxlength = sizeof(name)) {
+	new pos, module_index = -1, bool:packed = (name[0] > 255);
+	
+	if (packed) {
+		if (name{0} == 'M' && -1 < (pos = strfind(name, !"@", _, 2)) <= 4)
+			name{0} = ' ', module_index = strval(name), name{0} = 'M';
+	} else {
+		if (name[0] == 'M' && -1 < (pos = strfind(name, !"@", _, 2)) <= 4)
+			module_index = strval(name[1]);
+	}
+	
+	if (0 <= module_index < sizeof(PBP.Modules)) {
+		strdel(name, 0, pos);
+		
+		if (packed)
+			name{0} = '.';
+		else
+			name[0] = '.';
+		
+		strins(name, PBP.Modules[module_index][Name], 0, maxlength);
+	}
+	
+	return 1;
+}
+
 $max_players_cfg
 $module_prefixes
 #tryinclude "header"
