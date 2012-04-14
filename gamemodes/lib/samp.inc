@@ -1,3 +1,8 @@
+// Buffer used within this file
+static stock
+	gs_Buffer[256]
+;
+
 #if defined va_formatex
 	stock SendClientMessagef(playerid, color, fmat[], va_args<>) {
 		va_formatex(gs_Buffer, _, fmat, va_start<3>);
