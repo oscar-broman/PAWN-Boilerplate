@@ -70,8 +70,20 @@ class PBP {
 		
 		$callback_includes = array();
 		
-		foreach (glob('gamemodes/modules/*/callbacks.inc') as $file)
+		foreach (glob('gamemodes/modules/*/callbacks.inc') as $file) {
+			$contents = file_get_contents($file);
+			
+			if (preg_match('/^\s*public\s+/m', $contents)) {
+				echo "PBP Error: public functions are not allowed in callbacks.inc ($file).";
+				
+				
+				exit;
+			}
+			
+			unset($contents);
+			
 			$this->syntax_intel->parse_file($file);
+		}
 		
 		$callbacks = $this->syntax_intel->data->callbacks;
 		
