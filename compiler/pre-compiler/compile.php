@@ -137,10 +137,10 @@ if (!file_exists('include/amx_assembly/amx_header.inc')) {
 	
 	$tmpfile = tempnam(sys_get_temp_dir(), 'amx_assembly.zip');
 	
-	file_put_contents($tmpfile, @file_get_contents('https://github.com/Zeex/amx_assembly/zipball/master'));
+	file_put_contents($tmpfile, @file_get_contents('http://github.com/Zeex/amx_assembly/zipball/master'));
 	
 	if (filesize($tmpfile) == 0) {
-		echo "PBP Error: Unable to download amx_assembly from https://github.com/Zeex/amx_assembly/zipball/master\n";
+		echo "PBP Error: Unable to download amx_assembly from http://github.com/Zeex/amx_assembly/zipball/master\n";
 		
 		exit;
 	}
