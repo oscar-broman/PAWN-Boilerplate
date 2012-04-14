@@ -261,7 +261,7 @@ EOD;
 			$module_prefixes .= <<<EOD
 #define $module. M{$module_index}@
 #define M{$module_index}@INDEX  $module_index
-#define M{$module_index}@OFFSET  ($module_index * PBP.MODULE_OFFSET_MULTIPLIER)
+#define M{$module_index}@OFFSET  (($module_index + 1) * PBP.MODULE_OFFSET_MULTIPLIER)
 
 EOD;
 		}
