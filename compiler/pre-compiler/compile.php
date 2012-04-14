@@ -236,6 +236,8 @@ if (!file_exists('YSI/pawno/include/YSI.inc')) {
 
 		exit;
 	}
+	
+	echo "Done.\n";
 }
 
 require 'class.PBP.php';
