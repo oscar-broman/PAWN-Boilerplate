@@ -146,7 +146,7 @@ if (!file_exists('include/amx_assembly/amx_header.inc')) {
 	}
 	
 	echo "Downloaded.\n";
-	echo "Extracting amx_assembly.\n"
+	echo "Extracting amx_assembly.\n";
 	
 	$zip = new ZipArchive;
 	$res = $zip->open($tmpfile);
