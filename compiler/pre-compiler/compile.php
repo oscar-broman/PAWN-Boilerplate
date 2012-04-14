@@ -129,7 +129,7 @@ if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
 		exit;
 	}
 	
-	echo "\nDone.\n";
+	echo "Done.\n";
 }
 
 if (!file_exists('include/amx_assembly/amx_header.inc')) {
@@ -146,6 +146,7 @@ if (!file_exists('include/amx_assembly/amx_header.inc')) {
 	}
 	
 	echo "Downloaded.\n";
+	echo "Extracting amx_assembly.\n"
 	
 	$zip = new ZipArchive;
 	$res = $zip->open($tmpfile);
@@ -172,7 +173,7 @@ if (!file_exists('include/amx_assembly/amx_header.inc')) {
 		exit;
 	}
 	
-	echo "\nDone.\n";
+	echo "Done.\n";
 }
 
 require 'class.PBP.php';
