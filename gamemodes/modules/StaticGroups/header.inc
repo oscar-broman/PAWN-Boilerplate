@@ -32,11 +32,3 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 // Replace a trailing comma, if any, with another "new" keyword.
 #define _@pG_more()%1, _@pG_nomore(); new 
 #define _@pG_more_2:_@pG_more();
-
-// Declare some core groups
-new
-	StaticGroup<MANAGEMENT> = "Management",
-	StaticGroup<ADMIN>      = "Administrators",
-	StaticGroup<MODERATOR>  = "Moderators",
-	StaticGroup<VIP>        = "VIPs"
-;
