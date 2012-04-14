@@ -3,8 +3,6 @@ echo "PAWN Boilerplate\n\n";
 
 ini_set('memory_limit', '128M');
 
-unlink('samp-server.exe');
-
 // Download the server files if needed
 if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
 	define('SERVER_DL_URL',  'http://team.sa-mp.com/files/samp03dsvr_R2_win32.zip');
