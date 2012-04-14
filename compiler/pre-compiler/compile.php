@@ -176,6 +176,72 @@ if (!file_exists('include/amx_assembly/amx_header.inc')) {
 	echo "Done.\n";
 }
 
+if (!file_exists('YSI/pawno/include/YSI.inc')) {
+	echo "Downloading YSI, please wait.\n";
+	
+	$tmpfile = tempnam(sys_get_temp_dir(), 'YSI.zip');
+	
+	if (!($fp_in = fopen('https://github.com/Y-Less/YSI/zipball/master', 'rb'))) {
+		echo "PBP Error: Failed to download YSI from https://github.com/Y-Less/YSI/zipball/master\n";
+		
+		exit;
+	}
+	
+	if (!($fp_out = fopen($tmpfile, 'wb'))) {
+		fclose($fp_in);
+		
+		echo "PBP Error: Failed to open YSI.zip for writing.\n";
+		
+		exit;
+	}
+	
+	while (!feof($fp_in))
+		fwrite($fp_out, fread($fp_in, 8192));
+	
+	fclose($fp_in);
+	fclose($fp_out);
+	
+	function recursiveDelete($str) {
+		if (is_file($str)) {
+			return @unlink($str);
+		} else if (is_dir($str)) {
+			$scan = glob(rtrim(realpath($str), '/') . '/*');
+			
+			foreach($scan as $index=>$path)
+				recursiveDelete($path);
+			
+			return @rmdir($str);
+		}
+	}
+	
+	echo "Extracting YSI.\n";
+	
+	$zip = new ZipArchive;
+	
+	$res = $zip->open($tmpfile);
+	
+	if ($res === true) {
+		$zip->extractTo('.');
+		
+		$folder = strstr($zip->getNameIndex(0), '/', true);
+		
+		$zip->close();
+		
+		if (file_exists('YSI'))
+			recursiveDelete('YSI');
+		
+		rename($folder, 'YSI');
+		
+		echo "$folder\n";
+	} else {
+		echo "Unable to open the zip archive.\n";
+
+		exit;
+	}
+	
+	exit;
+}
+
 require 'class.PBP.php';
 
 $pbp = new PBP();
