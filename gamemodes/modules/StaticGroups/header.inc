@@ -1,7 +1,7 @@
 /*!
  * StaticGroups/header.inc
  *
- > Priority: 10
+ > Priority: 9
  */
 
 // Make sure the YCMD define is what we expect it to be.
