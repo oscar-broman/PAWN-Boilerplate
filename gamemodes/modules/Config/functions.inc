@@ -5,44 +5,116 @@
  */
 
 this.LoadEntries() {
-	new id, key[64], value[512];
-	
-	stmt_bind_result_field(this.stmt_load_entries, 0, DB::TYPE_INT   , id); // id
-	stmt_bind_result_field(this.stmt_load_entries, 1, DB::TYPE_STRING, key, sizeof(key)); // key
-	stmt_bind_result_field(this.stmt_load_entries, 2, DB::TYPE_STRING, value, sizeof(value)); // value
-	
-	if (stmt_execute(this.stmt_load_entries)) {
-	    while (stmt_fetch_row(this.stmt_load_entries)) {
-			new key_hash = YHash(key, .pack = false);
+	if (fexist(this.FILE)) {
+		new
+			File:fp = fopen(this.FILE, io_read),
+			pos,
+			start,
+			key[64 char],
+			line_buffer[512 char]
+		;
+		
+		if (!fp) {
+			printf(!"(Config) Error: Unable to open the file \"%S\" for reading.", this.FILE);
+
+			return;
+		}
+		
+		while (fread(fp, line_buffer, _, true)) {
+			if (-1 != (pos = strfind(line_buffer, !"="))) {
+				pos--;
+				
+				while (pos > 1 && line_buffer{pos} <= ' ')
+					pos--;
 			
-			for (new i = 0; i < this.NumConfigEntries; i++) {
-				if (key_hash == this.ConfigEntries[i][KeyHash] && !strcmp(key, mget(this.ConfigEntries[i][Key], 0))) {
-					this.ConfigEntries[i][Id] = id;
-					
-					if (this.ConfigEntries[i][Size] == 1) {
-						switch (this.ConfigEntries[i][Type]) {
-							case DB::TYPE_FLOAT:
-								@ptr[this.ConfigEntries[i][Address]] = _:floatstr(value);
-							
-							default:
-								@ptr[this.ConfigEntries[i][Address]] = strval(value);
-						}
-					} else {
-						switch (this.ConfigEntries[i][Type]) {
-							case DB::TYPE_STRING: {
-								if (this.ConfigEntries[i][Size] & (1 << 31))
-									strpack(@ptr[this.ConfigEntries[i][Address]], value, this.ConfigEntries[i][Size] & (-1 >>> 1));
-								else
-									strunpack(@ptr[this.ConfigEntries[i][Address]], value, this.ConfigEntries[i][Size]);
+				if (!pos)
+					continue;
+			
+				start = 0;
+			
+				while (start < pos && line_buffer{start} <= ' ')
+					start++;
+				
+				pos -= start;
+				
+				strdel(line_buffer, 0, start);
+				
+				strmid(key, line_buffer, 0, pos + 1);
+				
+				if (-1 == (pos = strfind(line_buffer, !"=")))
+					continue;
+				
+				pos++;
+				
+				while (0 < line_buffer{pos} <= ' ')
+					pos++;
+				
+				strdel(line_buffer, 0, pos);
+				
+				pos = strlen(line_buffer);
+				
+				if (pos)
+					pos--;
+				
+				while (pos && line_buffer{pos} <= ' ')
+					line_buffer{pos--} = '\0';
+				
+				if (line_buffer{0} == '"' && line_buffer{pos} == '"')
+					line_buffer{pos} = '\0', strdel(line_buffer, 0, 1);
+				
+				new key_hash = YHash(key, .pack = true);
+				
+				for (new i = 0; i < this.NumConfigEntries; i++) {
+					if (key_hash == this.ConfigEntries[i][KeyHash] && !strcmp(key, mget(this.ConfigEntries[i][Key], 0))) {
+						switch (this.ConfigEntries[i][Type] & 0xFF) {
+							case this.TYPE_INT:
+								@ptr[this.ConfigEntries[i][Address]] = strval(line_buffer);
+
+							case this.TYPE_FLOAT:
+								@ptr[this.ConfigEntries[i][Address]] = _:floatstr(line_buffer);
+
+							case this.TYPE_ARRAY: {
+								new bool:zerofill = false;
+								new type = this.ConfigEntries[i][Type] >>> 8;
+								
+								for (new j = 0; j < this.ConfigEntries[i][Size]; j++) {
+									if (zerofill) {
+										@ptr[this.ConfigEntries[i][Address]][j] = 0;
+										
+										continue;
+									}
+									
+									if (-1 != (pos = strfind(line_buffer, !",")))
+										line_buffer{pos} = 0;
+									
+									if (type == this.TYPE_FLOAT)
+										@ptr[this.ConfigEntries[i][Address]][j] = _:floatstr(line_buffer);
+									else
+										@ptr[this.ConfigEntries[i][Address]][j] = strval(line_buffer);
+									
+									if (pos == -1) {
+										zerofill = true;
+										
+										continue;
+									} else {
+										line_buffer{pos++} = ',';
+									}
+									
+									while (0 < line_buffer{pos} <= ' ')
+										pos++;
+									
+									strdel(line_buffer, 0, pos);
+								}
 							}
 							
-							default: {
-								// todo
+							case this.TYPE_STRING: {
+								if (this.ConfigEntries[i][Size] & (1 << 31))
+									strpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size] & (-1 >>> 1));
+								else
+									strunpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size]);
 							}
 						}
 					}
-					
-					break;
 				}
 			}
 		}
@@ -50,38 +122,69 @@ this.LoadEntries() {
 }
 
 this.SaveEntries() {
+	new
+		File:fp = fopen(this.FILE, io_write),
+		line_buffer[512]
+	;
+	
+	if (!fp) {
+		printf(!"(Config) Error: Unable to open the file \"%S\" for writing.", this.FILE);
+		
+		return;
+	}
+	
 	for (new i = 0; i < this.NumConfigEntries; i++) {
-		if (this.ConfigEntries[i][Id] == -1)
-			stmt_bind_value(this.stmt_save_entry, 0, DB::TYPE_NULL);
-		else
-			stmt_bind_value(this.stmt_save_entry, 0, DB::TYPE_INT, this.ConfigEntries[i][Id]);
+		strunpack(line_buffer, mget(this.ConfigEntries[i][Key], 0));
+		strcat (line_buffer, !" = ");
 		
-		stmt_bind_value(this.stmt_save_entry, 1, DB::TYPE_STRING, mget(this.ConfigEntries[i][Key], 0));
-		
-		if (this.ConfigEntries[i][Size] == 1) {
-			stmt_bind_value(this.stmt_save_entry, 2, this.ConfigEntries[i][Type], @ptr[this.ConfigEntries[i][Address]]);
-		} else {
-			switch (this.ConfigEntries[i][Type]) {
-				case DB::TYPE_STRING:
-					stmt_bind_value(this.stmt_save_entry, 2, DB::TYPE_STRING, @ptr[this.ConfigEntries[i][Address]]);
-				
-				default: {
-					// todo
+		switch (this.ConfigEntries[i][Type] & 0xFF) {
+			case this.TYPE_INT:
+				strcatf(line_buffer, _, !"%d", @ptr[this.ConfigEntries[i][Address]]);
+			
+			case this.TYPE_FLOAT:
+				strcatf(line_buffer, _, !"%f", @ptr[this.ConfigEntries[i][Address]]);
+			
+			case this.TYPE_ARRAY: {
+				switch (this.ConfigEntries[i][Type] >>> 8) {
+					case this.TYPE_FLOAT: {
+						for (new j = 0; j < this.ConfigEntries[i][Size]; j++) {
+							if (j)
+								strcatf(line_buffer, _, !", %f", @ptr[this.ConfigEntries[i][Address]][j]);
+							else
+								strcatf(line_buffer, _, !"%f", @ptr[this.ConfigEntries[i][Address]][j]);
+						}
+					}
+					
+					default: {
+						for (new j = 0; j < this.ConfigEntries[i][Size]; j++) {
+							if (j)
+								strcatf(line_buffer, _, !", %d", @ptr[this.ConfigEntries[i][Address]][j]);
+							else
+								strcatf(line_buffer, _, !"%d", @ptr[this.ConfigEntries[i][Address]][j]);
+						}
+					}
 				}
 			}
+			
+			case this.TYPE_STRING:
+				strcat(line_buffer, "\""), strcat(line_buffer, @ptr[this.ConfigEntries[i][Address]]), strcat(line_buffer, "\"");
 		}
 		
-		stmt_execute(this.stmt_save_entry);
+		strcat(line_buffer, !"\n");
+		
+		fwrite(fp, line_buffer);
 	}
+	
+	fclose(fp);
 }
 
 stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) {
 	new
-		           address,
-		           key[64 char],
-		DBDataType:type,
-		           i,
-		     Alloc:key_ptr
+		      address,
+		      key[64 char],
+		      type,
+		      i,
+		Alloc:key_ptr
 	;
 	
 	strpack(key, _key);
@@ -91,12 +194,17 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 	#emit LOAD.S.pri  24
 	#emit STOR.S.pri  address
 	
-	if (tag == tagof(String:))
-		type = DB::TYPE_STRING;
-	else if (tag == tagof(Float:))
-		type = DB::TYPE_FLOAT;
+	if (tag == tagof(Float:))
+		type = this.TYPE_FLOAT;
 	else
-		type = DB::TYPE_INT;
+		type = this.TYPE_INT;
+	
+	if (size > 1) {
+		if (numargs() > 4 && getarg(4))
+			type = (type << 8) | this.TYPE_ARRAY;
+		else
+			type = this.TYPE_STRING;
+	}
 	
 	key_ptr = malloc((strlen(key) + 1) char);
 	
@@ -104,13 +212,12 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 	
 	i = this.NumConfigEntries++;
 	
-	this.ConfigEntries[i][Id]       = -1;
 	this.ConfigEntries[i][KeyHash] = YHash(key, .pack = true);
 	this.ConfigEntries[i][Key]     = key_ptr;
 	this.ConfigEntries[i][Address] = address;
 	this.ConfigEntries[i][Type]    = type;
 	this.ConfigEntries[i][Size]    = size;
 	
-	if (type == DB::TYPE_STRING)
+	if (type == this.TYPE_STRING)
 		this.ConfigEntries[i][Size] |= (_:ispacked(@ptr[address]) << 31);
 }

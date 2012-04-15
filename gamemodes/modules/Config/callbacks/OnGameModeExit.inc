@@ -3,11 +3,9 @@
  *
  * OnGameModeExit()
  *
- > Priority: 0
+ > Priority: -10
  */
 
 {
 	this.SaveEntries();
-	
-	db_free_persistent(this.db);
 }

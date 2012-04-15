@@ -10,32 +10,35 @@
 		Config.RegisterVariableEntry(#%1, tagof((%1)), sizeof((%1)), %1); \
 	}
 
-#define RegisterConfigString<%1>; \
+#define RegisterConfigArray<%1>; \
 	forward %1@Pc_(); \
 	public %1@Pc_() { \
-		Config.RegisterVariableEntry(#%1, tagof(String:), sizeof((%1)), %1); \
+		Config.RegisterVariableEntry(#%1, tagof((%1)), sizeof((%1)), %1, true); \
 	}
 
 // Forward this since most RegisterConfigVariable will be in headers
 this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...);
 
 enum this.e_CONFIG_ENTRY {
-	           Id,
-	           KeyHash,
-	     Alloc:Key,
-	           Address,
-	DBDataType:Type,
-	           Size
+	      KeyHash,
+	Alloc:Key,
+	      Address,
+	      Type,
+	      Size
+};
+
+enum {
+	this.TYPE_INT,
+	this.TYPE_FLOAT,
+	this.TYPE_ARRAY,
+	this.TYPE_STRING
 };
 
 stock const
-	this.DB_FILE[] = !"config.db"
+	this.FILE[] = !"config.cfg"
 ;
 
 new
-	         DB:this.db,
-	DBStatement:this.stmt_load_entries,
-	DBStatement:this.stmt_save_entry,
-	            this.NumConfigEntries = 0,
-	            this.ConfigEntries[1024][this.e_CONFIG_ENTRY]
+	this.NumConfigEntries = 0,
+	this.ConfigEntries[1024][this.e_CONFIG_ENTRY]
 ;
