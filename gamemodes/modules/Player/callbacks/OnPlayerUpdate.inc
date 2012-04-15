@@ -9,6 +9,7 @@
 {
 	static
 		Float:x, Float:y, Float:z,
+		vehicleid,
 		Float:vx, Float:vy, Float:vz,
 		weapon,
 		ammo,
@@ -20,7 +21,7 @@
 	;
 	
 	GetPlayerPos(playerid, x, y, z);
-	GetPlayerVelocity(playerid, vx, vy, vz);
+	(vehicleid = GetPlayerVehicleID(playerid)) && GetVehicleVelocity(vehicleid, vx, vy, vz) || GetPlayerVelocity(playerid, vx, vy, vz);
 	GetPlayerFacingAngle(playerid, Player.Info[playerid][Rot]);
 	GetPlayerHealth(playerid, Player.Info[playerid][Health]);
 	GetPlayerArmour(playerid, Player.Info[playerid][Armour]);
