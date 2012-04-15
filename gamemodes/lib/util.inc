@@ -25,7 +25,7 @@ stock GetIPFromString(const ip[])
 	
 	// Allows use of formatex in y_va functions.
 	#if defined va_args
-		stock va_formatex(output[], size = sizeof(output), fmat[], va_:STATIC_ARGS) {
+		stock va_formatex(output[], size = sizeof(output), const fmat[], va_:STATIC_ARGS) {
 			new
 				num_args,
 				arg_start,
@@ -76,6 +76,12 @@ stock GetIPFromString(const ip[])
 			// Call formatex
 			#emit CONST.pri    formatex
 			#emit SCTRL        6
+		}
+		
+		stock strcatf(dest[], maxlength = sizeof(dest), const fmat[], va_args<>) {
+			va_formatex(gs_Buffer, _, fmat, va_start<3>);
+			
+			strcat(dest, gs_Buffer, maxlength);
 		}
 	#endif
 #endif
