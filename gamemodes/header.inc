@@ -14,6 +14,12 @@
 // Default return values
 const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 
+// Colors used throughout the script
+#define COLOR_COMMAND_HELP   0x9DDDDCFF
+#define COLOR_COMMAND_ERROR  0xCC2A41FF
+#define COLOR_COMMAND_INFO   0xF4FCE8FF
+#define COLOR_COMMAND_USAGE  0xFCFEF5FF
+
 /* ----------------------------------------------------------------------------
     Include files
    --------------------------------------------------------------------------*/
@@ -49,11 +55,14 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <YSI\y_groups>
 #include <YSI\y_amx>
 #include <YSI\y_debug>
+#include <YSI\y_malloc>
+#include <YSI\y_iterate>
 #include <YSI\y_hooks>
 
 // Misc.
-#include <formatex>
 #include <pointers>
+#include <sqlitei>
+#include <formatex>
 
 #include "lib\macros"
 #include "lib\util"

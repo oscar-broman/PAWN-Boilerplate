@@ -46,5 +46,5 @@ stock GetArgumentAddress(iArg) {
 	return 0;
 }
 
-#define  @adr[%1] (PointerByAddress (%1), g_aaiPointers[0][0])
+#define  @ptr[%1] (PointerByAddress (%1), g_aaiPointers[0][0])
 #define  @arg[%1] (PointerByArgument(%1), g_aaiPointers[0][0])
