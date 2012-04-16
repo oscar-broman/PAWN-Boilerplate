@@ -42,6 +42,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <amx_assembly\profiler>
 #include <amx_assembly\stack_dump>
 
+// These macros collide with ones in YSI
 #undef r@
 #undef w@
 
