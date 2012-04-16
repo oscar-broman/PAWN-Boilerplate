@@ -48,16 +48,16 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 // YSI
 #define YSI_NO_X11
 
-#include <YSI\y_commands>
-#include <YSI\y_utils>
-#include <YSI\y_classes>
-#include <YSI\y_colours>
-#include <YSI\y_groups>
-#include <YSI\y_amx>
-#include <YSI\y_debug>
-#include <YSI\y_malloc>
-#include <YSI\y_iterate>
-#include <YSI\y_hooks>
+#include <..\YSI\pawno\include\YSI\y_commands>
+#include <..\YSI\pawno\include\YSI\y_utils>
+#include <..\YSI\pawno\include\YSI\y_classes>
+#include <..\YSI\pawno\include\YSI\y_colours>
+#include <..\YSI\pawno\include\YSI\y_groups>
+#include <..\YSI\pawno\include\YSI\y_amx>
+#include <..\YSI\pawno\include\YSI\y_debug>
+#include <..\YSI\pawno\include\YSI\y_malloc>
+#include <..\YSI\pawno\include\YSI\y_iterate>
+#include <..\YSI\pawno\include\YSI\y_hooks>
 
 // Misc.
 #include <pointers>
