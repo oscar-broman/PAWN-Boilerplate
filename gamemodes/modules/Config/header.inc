@@ -4,13 +4,16 @@
  > Priority: 0
  */
 
-#define RegisterConfigVariable<%1>; \
+// This will cause errors if the macros below fails (i.e. they're not used properly).
+stock RegisterConfigVariable;
+
+#define RegisterConfigVariable:%1; \
 	forward %1@Pc_(); \
 	public %1@Pc_() { \
 		Config.RegisterVariableEntry(#%1, tagof((%1)), sizeof((%1)), %1); \
 	}
 
-#define RegisterConfigArray<%1>; \
+#define RegisterConfigArray:%1; \
 	forward %1@Pc_(); \
 	public %1@Pc_() { \
 		Config.RegisterVariableEntry(#%1, tagof((%1)), sizeof((%1)), %1, true); \

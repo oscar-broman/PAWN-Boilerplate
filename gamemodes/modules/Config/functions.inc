@@ -21,6 +21,9 @@ this.LoadEntries() {
 		}
 		
 		while (fread(fp, line_buffer, _, true)) {
+			if (line_buffer{0} == '#')
+				continue;
+			
 			if (-1 != (pos = strfind(line_buffer, !"="))) {
 				pos--;
 				
@@ -132,6 +135,10 @@ this.SaveEntries() {
 		
 		return;
 	}
+	
+	fwrite(fp, "# This file will automatically get re-created when the game mode exits.\n");
+	fwrite(fp, "# Use the RCON command \"reload_config\" to re-load the server's values.\n");
+	fwrite(fp, "\n");
 	
 	for (new i = 0; i < this.NumConfigEntries; i++) {
 		strunpack(line_buffer, mget(this.ConfigEntries[i][Key], 0));
