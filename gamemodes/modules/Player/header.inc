@@ -32,14 +32,17 @@ enum (<<= 1) {
 };
 
 new
-	this.Info[MAX_PLAYERS][e_PLAYER_INFO],
-	this.CB_OnPlayerPositionUpdate,
-	this.CB_OnPlayerVelocityUpdate,
-	this.CB_OnPlayerWeaponChange,
-	this.CB_OnPlayerAmmoChange,
-	this.CB_OnPlayerWeaponStateChg,
-	this.CB_OnPlayerMoneyChange,
-	this.CB_OnPlayerPingChange,
-	this.CB_OnPlayerSpecialActionChg,
-	this.CB_OnPlayerCameraModeChange
+	     this.Info[MAX_PLAYERS][e_PLAYER_INFO],
+	     this.CB_OnPlayerPositionUpdate,
+	     this.CB_OnPlayerVelocityUpdate,
+	     this.CB_OnPlayerWeaponChange,
+	     this.CB_OnPlayerAmmoChange,
+	     this.CB_OnPlayerWeaponStateChg,
+	     this.CB_OnPlayerMoneyChange,
+	     this.CB_OnPlayerPingChange,
+	     this.CB_OnPlayerSpecialActionChg,
+	     this.CB_OnPlayerCameraModeChange,
+	bool:this.UsePlayerPedAnimations = true
 ;
+
+RegisterConfigVariable: this.UsePlayerPedAnimations;

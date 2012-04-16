@@ -18,4 +18,7 @@
 	this.CB_OnPlayerPingChange       = GetPublicAddressByName("OnPlayerPingChange");
 	this.CB_OnPlayerSpecialActionChg = GetPublicAddressByName("OnPlayerSpecialActionChange");
 	this.CB_OnPlayerCameraModeChange = GetPublicAddressByName("OnPlayerCameraModeChange");
+	
+	if (this.UsePlayerPedAnimations)
+		UsePlayerPedAnims();
 }
