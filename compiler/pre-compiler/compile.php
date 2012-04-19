@@ -6,13 +6,8 @@ ini_set('memory_limit', '128M');
 $working_dir = rtrim(getenv('WORKING_PATH'), '/\\');
 $base_dir = rtrim(getenv('BASE_PATH'), '/\\');
 
-if (!empty($working_dir) && !empty($base_dir) && $working_dir == $base_dir) {
+if (!empty($working_dir) && !empty($base_dir) && $working_dir == $base_dir)
 	chdir("$working_dir\\..");
-	
-	echo "changed to: $working_dir\n";
-	var_dump(getcwd());
-	var_dump(realpath('.'));
-}
 
 // Download the server files if needed
 if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
