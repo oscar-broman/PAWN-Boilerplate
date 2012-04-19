@@ -12,6 +12,7 @@ class PBP {
 	
 	public function __construct() {
 		$this->is_windows = (strpos(PHP_OS, 'WIN') !== false);
+		
 		foreach (array('compiler', 'gamemodes', 'gamemodes/modules', 'include') as $dir)
 			if (!is_dir($dir)) trigger_error("Unable to locate essential directory: $dir", E_USER_ERROR);
 	}
@@ -542,8 +543,35 @@ EOD;
 					foreach ($amx->debug->states as &$state)
 						$state->name = preg_replace_callback($pat, array($this, 'pawnc_module_prefix'), $state->name, -1, $count);
 				
+					if (!$this->is_windows) {
+						$base = escapeshellarg(realpath('.'));
+						$base = trim(`$pawnc->wine_dir/winepath -w $base`);
+					} else {
+						$base = realpath('.');
+					}
+					
+					$base = str_replace('\\', '/', $base);
+					$base = rtrim($base, '/');
+					
+					foreach($amx->debug->files as &$file) {
+						$file->name = str_replace('\\', '/', $file->name);
+						$file->name = preg_replace('#^' . preg_quote($base, '#') . '#', '', $file->name);
+						
+						// This will most likely only happen when in UNC paths (Windows tries to fix that..)
+						if (preg_match('#^[a-z]:/#i', $file->name) && preg_match('#^[a-z]:/#i', $base))
+							$file->name = preg_replace('#^[a-z]:/' . preg_quote(substr($base, 3)) . '#i', '', $file->name);
+						
+						$file->name = ltrim($file->name, '/');
+						$file->name = str_ireplace('YSI/pawno/include/YSI', 'YSI', $file->name);
+						
+						do
+							$file->name = preg_replace('#(^|/)([^/]*?)/\.\.(/|$)#', '$1', $file->name, -1, $count);
+						while ($count);
+					}
+					
 					$amx->save();
 				}
+				
 				echo "Successfully compiled in " . round(microtime(true) - $start_time, 1) . " seconds; file size: " . round(filesize($pawnc->output_file) / 1024, 2) . "kb.\n";
 				
 			} else {

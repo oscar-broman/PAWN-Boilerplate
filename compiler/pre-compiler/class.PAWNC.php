@@ -32,7 +32,7 @@ class PAWNC {
 	
 	private $basedir;
 	private $is_windows;
-	private $wine_dir;
+	public $wine_dir;
 	
 	public function __construct() {
 		$this->basedir = realpath(dirname(__file__));
