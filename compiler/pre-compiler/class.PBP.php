@@ -529,6 +529,21 @@ EOD;
 			
 				if ($amx->debug) {
 					$pat = '/^M([0-9]+)@/';
+					
+					foreach ($amx->header->publics as $name => $address) {
+						$matching_symbol = false;
+						
+						foreach ($amx->debug->symbols as &$symbol) {
+							if ($symbol->ident == AMX::IDENT_FUNCTION && $symbol->name == $name) {
+								$matching_symbol = true;
+								
+								break;
+							}
+						}
+						
+						if (!$matching_symbol)
+							echo "NOTICE: Public $name has no found matching symbol.\n";
+					}
 				
 					// Replace module prefixes back to the module's name in the AMX file's debug information
 					foreach ($amx->debug->symbols as &$symbol)
