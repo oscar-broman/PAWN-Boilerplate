@@ -223,8 +223,8 @@ class AMX {
 	public function save() {
 		if ($this->debug) {
 			$debug_output = pack(
-				'Vvccvvvvvvv',
-				$this->debug->size,
+				'vccvvvvvvv',
+//				$this->debug->size, <- Will be written lastly
 				$this->debug->magic,
 				$this->debug->file_version,
 				$this->debug->amx_version,
@@ -273,6 +273,7 @@ class AMX {
 		
 				ftruncate($fp, $this->header->size);
 		
+				fwrite($fp, pack('V', strlen($debug_output)));
 				fwrite($fp, $debug_output);
 		
 				fclose($fp);
