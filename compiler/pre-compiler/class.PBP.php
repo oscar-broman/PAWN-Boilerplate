@@ -374,28 +374,39 @@ stock const
 	PBP.Modules[][PBP.e_MODULE] = {{$module_array}}
 ;
 
-#include <string>
+// Let's avoid touching anything we shouldn't
+native PBP.print(const string[]) = print;
+native PBP.strins(string[], const substr[], pos, maxlength=sizeof string) = strins;
+native PBP.strdel(string[], start, end) = strdel;
+native PBP.strfind(const string[], const sub[], bool:ignorecase=false, pos=0) = strfind;
+native PBP.strval(const string[]) = strval;
+
+forward PBP.ThisFunctionError(...);
+public PBP.ThisFunctionError(...) {
+	PBP.print(!"PBP Error: A public function was prefixed with \"this.\". Unable to determine where it points.");
+	PBP.print(!"           Use the stringize operator or full module prefixes when dealing with public function names.");
+}
 
 stock PBP.ResolveSymbolName(name[], maxlength = sizeof(name)) {
 	new pos, module_index = -1, bool:packed = (name[0] > 255);
 	
 	if (packed) {
-		if (name{0} == 'M' && -1 < (pos = strfind(name, !"@", _, 2)) <= 4)
-			name{0} = ' ', module_index = strval(name), name{0} = 'M';
+		if (name{0} == 'M' && -1 < (pos = PBP.strfind(name, !"@", _, 2)) <= 4)
+			name{0} = ' ', module_index = PBP.strval(name), name{0} = 'M';
 	} else {
-		if (name[0] == 'M' && -1 < (pos = strfind(name, !"@", _, 2)) <= 4)
-			module_index = strval(name[1]);
+		if (name[0] == 'M' && -1 < (pos = PBP.strfind(name, !"@", _, 2)) <= 4)
+			module_index = PBP.strval(name[1]);
 	}
 	
 	if (0 <= module_index < sizeof(PBP.Modules)) {
-		strdel(name, 0, pos);
+		PBP.strdel(name, 0, pos);
 		
 		if (packed)
 			name{0} = '.';
 		else
 			name[0] = '.';
 		
-		strins(name, PBP.Modules[module_index][Name], 0, maxlength);
+		PBP.strins(name, PBP.Modules[module_index][Name], 0, maxlength);
 	}
 	
 	return 1;
@@ -528,11 +539,57 @@ EOD;
 				$amx = new AMX($pawnc->output_file);
 				
 				$save = false;
+				
+				$pat = '/^M([0-9]+)@/';
+				
+				$redirects = array();
+				$this_errfunc = 0;
+				
+				foreach ($amx->header->publics as &$public) {
+					if ($public->name == 'PBP_ThisFunctionError') {
+						$this_errfunc = $public->value;
+						
+						break;
+					}
+				}
+				
+				foreach ($amx->header->publics as &$public) {
+					if (preg_match($pat, $public->name)) {
+						$name = preg_replace_callback($pat, array($this, 'pawnc_module_prefix'), $public->name);
+						
+						if (strlen($name) > 31)
+							continue;
+						
+						$redirects[$name] = true;
+						
+						array_push($amx->header->publics, (object) array(
+							'name' => $name,
+							'value' => $public->value
+						));
+						
+						if ($this_errfunc) {
+							$name = preg_replace($pat, 'this.', $public->name);
+
+							if (strlen($name) > 31)
+								continue;
+
+							$redirects[$name] = true;
+
+							array_push($amx->header->publics, (object) array(
+								'name' => $name,
+								'value' => $this_errfunc
+							));
+						}
+					}
+				}
 			
 				if ($amx->debug) {
 					$pat = '/^M([0-9]+)@/';
 					
 					foreach ($amx->header->publics as $entry) {
+						if (isset($redirects[$entry->name]))
+							continue;
+						
 						$matching_symbol = false;
 						
 						foreach ($amx->debug->symbols as &$symbol) {
