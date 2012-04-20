@@ -526,15 +526,17 @@ EOD;
 		else {
 			if (!$pawnc->list_file && !$pawnc->asm_file) {
 				$amx = new AMX($pawnc->output_file);
+				
+				$save = false;
 			
 				if ($amx->debug) {
 					$pat = '/^M([0-9]+)@/';
 					
-					foreach ($amx->header->publics as $name => $address) {
+					foreach ($amx->header->publics as $entry) {
 						$matching_symbol = false;
 						
 						foreach ($amx->debug->symbols as &$symbol) {
-							if ($symbol->ident == AMX::IDENT_FUNCTION && $symbol->name == $name) {
+							if ($symbol->ident == AMX::IDENT_FUNCTION && $symbol->name == $entry->name) {
 								$matching_symbol = true;
 								
 								break;
@@ -542,7 +544,7 @@ EOD;
 						}
 						
 						if (!$matching_symbol)
-							echo "NOTICE: Public $name has no found matching symbol.\n";
+							echo "NOTICE: Public $entry->name has no found matching symbol.\n";
 					}
 				
 					// Replace module prefixes back to the module's name in the AMX file's debug information
@@ -584,7 +586,12 @@ EOD;
 						while ($count);
 					}
 					
-					$amx->save();
+					$save = true;
+				}
+				
+				if ($save) {
+					if (!$amx->save())
+						echo "ERROR: Failed to save the modified AMX. It might be corrupted.";
 				}
 				
 				echo "Successfully compiled in " . round(microtime(true) - $start_time, 1) . " seconds; file size: " . round(filesize($pawnc->output_file) / 1024, 2) . "kb.\n";

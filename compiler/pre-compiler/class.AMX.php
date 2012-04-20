@@ -3,6 +3,7 @@ class AMX {
 	private $file;
 	
 	public $header;
+	public $header_raw;
 	public $debug;
 	
 	const IDENT_VARIABLE  = 1;
@@ -57,7 +58,9 @@ class AMX {
 			return;
 		}
 		
-		$data .= fread($fp, $this->header->cod);
+		$data .= fread($fp, $this->header->cod - 56);
+		
+		$this->header_raw = $data;
 		
 		$this->header->num_publics   = ($this->header->offset_natives - $this->header->offset_publics) / $this->header->defsize;
 		$this->header->num_natives   = ($this->header->offset_libraries - $this->header->offset_natives) / $this->header->defsize;
@@ -70,24 +73,52 @@ class AMX {
 		$this->header->pubvars       = array();
 		$this->header->tags          = array();
 		
+		$pos = $this->header->offset_nametable;
+		
+		extract(unpack("@$pos/vname_size", $data));
+		
+		$pos += 2;
+		
+		$this->header->name_size = $name_size;
+		
+		$_names = explode("\0", trim(substr(
+			$data,
+			$pos,
+			$this->header->cod - $pos
+		), "\0"));
+		
+		$names = array();
+		
+		foreach ($_names as $i => &$name) {
+			$names[$pos] = &$name;
+			
+			$pos += strlen($name) + 1;
+		}
+		
 		$pos = $this->header->offset_publics;
 		
 		foreach (array('publics', 'natives', 'libraries', 'pubvars', 'tags') as $entry) {
 			$numvar = "num_$entry";
 			
 			for ($i = 0; $i < $this->header->$numvar; $i++) {
-				$info = (object) unpack("@$pos/Vaddress/Vname", $data);
+				$info = (object) unpack("@$pos/Vvalue/Vname", $data);
 
 				$pos += 8;
-
-				$info->name = substr($data, $info->name, 64);
-				$info->name = strstr($info->name, "\0", true);
 				
-				// Strange PHP behavior lead me to this..
-				$ar = &$this->header->$entry;
-				$ar[$info->name] = $info->address;
+				if (!isset($names[$info->name])) {
+					echo "WARNING: Invalid name table offset $info->name ($info->value).\n";
+					
+					continue;
+				}
+
+				$info->name = $names[$info->name];
+				
+				array_push($this->header->$entry, $info);
 			}
 		}
+		
+		unset($names);
+		unset($_names);
 		
 		// Is there debug information?
 		if (filesize($this->file) > $this->header->size) {
@@ -221,6 +252,99 @@ class AMX {
 	}
 	
 	public function save() {
+		$tables = array_fill_keys(array('publics', 'natives', 'libraries', 'pubvars', 'tags'), array());
+		$nametable = pack('v', $this->header->name_size);
+		$offsets = array();
+		$offset = 56; // size of the static data in the header
+		
+		// TODO: String pooling for the nametable entries
+		foreach ($tables as $table_name => &$table) {
+			$offsets[$table_name] = $offset;
+			
+			foreach ($this->header->$table_name as $entry) {
+				$table[] = (object) array(
+					'name_offset' => strlen($nametable),
+					'name' => $entry->name,
+					'value' => $entry->value
+				);
+				
+				if (strlen($entry->name) > $this->header->name_size) {
+					echo "WARNING: The entry for $entry->name in the $table_name table will be truncated to 31 characters.";
+					
+					$nametable .= substr($entry->name, 0, $this->header->name_size) . "\0";
+				} else {
+					$nametable .= "$entry->name\0";
+				}
+				
+				$offset += 8;
+			}
+			
+			if ($table_name != 'natives') {
+				usort($table, function ($left, $right) {
+					return strcmp($left->name, $right->name);
+				});
+			}
+		}
+		
+		$nametable .= "\0";
+		
+		$offsets['nametable'] = $offset;
+		
+		// Calculate the by how much the size of the prefix ($this->header) has changed
+		$sizediff = ($offset + strlen($nametable)) - $this->header->cod;
+		
+		$this->header->size += $sizediff;
+		$this->header->cod  += $sizediff;
+		$this->header->dat  += $sizediff;
+		$this->header->hea  += $sizediff;
+		$this->header->stp  += $sizediff;
+		
+		$header = pack(
+			'VvccvvVVVVVVVVVVV',
+			$this->header->size,
+			$this->header->magic,
+			$this->header->file_version,
+			$this->header->amx_version,
+			$this->header->flags,
+			$this->header->defsize,
+			$this->header->cod,
+			$this->header->dat,
+			$this->header->hea,
+			$this->header->stp,
+			$this->header->cip,
+			$offsets['publics'],
+			$offsets['natives'],
+			$offsets['libraries'],
+			$offsets['pubvars'],
+			$offsets['tags'],
+			$offsets['nametable']
+		);
+		
+		foreach ($tables as &$table) {
+			foreach ($table as &$entry) {
+				$entry->name_offset += $offsets['nametable'];
+				
+				$header .= pack('VV', $entry->value, $entry->name_offset);
+			}
+		}
+		
+		$header .= $nametable;
+		
+		if ($header !== $this->header_raw) {
+			if ($sizediff > 0)
+				file_put_contents($this->file, str_repeat("\0", $sizediff) . file_get_contents($this->file));
+			else if ($sizediff < 0)
+				file_put_contents($this->file, substr(file_get_contents($this->file), -$sizediff));
+			
+			if (($fp = fopen($this->file, 'cb'))) {
+				fwrite($fp, $header);
+		
+				fclose($fp);
+			} else {
+				return false;
+			}
+		}
+		
 		if ($this->debug) {
 			$debug_output = pack(
 				'vccvvvvvvv',
@@ -268,7 +392,7 @@ class AMX {
 			foreach ($this->debug->states as $state)
 				$debug_output .= pack('vv', $state->id, $state->automaton) . "$state->name\0";
 		
-			if (($fp = fopen($this->file, 'a'))) {
+			if (($fp = fopen($this->file, 'ab'))) {
 				fseek($fp, $this->header->size);
 		
 				ftruncate($fp, $this->header->size);
