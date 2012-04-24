@@ -103,10 +103,25 @@ class PBP {
 					}
 				}
 				
+				$contents = file_get_contents($file);
+				
+				$macros = array();
+				
+				if (preg_match_all('/^\s*#define\s+(this|' . implode('|', $modules) . ')_([a-zA-Z0-9_@]+)(.*?)(?<!\\\)$/sm', $contents, $matches, PREG_SET_ORDER)) {
+					foreach ($matches as $match) {
+						$macros[] = (object) array(
+							'module_prefix' => $match[1],
+							'symbol'        => $match[2],
+							'replacement'   => $match[3],
+						);
+					}
+				}
+				
 				$module_includes[$incfile][] = (object) array(
 					'module'       => $module_index,
 					'include_path' => "modules\\$module\\$incfile",
 					'priority'     => isset($info['Priority']) ? (int) $info['Priority'] : 0,
+					'macros'       => $macros,
 				);
 			}
 		}
@@ -265,6 +280,25 @@ EOD;
 			$module_inclusions .= "\n// $incfile.inc\n\n";
 			
 			foreach ($includes as &$include) {
+				$undefs = '';
+				
+				foreach ($include->macros as $macro) {
+					if ($macro->module_prefix == 'this')
+						$idx = $include->module;
+					else
+						$idx = array_search($macro->module_prefix, $modules);
+					
+					$module_inclusions .= <<<EOD
+#define M{$idx}@$macro->symbol$macro->replacement
+
+EOD;
+
+					$undefs .= <<<EOD
+#undef {$macro->module_prefix}_{$macro->symbol}
+
+EOD;
+				}
+				
 				$module_inclusions .= <<<EOD
 #define this. {$modules[$include->module]}.
 #if defined _inc_$incfile
@@ -273,6 +307,7 @@ EOD;
 #include "{$include->include_path}"
 #undef _inc_$incfile
 #undef this
+$undefs
 
 EOD;
 			}
