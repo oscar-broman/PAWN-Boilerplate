@@ -522,6 +522,17 @@ EOD;
 		
 		$pawnc->args['IN_COMPILE_SCRIPT'] = true;
 		
+		if (!$this->is_windows) {
+			if (false === stripos(`ps aux`, 'wineserver')) {
+				echo "Starting wineserver.. ";
+				
+				`$pawnc->wine_dir/wineserver -p -d0`;
+				`$pawnc->wine_dir/wine cmd /c exit`;
+				
+				echo "done.\n";
+			}
+		}
+
 		$retval = 0;
 		$retval = $pawnc->compile();
 		
