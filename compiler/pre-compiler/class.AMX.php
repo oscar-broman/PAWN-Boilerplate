@@ -134,7 +134,7 @@ class AMX {
 				'vmagic',          /* signature, must be 0xf1ef */
 				'cfile_version',   /* file format version */
 				'camx_version',    /* required version of the AMX */
-				'vnum_flags',      /* currently unused */
+				'vflags',          /* currently unused */
 				'vnum_files',      /* number of entries in the "file" table */
 				'vnum_lines',      /* number of entries in the "line" table */
 				'vnum_symbols',    /* number of entries in the "symbol" table */
@@ -346,13 +346,20 @@ class AMX {
 		}
 		
 		if ($this->debug) {
+			$this->debug->num_files      = count($this->debug->files);
+			$this->debug->num_lines      = count($this->debug->lines);
+			$this->debug->num_symbols    = count($this->debug->symbols);
+			$this->debug->num_tags       = count($this->debug->tags);
+			$this->debug->num_automatons = count($this->debug->automatons);
+			$this->debug->num_states     = count($this->debug->states);
+			
 			$debug_output = pack(
 				'vccvvvvvvv',
 //				$this->debug->size, <- Will be written lastly
 				$this->debug->magic,
 				$this->debug->file_version,
 				$this->debug->amx_version,
-				$this->debug->num_flags,
+				$this->debug->flags,
 				$this->debug->num_files,
 				$this->debug->num_lines,
 				$this->debug->num_symbols,
