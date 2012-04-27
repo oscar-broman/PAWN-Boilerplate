@@ -16,7 +16,7 @@
 		group = Group_Create(NULL);
 		
 		// Load the group name and set the global variable's value
-		CallLocalFunctionExt(buf, "si", name, group);
+		CallLocalFunctionEx(buf, "si", name, group);
 		
 		Group_SetName(group, name);
 	}

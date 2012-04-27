@@ -88,9 +88,9 @@ stock GetIPFromString(const ip[])
 
 // Improved version of CallLocalFunction
 #if defined GLOBAL_TAG_TYPES
-	stock CallLocalFunctionExt(const szFunction[], const szFormat[], GLOBAL_TAG_TYPES:...) {
+	stock CallLocalFunctionEx(const szFunction[], const szFormat[], GLOBAL_TAG_TYPES:...) {
 #else
-	stock CallLocalFunctionExt(const szFunction[], const szFormat[], {Float, _}:...) {
+	stock CallLocalFunctionEx(const szFunction[], const szFormat[], {Float, _}:...) {
 #endif
     new
              iFunc,
