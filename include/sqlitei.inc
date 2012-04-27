@@ -1,7 +1,16 @@
 /*
-	SQLite Improved v0.8 by Slice
+	SQLite Improved v0.9 by Slice
 	
 	Changelog:
+			2012-08-27:
+				* Always throw warnings when invalid results are given to SQLitei functions.
+				* Even more improvements to stability!
+				* GetAmxBase is now updated with a JIT compatible version (all credits to Zeex).
+				* All the default DB functions (which are hooked by SQLitei) are now compatible with the JIT plugin.
+				* Fixed a bug in SA-MP's SQLite implementation where strings would contain signed characters instead of unsigned.
+				  Most functions work just fine with both types of strings but strcmp, for one, does not.
+				* stmt_bind_value now deals with packed strings properly.
+			
 			2012-03-22:
 				* db_query now accept extra parameters similar to those in stmt_bind_value, allowing
 				  a very quick way to format and run queries!
@@ -84,7 +93,7 @@
 	#error Please include a_samp before sqlitei.
 #endif
 
-#if defined _inc_formatex
+#if defined formatex
 	#error Please include sqlitei before formatex.
 #endif
 
@@ -130,6 +139,8 @@
 // Fix some natives ("const" keyword was missing)
 native DB:db_open@(const szName[]) = db_open;
 native DBResult:db_query@(DB:db, const szQuery[]) = db_query;
+native db_get_field@(DBResult:dbresult, field, result[], maxlength) = db_get_field;
+native db_get_field_assoc@(DBResult:dbresult, const field[], result[], maxlength) = db_get_field_assoc;
 native db_close@(DB:db) = db_close;
 native db_free_result@(DBResult:dbrResult) = db_free_result;
 
@@ -549,7 +560,7 @@ stock DB::LazyInitialize() {
 	bIsInitialized = true;
 	
 	#if defined HTTP
-		HTTP(0x7FEDCBA0, HTTP_GET, !"spelsajten.net/sqlitei_version.php?version=080", "", !"DB_VersionCheckReponse");
+		HTTP(0x7FEDCBA0, HTTP_GET, !"spelsajten.net/sqlitei_version.php?version=090", "", !"DB_VersionCheckReponse");
 	#endif
 }
 
@@ -600,8 +611,15 @@ stock bool:db_is_valid_persistent(DB:db) {
 // Has to be defined after statement functions.
 stock DBResult:db_query_hook(iTagOf3 = tagof(_bAutoRelease), DB:db, const szQuery[], {bool, DBDataType}:_bAutoRelease = true, {DBDataType, QQPA}:...);
 
-stock db_rewind(DBResult:dbrResult)
+stock db_rewind(DBResult:dbrResult) {
+	if (dbrResult == DB::INVALID_RESULT) {
+		DB::Notice("(db_rewind) Invalid result given.");
+		
+		return false;
+	}
+	
 	db_set_row_index(dbrResult, 0);
+}
 
 stock bool:db_exec(DB:db, const szQuery[]) {
 	new
@@ -653,33 +671,39 @@ stock db_set_struct_info(DB:db, {_, e_SQLITE3}:iOffset, iValue) {
 }
 
 stock db_set_row_index(DBResult:dbrResult, iRow) {
-	if (dbrResult) {
-		if (iRow < 0 || iRow >= db_num_rows(dbrResult))
-			return false;
+	if (dbrResult == DB::INVALID_RESULT) {
+		DB::Notice("(db_set_row_index) Invalid result given.");
 		
-		new
-			iAddress = _:dbrResult - DB::GetAmxBaseRelative() + 16
-		;
-		
-		#emit LOAD.S.pri  iRow
-		#emit SREF.S.pri  iAddress
-		
-		return true;
+		return false;
 	}
 	
-	return false;
+	if (iRow < 0 || iRow >= db_num_rows(dbrResult))
+		return false;
+	
+	new
+		iAddress = _:dbrResult - DB::GetAmxBaseRelative() + 16
+	;
+	
+	#emit LOAD.S.pri  iRow
+	#emit SREF.S.pri  iAddress
+	
+	return true;
 }
 
 stock db_get_row_index(DBResult:dbrResult) {
-	if (dbrResult) {
-		new
-			iAddress = _:dbrResult - DB::GetAmxBaseRelative() + 16
-		;
+	if (dbrResult == DB::INVALID_RESULT) {
+		DB::Notice("(db_get_row_index) Invalid result given.");
 		
-		#emit LREF.S.pri  iAddress
-		#emit STACK       4
-		#emit RETN
+		return 0;
 	}
+	
+	new
+		iAddress = _:dbrResult - DB::GetAmxBaseRelative() + 16
+	;
+	
+	#emit LREF.S.pri  iAddress
+	#emit STACK       4
+	#emit RETN
 	
 	return 0;
 }
@@ -754,8 +778,13 @@ stock db_query_int(DB:db, const szQuery[], iField = 0) {
 		DBResult:dbrResult = db_query(db, szQuery, false)
 	;
 
-	if (!dbrResult)
+	if (!dbrResult) {
+		strunpack(gs_szBuffer, szQuery);
+		
+		DB::Warningf("(db_query_int) Query failed: \"%s\".", gs_szBuffer);
+		
 		return 0;
+	}
 
 	db_get_field(dbrResult, iField, gs_szBuffer, sizeof(gs_szBuffer) - 1);
 
@@ -769,8 +798,13 @@ stock Float:db_query_float(DB:db, const szQuery[], iField = 0) {
 		DBResult:dbrResult = db_query(db, szQuery, false)
 	;
 
-	if (!dbrResult)
+	if (!dbrResult) {
+		strunpack(gs_szBuffer, szQuery);
+		
+		DB::Warningf("(db_query_float) Query failed: \"%s\".", gs_szBuffer);
+		
 		return 0.0;
+	}
 
 	db_get_field(dbrResult, iField, gs_szBuffer, sizeof(gs_szBuffer) - 1);
 
@@ -780,6 +814,12 @@ stock Float:db_query_float(DB:db, const szQuery[], iField = 0) {
 }
 
 stock db_is_result_freed(DBResult:dbrResult) {
+	if (dbrResult == DB::INVALID_RESULT) {
+		DB::Notice("(db_is_result_freed) Invalid result given.");
+		
+		return true;
+	}
+	
 	new
 		iAddress = _:dbrResult - DB::GetAmxBaseRelative() + 16,
 		iData
@@ -792,8 +832,11 @@ stock db_is_result_freed(DBResult:dbrResult) {
 }
 
 stock db_free_result_hook(DBResult:dbrResult) {
-	if (!dbrResult)
-		return 0;
+	if (dbrResult == DB::INVALID_RESULT) {
+		DB::Notice("(db_free_result_hook) Invalid result given.");
+		
+		return false;
+	}
 	
 	DB::Debug("(db_free_result) Freeing 0x%04x%04x.", _:dbrResult >>> 16, _:dbrResult & 0xFFFF);
 	
@@ -819,12 +862,12 @@ stock db_free_result_hook(DBResult:dbrResult) {
 		#emit CONST.pri   0xFFFFFFFF
 		#emit SREF.S.pri  iAddress
 		
-		return 1;
+		return true;
 	} else {
 		DB::Warning("(db_free_result) Attempted to free an already freed result; crash prevented.");
 	}
 	
-	return 0;
+	return false;
 }
 
 stock db_free_persistent(DB:db) {
@@ -929,6 +972,12 @@ stock db_last_insert_rowid(DB:db) {
 }
 
 stock db_field_is_null(DBResult:dbrResult, iField) {
+	if (dbrResult == DB::INVALID_RESULT) {
+		DB::Notice("(db_field_is_null) Invalid result given.");
+	
+		return false;
+	}
+	
 	new
 		iAddress = _:dbrResult - DB::GetAmxBaseRelative(),
 		iCols,
@@ -1137,8 +1186,13 @@ stock stmt_bind_value(&DBStatement:stStatement, iParam, DBDataType:iType, {Float
 	new
 		     iLengthDiff,
 		     iLength,
-		bool:bIsPacked
+		bool:bIsPacked,
+		     iNumArgs
 	;
+	
+	#emit LOAD.S.pri  8
+	#emit SHR.C.pri   2
+	#emit STOR.S.pri  iNumArgs
 	
 	if (stStatement == DB::INVALID_STATEMENT || !(0 <= _:stStatement < sizeof(gs_Statements))) {
 		DB::Warningf("(stmt_bind_value) Invalid statement passed (%d).", _:stStatement);
@@ -1212,19 +1266,20 @@ stock stmt_bind_value(&DBStatement:stStatement, iParam, DBDataType:iType, {Float
 			format(gs_szBuffer, sizeof(gs_szBuffer), "%f", getarg(3));
 		
 		case DB::TYPE_STRING: {
-			bIsPacked = !!DB::isargpacked(3);
+			new iSize = sizeof(gs_szBuffer) - 3;
 			
-			if (!bIsPacked)
-				gs_szBuffer[0] = '\'';
-
-			DB::getstringarg(gs_szBuffer[bIsPacked ? 0 : 1], 3, sizeof(gs_szBuffer) - 3);
-
-			db_escape_string(gs_szBuffer[bIsPacked ? 0 : 1], "'", sizeof(gs_szBuffer) - 1);
+			//strpack(dest[], const source[], maxlength = sizeof dest)
+			#emit PUSH.S    iSize
+			#emit PUSH.S    24 // arg 3
+			#emit PUSH.C    gs_szBuffer
+			#emit PUSH.C    12
+			#emit SYSREQ.C  strpack
+			#emit STACK     16
 			
-			if (bIsPacked)
-				strins(gs_szBuffer, "'", 0);
+			db_escape_string(gs_szBuffer, "'", sizeof(gs_szBuffer) - 1);
 			
-			strcat(gs_szBuffer, "'");
+			strins(gs_szBuffer, !"'", 0);
+			strcat(gs_szBuffer, !"'");
 		}
 		
 #if DB::USE_WHIRLPOOL
@@ -1302,8 +1357,8 @@ stock stmt_bind_value(&DBStatement:stStatement, iParam, DBDataType:iType, {Float
 		case DB::TYPE_ARRAY: {
 			// DB::CompressArray(const aiArray[], iSize = sizeof(aiArray), aiOutput[])
 			
-			if (numargs() != 5) {
-				DB::Error("(stmt_bind_value) Invalud argument count. DB::TYPE_ARRAY requires an additional argument containing the array's length.");
+			if (iNumArgs != 5) {
+				DB::Error("(stmt_bind_value) Invalid argument count. DB::TYPE_ARRAY requires an additional argument containing the array's length.");
 				
 				return false;
 			}
@@ -1405,8 +1460,13 @@ stock stmt_bind_result_field(&DBStatement:stStatement, iField, DBDataType:iType,
 	
 	new
 		iAddress,
-		iSize
+		iSize,
+		iNumArgs
 	;
+	
+	#emit LOAD.S.pri  8
+	#emit SHR.C.pri   2
+	#emit STOR.S.pri  iNumArgs
 
 	if (stStatement == DB::INVALID_STATEMENT || !(0 <= _:stStatement < sizeof(gs_Statements))) {
 		DB::Warningf("(stmt_bind_result_field) Invalid statement passed (%d).", _:stStatement);
@@ -1425,7 +1485,7 @@ stock stmt_bind_result_field(&DBStatement:stStatement, iField, DBDataType:iType,
 		     DB::TYPE_RAW_STRING,
 		     DB::TYPE_IDENTIFIER,
 		     DB::TYPE_ARRAY: {
-			if (numargs() != 5) {
+			if (iNumArgs != 5) {
 				DB::Error("(stmt_bind_result_field) Invalid number of arguments passed. Strings and arrays require an additional argument containing the string size.");
 
 				return;
@@ -1441,7 +1501,7 @@ stock stmt_bind_result_field(&DBStatement:stStatement, iField, DBDataType:iType,
 		}
 		
 		default: {
-			if (numargs() != 4) {
+			if (iNumArgs != 4) {
 				DB::Error("(stmt_bind_result_field) Invalid number of arguments passed.");
 
 				return;
@@ -1604,9 +1664,13 @@ stock bool:stmt_fetch_row(&DBStatement:stStatement) {
 					         iSize
 				;
 				
+				static const
+					sc_szFormatString[] = "%s"
+				;
+				
 				iAddress  = gs_Statements[stStatement][e_aiFieldAddresses][iField];
 				dbrResult = gs_Statements[stStatement][e_dbrResult];
-				iSize     = gs_Statements[stStatement][e_aiFieldSizes][iField] - 1;
+				iSize     = gs_Statements[stStatement][e_aiFieldSizes][iField];
 				
 				#emit PUSH.S    iSize
 				#emit PUSH.S    iAddress
@@ -1615,6 +1679,16 @@ stock bool:stmt_fetch_row(&DBStatement:stStatement) {
 				#emit PUSH.C    16
 				#emit SYSREQ.C  db_get_field
 				#emit STACK     20
+				
+				// Fix a bug with UTF-8 characters
+				// For example, 'ö' would become 0xFFFFFFC3 instead of 0xC3
+				#emit PUSH.S     iAddress
+				#emit PUSH.C     sc_szFormatString
+				#emit PUSH.S     iSize
+				#emit PUSH.S     iAddress
+				#emit PUSH.C     16
+				#emit SYSREQ.C   format
+				#emit STACK      20
 			}
 			
 			case DB::TYPE_ARRAY: {
@@ -1836,10 +1910,14 @@ stock stmt_autoclose(&DBStatement:stStatement) {
 stock DBResult:db_query_hook(iTagOf3 = tagof(_bAutoRelease), DB:db, const szQuery[], {bool, DBDataType}:_bAutoRelease = true, {DBDataType, QQPA}:...) {
 	new
 		     iIndex,
-		     iNumArgs = numargs(),
+		     iNumArgs,
 		     iStaticArgs = 4,
 		bool:bAutoRelease = true
 	;
+	
+	#emit LOAD.S.pri  8
+	#emit SHR.C.pri   2
+	#emit STOR.S.pri  iNumArgs
 	
 	DB::LazyInitialize();
 	
@@ -2006,6 +2084,22 @@ stock DBResult:db_query_hook(iTagOf3 = tagof(_bAutoRelease), DB:db, const szQuer
 	}
 	
 	return dbrResult;
+}
+
+stock db_get_field_hook(DBResult:dbresult, field, result[], maxlength = sizeof(result)) {
+	new retval = db_get_field(dbresult, field, result, maxlength);
+	
+	format(result, maxlength, "%s", result);
+	
+	return retval;
+}
+
+stock db_get_field_assoc_hook(DBResult:dbresult, const field[], result[], maxlength = sizeof(result)) {
+	new retval = db_get_field_assoc(dbresult, field, result, maxlength);
+	
+	format(result, maxlength, "%s", result);
+	
+	return retval;
 }
 
 stock db_dump_table(DB:db, const szTable[], const szFilename[]) {
@@ -2581,51 +2675,45 @@ stock DB::GetAmxBaseRelative() {
 }
 
 // By Zeex!
-// Returns AMX base address i.e. amx->base.
-// Slightly modified to avoid the compiler wrongfully detecting recursion.
-stock DB::GetAmxBase_(fn_addr) {
-	new cod, dat;
-	#emit lctrl 0
-	#emit stor.s.pri cod
-	#emit lctrl 1
-	#emit stor.s.pri dat
-
-	// Start of code section relative to data.
-	new code_start = cod - dat;
-
-	// Get the return address stored from the stack.
-	new ret_addr, tmp;
-	#emit lctrl 5
-	#emit add.c 4
-	#emit stor.s.pri tmp
-	#emit lref.s.pri tmp
-	#emit stor.s.pri ret_addr
-
-	// Get location of relocated function address in code.
-	new fn_addr_reloc_ptr = code_start + ret_addr - 4;
-
-	// Read in the relocated address.
-	// It is equal to amx->base + amxhdr->cod + fn_addr.
-	new fn_addr_reloc;
-	#emit lref.s.pri fn_addr_reloc_ptr
-	#emit stor.s.pri fn_addr_reloc
-
-	return fn_addr_reloc - fn_addr - cod;
+// Returns the AMX base address i.e. amx->base.
+static stock DB::dummy() {
+	return 0;
 }
 
 stock DB::GetAmxBase() {
-	static
-		s_iAmxBase = 0
-	;
-	
-	if (!s_iAmxBase) {
+	static amx_base = 0; // cached
+
+	if (amx_base == 0) {
+		new cod, dat;
+		#emit lctrl 0
+		#emit stor.s.pri cod
+		#emit lctrl 1
+		#emit stor.s.pri dat
+
+		// Get code section start address relative to data.
+		new code_start = cod - dat;
+
+		// Get address of DB::dummy().
 		new fn_addr;
-		
-		#emit CONST.pri   DB_GetAmxBase_
-		#emit STOR.S.pri  fn_addr
-		
-		s_iAmxBase = DB::GetAmxBase_(fn_addr);
+		#emit const.pri DB_dummy
+		#emit stor.s.pri fn_addr
+
+		// Get absolute address from the CALL instruction.
+		new fn_addr_reloc, call_addr;
+		DB_dummy();
+		#emit lctrl 6
+		#emit stor.s.pri call_addr
+		call_addr = call_addr - 12 + code_start;
+		#emit lref.s.pri call_addr
+		#emit stor.s.pri fn_addr_reloc
+
+		amx_base = fn_addr_reloc - fn_addr - cod;
 	}
-	
-	return s_iAmxBase;
+
+	return amx_base;
 }
+
+// Hook db_get_field
+// This is done lastly because the fixed function isn't needed within SQLitei
+#define db_get_field db_get_field_hook
+#define db_get_field_assoc db_get_field_assoc_hook
