@@ -19,6 +19,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #define COLOR_COMMAND_ERROR  0xCC2A41FF
 #define COLOR_COMMAND_INFO   0xF4FCE8FF
 #define COLOR_COMMAND_USAGE  0xFCFEF5FF
+#define COLOR_GENERIC_INFO   0x7CB3CDFF
 
 /* ----------------------------------------------------------------------------
     Include files
@@ -34,6 +35,9 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 	#define MAX_PLAYERS CFG_MAX_PLAYERS
 #endif
 
+// sscanf
+#include <sscanf2>
+
 // amx_assembly
 #include <amx_assembly\amx_header>
 #include <amx_assembly\amx_memory>
@@ -45,6 +49,9 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 // These macros collide with ones in YSI
 #undef r@
 #undef w@
+
+// fixes.inc
+#include <..\YSI\pawno\include\fixes>
 
 // YSI
 #define YSI_NO_X11
