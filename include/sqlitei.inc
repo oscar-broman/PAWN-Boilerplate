@@ -93,7 +93,7 @@
 	#error Please include a_samp before sqlitei.
 #endif
 
-#if defined formatex
+#if defined __fmt_funcinc && defined FormatSpecifier
 	#error Please include sqlitei before formatex.
 #endif
 
