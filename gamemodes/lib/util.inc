@@ -23,6 +23,14 @@ stock GetIPFromString(const ip[])
 	FormatSpecifier<'S'>(output[], string[])
 		strunpack(output, string);
 	
+	// Lower-case string
+	FormatSpecifier<'L'>(output[], string[]) {
+		strunpack(output, string);
+		
+		for (new i = 0, l = strlen(output); i < l; i++)
+			output[i] = tolower(output[i]);
+	}
+	
 	// Allows use of formatex in y_va functions.
 	#if defined va_args
 		stock va_formatex(output[], size = sizeof(output), const fmat[], va_:STATIC_ARGS) {
@@ -88,9 +96,9 @@ stock GetIPFromString(const ip[])
 
 // Improved version of CallLocalFunction
 #if defined GLOBAL_TAG_TYPES
-	stock CallLocalFunctionEx(const szFunction[], const szFormat[], GLOBAL_TAG_TYPES:...) {
+	stock CallLocalFunctionEx(const szFunction[], const szFormat[] = "", GLOBAL_TAG_TYPES:...) {
 #else
-	stock CallLocalFunctionEx(const szFunction[], const szFormat[], {Float, _}:...) {
+	stock CallLocalFunctionEx(const szFunction[], const szFormat[] = "", {Float, _}:...) {
 #endif
     new
              iFunc,
@@ -208,4 +216,21 @@ stock GetIPFromString(const ip[])
     
     // Never actually happens
     return 0;
+}
+
+// Allocate needed memory with y_malloc and store a string in it.
+stock Alloc:Malloc_NewS(const string[], bool:pack = false) {
+	new
+		      size = pack ? ((strlen(string) + 1) char) : (strlen(string) + 1),
+		Alloc:alloc = malloc(size)
+	;
+	
+	if (alloc) {
+		if (pack)
+			strpack(mget(alloc, 0), string, size);
+		else
+			strunpack(mget(alloc, 0), string, size);
+	}
+	
+	return alloc;
 }
