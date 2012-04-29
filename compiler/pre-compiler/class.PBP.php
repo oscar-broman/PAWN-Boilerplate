@@ -87,6 +87,8 @@ class PBP {
 				if (!file_exists($file))
 					touch($file);
 				
+				$this->process_file($file, $module_index);
+				
 				$info = $this->file_header($file, array(), array(
 					'Priority' => 0
 				));
@@ -116,6 +118,8 @@ class PBP {
 		foreach ($modules as $module_index => $module) {
 			foreach (glob("gamemodes/modules/$module/callbacks/*.inc") as $file) {
 				$cbfile = basename($file);
+				
+				$this->process_file($file, $module_index);
 				
 				$callback = substr($cbfile, 0, strpos($cbfile, '.'));
 				
@@ -267,11 +271,11 @@ EOD;
 			foreach ($includes as &$include) {
 				$module_inclusions .= <<<EOD
 #define this. {$modules[$include->module]}.
-#if defined _inc_$incfile
-	#undef _inc_$incfile
+#if defined _inc_$incfile@PBP
+	#undef _inc_$incfile@PBP
 #endif
-#include "{$include->include_path}"
-#undef _inc_$incfile
+#include "{$include->include_path}@PBP"
+#undef _inc_$incfile@PBP
 #undef this
 
 EOD;
@@ -323,14 +327,14 @@ $pub$callback({$callbacks[$callback]}) {
 EOD;
 			
 			foreach ($callback_include as $k => &$v) {
-				$incdef = '_inc_' . substr($callback, 0, 25);
+				$incdef = '_inc_' . substr("$callback@PBP", 0, 25);
 				
 				$public_functions .= <<<EOD
 	#define this. {$modules[$v->module]}.
 	#if defined $incdef
 		#undef $incdef
 	#endif
-	#include "$v->include_path"
+	#include "{$v->include_path}@PBP"
 	#undef $incdef
 	#undef this
 
@@ -416,8 +420,8 @@ $max_players_cfg
 $module_prefixes
 #tryinclude "header"
 
-#if defined _inc_header
-	#undef _inc_header
+#if defined _inc_header@PBP
+	#undef _inc_header@PBP
 #endif
 
 #if !defined PBP_MODULE_OFFSET_MULTIPLIER
@@ -501,11 +505,62 @@ EOD;
 		return $new_info;
 	}
 	
+	public function clean_directories() {
+		foreach (glob('gamemodes/modules/*/*@PBP.inc') as $file)
+			unlink($file);
+		
+		foreach (glob('gamemodes/modules/*/callbacks/*@PBP.inc') as $file)
+			unlink($file);
+	}
+	
+	private $in_module;
+
+	private function process_file($file, $in_module = null) {
+		$newfile = preg_replace('/(.*?)(\..*)/i', '$1@PBP$2', $file);
+		
+		$this->in_module = $in_module;
+		
+		$contents = file_get_contents($file);
+		
+		$contents = preg_replace_callback('/^\s*#define\s+(this|' . implode('|', $this->modules) . ')\.([a-zA-Z0-9_@]+)/sm', array($this, 'module_prefix_macro'), $contents);
+		
+		if ($count) {
+			echo $contents;
+			
+			exit;
+		}
+		
+		file_put_contents($newfile, $contents);
+		$fp = fopen($newfile, 'wb');
+		
+		assert($fp !== null);
+		
+		fwrite($fp, "#file \"$file\"\n#line 0\n");
+		fwrite($fp, $contents);
+		fclose($fp);
+	}
+	
+	public function module_prefix_macro($matches) {
+		if ($matches[1] == 'this')
+			$module_index = $this->in_module;
+		else
+			$module_index = array_search($matches[1], $this->modules);
+		
+		if ($module_index !== null)
+			return "#define M{$module_index}@{$matches[2]}";
+		else
+			trigger_error("Invalid #define: \"{$matches[1]}.{$matches[2]}\".", E_USER_ERROR);
+	}
+	
 	public function pawnc_module_prefix($matches) {
 		return $this->modules[$matches[1]] . '.';
 	}
 	
 	public function compile() {
+		$this->clean_directories();
+		
+		register_shutdown_function(array($this, 'clean_directories'));
+		
 		$start_time = microtime(true);
 		
 		$this->generate_main();
