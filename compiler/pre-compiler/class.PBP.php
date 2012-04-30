@@ -58,6 +58,9 @@ class PBP {
 		
 		$callback_includes = array();
 		
+		$callbacks = $this->syntax_intel->data->callbacks;
+		$this->syntax_intel->data->callbacks = array();
+		
 		foreach (glob('gamemodes/modules/*/callbacks.inc') as $file) {
 			$contents = file_get_contents($file);
 			
@@ -73,7 +76,8 @@ class PBP {
 			$this->syntax_intel->parse_file($file);
 		}
 		
-		$callbacks = $this->syntax_intel->data->callbacks;
+		$custom_callbacks = $this->syntax_intel->data->callbacks;
+		$callbacks = array_merge($callbacks, $custom_callbacks);
 		
 		$callbacks['main'] = '';
 		
@@ -204,6 +208,14 @@ class PBP {
 		foreach ($modules as $module)
 			$module_list .= "\n  \t* $module";
 		
+		$custom_callback_list = '';
+		
+		asort($custom_callbacks);
+		
+		foreach ($custom_callbacks as $callback => $arguments) {
+			$custom_callback_list .= "\n  \t" . (isset($active_callbacks[$callback]) ? '+' : ' ') . " $callback($arguments)";
+		}
+		
 		$callback_list = '';
 		
 		asort($callbacks);
@@ -221,6 +233,8 @@ class PBP {
 
   Existing modules: $module_list
   
+  Custom callbacks: $custom_callback_list
+
   Existing callbacks: $callback_list
 */
 
