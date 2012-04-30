@@ -96,9 +96,9 @@ class PBP {
 				if (!empty($info['Requires'])) {
 					$requires = preg_split('/\s*,\s*/', $info['Requires']);
 					
-					foreach ($requires as $module) {
-						if (!in_array($module, $modules)) {
-							echo "PBP Error: Non-existing module \"$module\" is required by file: \"modules/$module/$incfile.inc\".";
+					foreach ($requires as $reqmodule) {
+						if (!in_array($reqmodule, $modules)) {
+							echo "PBP Error: Non-existing module \"$reqmodule\" is required by file: \"modules/$module/$incfile.inc\".";
 							
 							exit;
 						}
