@@ -537,6 +537,7 @@ EOD;
 		$contents = file_get_contents($file);
 		
 		$contents = preg_replace_callback('/^\s*#define\s+(this|' . implode('|', $this->modules) . ')\.([a-zA-Z0-9_@]+)/sm', array($this, 'module_prefix_macro'), $contents);
+		$contents = preg_replace_callback('/^\s*#emit(\s+\S+\s+)(this|' . implode('|', $this->modules) . ')\.([a-zA-Z0-9_@]+)/sm', array($this, 'module_prefix_emit'), $contents);
 		
 		if ($count) {
 			echo $contents;
@@ -564,6 +565,18 @@ EOD;
 			return "#define M{$module_index}@{$matches[2]}";
 		else
 			trigger_error("Invalid #define: \"{$matches[1]}.{$matches[2]}\".", E_USER_ERROR);
+	}
+
+	public function module_prefix_emit($matches) {
+		if ($matches[2] == 'this')
+			$module_index = $this->in_module;
+		else
+			$module_index = array_search($matches[2], $this->modules);
+
+		if ($module_index !== null)
+			return "#emit{$matches[1]}M{$module_index}@{$matches[3]}";
+		else
+			trigger_error("Invalid #emit: \"{$matches[0]}\".", E_USER_ERROR);
 	}
 	
 	public function pawnc_module_prefix($matches) {
