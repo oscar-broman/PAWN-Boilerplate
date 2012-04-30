@@ -217,20 +217,3 @@ stock GetIPFromString(const ip[])
     // Never actually happens
     return 0;
 }
-
-// Allocate needed memory with y_malloc and store a string in it.
-stock Alloc:Malloc_NewS(const string[], bool:pack = false) {
-	new
-		      size = pack ? ((strlen(string) + 1) char) : (strlen(string) + 1),
-		Alloc:alloc = malloc(size)
-	;
-	
-	if (alloc) {
-		if (pack)
-			strpack(mget(alloc, 0), string, size);
-		else
-			strunpack(mget(alloc, 0), string, size);
-	}
-	
-	return alloc;
-}
