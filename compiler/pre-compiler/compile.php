@@ -1,6 +1,15 @@
 <?php
 echo "PAWN Boilerplate\n\n";
 
+if (file_exists('compiler.lock'))
+	die('The compiler is currently running. In case it crashed/hanged, delete "compiler/compiler.lock".');
+
+touch('compiler.lock');
+
+register_shutdown_function(function() {
+	unlink('compiler.lock');
+});
+
 ini_set('memory_limit', '128M');
 
 $working_dir = rtrim(getenv('WORKING_PATH'), '/\\');
