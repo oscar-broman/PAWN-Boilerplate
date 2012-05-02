@@ -29,7 +29,9 @@ new
 	
 	StaticGroup<GROUP_MOD>        = "Moderator",
 	StaticGroup<GROUP_ADMIN>      = "Administrator",
-	StaticGroup<GROUP_MANAGEMENT> = "Management"
+	StaticGroup<GROUP_MANAGEMENT> = "Management",
+	
+	StaticGroup<GROUP_RCON>       = "RCON Administrator"
 ;
 
 // Forward-declarations

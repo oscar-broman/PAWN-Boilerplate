@@ -6,7 +6,7 @@
 
 CommandDescription<setlevel> = "Set a player's admin level.";
 
-YCMD(GROUP_MANAGEMENT):setlevel(playerid, params[], help) {
+YCMD(GROUP_MANAGEMENT, GROUP_RCON):setlevel(playerid, params[], help) {
 	if (help) {
 		SendClientMessage(playerid, COLOR_COMMAND_HELP, "* Set a player's admin level.");
 
@@ -19,10 +19,10 @@ usage:
 			           level_name[32]
 		;
 		
-		if (!sscanf(params, "ui", otherid, _:level)) {
+		if (!sscanf(params, !"k<player_name>i", otherid, _:level)) {
 			if (!(AdminLevel:0 <= level < this.NUM_LEVELS))
 				level = this.INVALID_LEVEL;
-		} else if (!sscanf(params, "us[32]", otherid, level_name)) {
+		} else if (!sscanf(params, !"k<player_name>s[32]", otherid, level_name)) {
 			new AdminLevel:found_level = this.INVALID_LEVEL;
 			
 			for (level = AdminLevel:0; level < this.NUM_LEVELS; level++) {
@@ -42,7 +42,9 @@ usage:
 		} else
 			goto usage;
 		
-		if (!IsPlayerAdmin(playerid) && this.GetPlayerLevel(otherid) >= this.GetPlayerLevel(playerid)) {
+		if (otherid == INVALID_PLAYER_ID) {
+			SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* Invalid player.");
+		} else if (!IsPlayerAdmin(playerid) && this.GetPlayerLevel(otherid) >= this.GetPlayerLevel(playerid)) {
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* You may only change the level of players with a level lower than yours.");
 		} else if (level == this.INVALID_LEVEL) {
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* Invalid level.");
