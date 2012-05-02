@@ -24,3 +24,23 @@ public this.CheckForNewAdmins() {
 		}
 	}
 }
+
+// Custom sscanf specifier for searching through player names
+// The default one doesn't find "def" in [ABC]Def.
+#if defined SSCANF
+	SSCANF:player_name(string[]) {
+		new foundplayer = INVALID_PLAYER_ID;
+		
+		foreach(new playerid : Player) {
+			if (strfind(this.Info[playerid][Name], string, true) != -1) {
+				// Multiple matches
+				if (foundplayer != INVALID_PLAYER_ID)
+					return INVALID_PLAYER_ID;
+				else
+					foundplayer = playerid;
+			}
+		}
+		
+		return foundplayer;
+	}
+#endif
