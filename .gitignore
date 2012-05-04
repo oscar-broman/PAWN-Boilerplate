@@ -9,6 +9,7 @@ Desktop.lnk
 server_log.txt
 *.log
 main.pwn
+server.cfg
 /samp-license.txt
 /server-readme.txt
 /samp-server.exe

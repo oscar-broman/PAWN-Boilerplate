@@ -9,12 +9,73 @@ class PBP {
 	private $is_windows;
     private $syntax_intel;
 	private $modules;
+	private $cfg = array();
 	
 	public function __construct() {
 		$this->is_windows = (strpos(PHP_OS, 'WIN') !== false);
 		
 		foreach (array('compiler', 'gamemodes', 'gamemodes/modules', 'include') as $dir)
 			if (!is_dir($dir)) trigger_error("Unable to locate essential directory: $dir", E_USER_ERROR);
+		
+		if (!file_exists('server.cfg')) {
+			$cfg_default = <<<EOD
+echo Executing Server Config...
+lanmode 0
+rcon_password changeme
+maxplayers 32
+port 7777
+hostname SA-MP 0.3 Server
+gamemode0 main 1
+filterscripts fix_OnRconCommand
+announce 0
+query 1
+weburl www.sa-mp.com
+onfoot_rate 40
+incar_rate 40
+weapon_rate 40
+stream_distance 300.0
+stream_rate 1000
+maxnpc 0
+logtimeformat [%H:%M:%S]
+plugins crashdetect sscanf
+
+;PAWN Boilerplate settings
+debug_level 2
+
+EOD;
+			
+			file_put_contents('server.cfg', $cfg_default);
+			
+			echo "Created \"server.cfg\".\n";
+		}
+		
+		$this->cfg['debug_level'] = 2;
+		
+		foreach (file('server.cfg') as $row) {
+			$row = trim($row);
+			
+			if (empty($row) || preg_match('/^(;|#|echo)/', $row))
+				continue;
+			
+			list($key, $value) = preg_split('/\s+/', $row, 2);
+			
+			$key = strtolower($key);
+			
+			if (in_array($key, array('lanmode', 'maxplayers', 'port', 'announce', 'query', 'onfoot_rate', 'incar_rate', 'weapon_rate', 'stream_rate', 'maxnpc', 'debug_level'))) {
+				$value = (int) $value;
+				
+				if ($key == 'debug_level' && ($value < 0 || $value > 3)) {
+					echo "PBP Warning: Invalid server.cfg value for debug_level.\n";
+					
+					continue;
+				}
+			}
+			
+			if (in_array($key, array('stream_distance')))
+				$value = (float) $value;
+			
+			$this->cfg[$key] = $value;
+		}
 	}
 	
 	private function generate_main() {
@@ -365,16 +426,12 @@ EOD;
 		
 		$max_players_cfg = '';
 		
-		if (is_readable('server.cfg')) {
-			$cfg = file_get_contents('server.cfg');
-			
-			if (preg_match('/^\s*maxplayers\s+([0-9]+)\s*$/mi', $cfg, $matches)) {
-				$max_players_cfg = <<<EOD
+		if (!empty($this->cfg['maxplayers'])) {
+			$max_players_cfg = <<<EOD
 
-#define CFG_MAX_PLAYERS {$matches[1]}
+#define CFG_MAX_PLAYERS {$this->cfg['maxplayers']}
 
 EOD;
-			}
 		}
 		
 		$output .= <<<EOD
@@ -598,7 +655,7 @@ EOD;
 		$pawnc->input_file         = 'gamemodes/main.pwn';
 		$pawnc->output_file        = 'gamemodes/main.amx';
 		$pawnc->include_dir        = 'include';
-		$pawnc->debug              = 2;
+		$pawnc->debug              = $this->cfg['debug_level'];
 		$pawnc->list_file          = false;
 		$pawnc->short_output_paths = true;
 		
