@@ -741,14 +741,31 @@ EOD;
 							continue;
 						
 						$matching_symbol = false;
+						$arrays = array();
 						
 						foreach ($amx->debug->symbols as &$symbol) {
+							if ($symbol->ident == AMX::IDENT_ARRAY)
+								$arrays[] = &$symbol;
+							
 							if ($symbol->ident == AMX::IDENT_FUNCTION && $symbol->name == $entry->name) {
 								$matching_symbol = true;
 								
 								break;
 							}
 						}
+						
+						usort($arrays, function ($left, $right) {
+							$leftsize = 1;
+							$rightsize = 1;
+							
+							foreach ($left->dim as $dim)
+								$leftsize *= $dim->size;
+
+							foreach ($right->dim as $dim)
+								$rightsize *= $dim->size;
+							
+							return $rightsize - $leftsize;
+						});
 						
 						if (!$matching_symbol)
 							echo "NOTICE: Public $entry->name has no found matching symbol.\n";
