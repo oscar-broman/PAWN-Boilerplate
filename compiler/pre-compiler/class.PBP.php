@@ -867,7 +867,7 @@ EOD;
 						echo "ERROR: Failed to save the modified AMX. It might be corrupted.";
 				}
 				
-				echo "Successfully compiled in " . round(microtime(true) - $start_time, 1) . " seconds; file size: " . round(filesize($pawnc->output_file) / 1024, 2) . "kb.\n";
+				echo "Successfully compiled in " . round(microtime(true) - $start_time, 1) . " seconds; AMX size: " . $this->human_size($amx->header->size) . ".\n";
 				
 			} else {
 				echo "Done.\n";
