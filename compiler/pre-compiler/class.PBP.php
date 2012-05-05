@@ -646,6 +646,13 @@ EOD;
 		return $this->modules[$matches[1]] . '.';
 	}
 	
+	private function human_size($bytes, $decimals = 2) {
+		$suffixes = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
+		$factor = floor((strlen($bytes) - 1) / 3);
+		
+		return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . $suffixes[$factor];
+	}
+	
 	public function compile() {
 		$this->clean_directories();
 		
@@ -747,12 +754,8 @@ EOD;
 							continue;
 						
 						$matching_symbol = false;
-						$arrays = array();
 						
 						foreach ($amx->debug->symbols as &$symbol) {
-							if ($symbol->ident == AMX::IDENT_ARRAY)
-								$arrays[] = &$symbol;
-							
 							if ($symbol->ident == AMX::IDENT_FUNCTION && $symbol->name == $entry->name) {
 								$matching_symbol = true;
 								
@@ -760,26 +763,19 @@ EOD;
 							}
 						}
 						
-						usort($arrays, function ($left, $right) {
-							$leftsize = 1;
-							$rightsize = 1;
-							
-							foreach ($left->dim as $dim)
-								$leftsize *= $dim->size;
-
-							foreach ($right->dim as $dim)
-								$rightsize *= $dim->size;
-							
-							return $rightsize - $leftsize;
-						});
-						
 						if (!$matching_symbol)
 							echo "NOTICE: Public $entry->name has no found matching symbol.\n";
 					}
+					
+					$arrays = array();
 				
-					// Replace module prefixes back to the module's name in the AMX file's debug information
-					foreach ($amx->debug->symbols as &$symbol)
+					foreach ($amx->debug->symbols as &$symbol) {
+						if ($symbol->ident == AMX::IDENT_ARRAY)
+							$arrays[] = &$symbol;
+						
+						// Replace module prefixes back to the module's name in the AMX file's debug information
 						$symbol->name = preg_replace_callback($pat, array($this, 'pawnc_module_prefix'), $symbol->name, -1, $count);
+					}
 				
 					foreach ($amx->debug->tags as $id => &$tag)
 						$tag = preg_replace_callback($pat, array($this, 'pawnc_module_prefix'), $tag, -1, $count);
@@ -814,6 +810,42 @@ EOD;
 						do
 							$file->name = preg_replace('#(^|/)([^/]*?)/\.\.(/|$)#', '$1', $file->name, -1, $count);
 						while ($count);
+					}
+
+					usort($arrays, function ($left, $right) {
+						$leftsize = 1;
+						$rightsize = 1;
+
+						foreach ($left->dim as $dim)
+							$leftsize *= $dim->size;
+
+						foreach ($right->dim as $dim)
+							$rightsize *= $dim->size;
+
+						return $rightsize - $leftsize;
+					});
+					
+					$topvars = 'Largest variables:';
+
+					for ($i = 0; $i < 30; $i++) {
+						if (!isset($arrays[$i]))
+							break;
+						
+						$symbol = &$arrays[$i];
+						$symbol->size = 1;
+
+						foreach ($symbol->dim as $dim)
+							$symbol->size *= $dim->size;
+
+						$topvars .= "\n  \t" . sprintf("%6s - %s", $this->human_size($symbol->size * 4, 0), $symbol->name);
+					}
+					
+					$main = @file_get_contents('gamemodes/main.pwn');
+					
+					if ($main) {
+						$main = str_replace('  Existing callbacks:', "  $topvars\n\n  Existing callbacks:", $main);
+						
+						file_put_contents('gamemodes/main.pwn', $main);
 					}
 					
 					$save = true;
