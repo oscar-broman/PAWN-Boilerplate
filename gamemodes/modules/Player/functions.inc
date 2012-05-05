@@ -30,6 +30,24 @@ public this.CheckForNewAdmins() {
 #if defined SSCANF
 	SSCANF:player_name(string[]) {
 		new foundplayer = INVALID_PLAYER_ID;
+		new bool:numeric = true;
+		
+		for (new i = 0, c; (c = string[i]); i++) {
+			if (c < '0' || c > '9') {
+				numeric = false;
+				
+				break;
+			}
+		}
+		
+		if (numeric) {
+			foundplayer = strval(string);
+			
+			if (IsPlayerConnected(foundplayer))
+				return foundplayer;
+			else
+				foundplayer = INVALID_PLAYER_ID;
+		}
 		
 		foreach(new playerid : Player) {
 			if (strfind(this.Info[playerid][Name], string, true) != -1) {
