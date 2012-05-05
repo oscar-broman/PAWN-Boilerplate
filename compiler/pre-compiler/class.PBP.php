@@ -596,6 +596,12 @@ EOD;
 		$contents = preg_replace_callback('/^\s*#define\s+(this|' . implode('|', $this->modules) . ')\.([a-zA-Z0-9_@]+)/sm', array($this, 'module_prefix_macro'), $contents);
 		$contents = preg_replace_callback('/^\s*#emit(\s+\S+\s+)(this|' . implode('|', $this->modules) . ')\.([a-zA-Z0-9_@]+)/sm', array($this, 'module_prefix_emit'), $contents);
 		
+		$contents = preg_replace_callback('/\b_([IH])\<(.*?)\>/', function ($matches) {
+			$separated_characters = preg_replace('/((?<!^).)/s', ',$1', $matches[2]);
+			
+			return "_{$matches[1]}($separated_characters)";
+		}, $contents);
+		
 		if ($count) {
 			echo $contents;
 			
@@ -671,7 +677,7 @@ EOD;
 				echo "done.\n";
 			}
 		}
-
+		
 		$retval = 0;
 		$retval = $pawnc->compile();
 		
