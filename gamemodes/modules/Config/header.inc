@@ -43,5 +43,6 @@ stock const
 
 new
 	this.NumConfigEntries = 0,
-	this.ConfigEntries[1024][this.e_CONFIG_ENTRY]
+	this.ConfigEntries[1024][this.e_CONFIG_ENTRY],
+	this.CB_OnConfigValueChange
 ;

@@ -4,7 +4,7 @@
  > Priority: 0
  */
 
-this.LoadEntries() {
+this.LoadEntries(bool:initial_load = false) {
 	if (fexist(this.FILE)) {
 		new
 			File:fp = fopen(this.FILE, io_read),
@@ -66,17 +66,42 @@ this.LoadEntries() {
 					line_buffer{pos} = '\0', strdel(line_buffer, 0, 1);
 				
 				new key_hash = YHash(key, .pack = true);
+				static key_unpacked[64];
 				
 				for (new i = 0; i < this.NumConfigEntries; i++) {
 					if (key_hash == this.ConfigEntries[i][KeyHash] && !strcmp(key, mget(this.ConfigEntries[i][Key], 0))) {
 						switch (this.ConfigEntries[i][Type] & 0xFF) {
-							case this.TYPE_INT:
-								@ptr[this.ConfigEntries[i][Address]] = strval(line_buffer);
+							case this.TYPE_INT: {
+								new value = strval(line_buffer);
+								
+								if (@ptr[this.ConfigEntries[i][Address]] != value) {
+									@ptr[this.ConfigEntries[i][Address]] = value;
+									
+									if (!initial_load) {
+										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+									
+										CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
+									}
+								}
+							}
 
-							case this.TYPE_FLOAT:
-								@ptr[this.ConfigEntries[i][Address]] = _:floatstr(line_buffer);
+							case this.TYPE_FLOAT: {
+								new value = _:floatstr(line_buffer);
+
+								if (@ptr[this.ConfigEntries[i][Address]] != value) {
+									@ptr[this.ConfigEntries[i][Address]] = value;
+									
+									if (!initial_load) {
+										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+									
+										CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
+									}
+								}
+							}
 
 							case this.TYPE_ARRAY: {
+								new bool:modified = false;
+								new old_val;
 								new bool:zerofill = false;
 								new type = this.ConfigEntries[i][Type] >>> 8;
 								
@@ -90,10 +115,16 @@ this.LoadEntries() {
 									if (-1 != (pos = strfind(line_buffer, !",")))
 										line_buffer{pos} = 0;
 									
+									if (!modified)
+										old_val = @ptr[this.ConfigEntries[i][Address]][j];
+									
 									if (type == this.TYPE_FLOAT)
 										@ptr[this.ConfigEntries[i][Address]][j] = _:floatstr(line_buffer);
 									else
 										@ptr[this.ConfigEntries[i][Address]][j] = strval(line_buffer);
+									
+									if (!modified && old_val != @ptr[this.ConfigEntries[i][Address]][j])
+										modified = true;
 									
 									if (pos == -1) {
 										zerofill = true;
@@ -108,15 +139,31 @@ this.LoadEntries() {
 									
 									strdel(line_buffer, 0, pos);
 								}
+								
+								if (modified && !initial_load) {
+									strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+
+									CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
+								}
 							}
 							
 							case this.TYPE_STRING: {
-								if (this.ConfigEntries[i][Size] & (1 << 31))
-									strpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size] & (-1 >>> 1));
-								else
-									strunpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size]);
+								if (strcmp(@ptr[this.ConfigEntries[i][Address]], line_buffer, false) || isnull(@ptr[this.ConfigEntries[i][Address]]) != isnull(line_buffer)) {
+									if (this.ConfigEntries[i][Size] & (1 << 31))
+										strpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size] & (-1 >>> 1));
+									else
+										strunpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size]);
+									
+									if (!initial_load) {
+										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+
+										CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
+									}
+								}
 							}
 						}
+						
+						break;
 					}
 				}
 			}
