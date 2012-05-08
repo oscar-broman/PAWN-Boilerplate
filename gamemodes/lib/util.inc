@@ -217,3 +217,10 @@ stock GetIPFromString(const ip[])
     // Never actually happens
     return 0;
 }
+
+stock bool:strequals(const str1[], const str2[], bool:ignorecase = false) {
+	if ((str1[0] > 255 ? str1{0} : str1[0]) != (str2[0] > 255 ? str2{0} : str2[0]))
+		return false;
+	
+	return !strcmp(str1, str2, ignorecase);
+}
