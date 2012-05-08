@@ -35,7 +35,8 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 	#define MAX_PLAYERS CFG_MAX_PLAYERS
 #endif
 
-// sscanf
+// plugins
+#include <whirlpool>
 #include <sscanf2>
 
 // amx_assembly
@@ -69,6 +70,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 
 // Misc.
 #include <pointers>
+#define DB_USE_WHIRLPOOL true
 #include <sqlitei>
 #include <formatex>
 
