@@ -3,7 +3,7 @@
  *
  * OnPlayerConnect(playerid)
  *
- > Priority: 0
+ > Priority: 9
  */
 
 {
