@@ -20,6 +20,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #define COLOR_COMMAND_INFO   0xF4FCE8FF
 #define COLOR_COMMAND_USAGE  0xFCFEF5FF
 #define COLOR_GENERIC_INFO   0x7CB3CDFF
+#define COLOR_GENERIC_ERROR  0xCC2A41FF
 
 /* ----------------------------------------------------------------------------
     Include files
@@ -59,7 +60,6 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 
 #include <..\YSI\pawno\include\YSI\y_commands>
 #include <..\YSI\pawno\include\YSI\y_utils>
-#include <..\YSI\pawno\include\YSI\y_classes>
 #include <..\YSI\pawno\include\YSI\y_colours>
 #include <..\YSI\pawno\include\YSI\y_groups>
 #include <..\YSI\pawno\include\YSI\y_amx>
