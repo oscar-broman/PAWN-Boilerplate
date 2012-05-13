@@ -20,8 +20,8 @@ if (!empty($working_dir) && !empty($base_dir) && $working_dir == $base_dir)
 
 // Download the server files if needed
 if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
-	define('SERVER_DL_URL',  'http://team.sa-mp.com/files/samp03dsvr_R2_win32.zip');
-	define('SERVER_DL_SIZE', 1876336);
+	define('SERVER_DL_URL',  'http://files.sa-mp.com/samp03e_svr_win32.zip');
+	define('SERVER_DL_SIZE', 1904394);
 	define('SERVER_DL_FILE', tempnam(sys_get_temp_dir(), 'samp-server.zip'));
 	
 	$fp_out = null;
