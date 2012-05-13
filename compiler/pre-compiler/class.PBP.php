@@ -172,7 +172,7 @@ EOD;
 				
 				$module_includes[$incfile][] = (object) array(
 					'module'       => $module_index,
-					'include_path' => "modules\\$module\\$incfile",
+					'include_path' => ".build\\modules\\$module\\$incfile",
 					'priority'     => isset($info['Priority']) ? (int) $info['Priority'] : 0,
 				);
 			}
@@ -240,7 +240,7 @@ EOD;
 				
 				$callback_includes[$callback][] = (object) array(
 					'module'       => $module_index,
-					'include_path' => "modules\\$module\\callbacks\\$callback",
+					'include_path' => ".build\\modules\\$module\\callbacks\\$callback",
 					'priority'     => isset($info['Priority']) ? (int) $info['Priority'] : 0,
 				);
 			}
@@ -346,11 +346,11 @@ EOD;
 			foreach ($includes as &$include) {
 				$module_inclusions .= <<<EOD
 #define this. {$modules[$include->module]}.
-#if defined _inc_$incfile@PBP
-	#undef _inc_$incfile@PBP
+#if defined _inc_$incfile
+	#undef _inc_$incfile
 #endif
-#include "{$include->include_path}@PBP"
-#undef _inc_$incfile@PBP
+#include "{$include->include_path}"
+#undef _inc_$incfile
 #undef this
 
 EOD;
@@ -402,14 +402,14 @@ $pub$callback({$callbacks[$callback]}) {
 EOD;
 			
 			foreach ($callback_include as $k => &$v) {
-				$incdef = '_inc_' . substr("$callback@PBP", 0, 25);
+				$incdef = '_inc_' . substr("$callback", 0, 25);
 				
 				$public_functions .= <<<EOD
 	#define this. {$modules[$v->module]}.
 	#if defined $incdef
 		#undef $incdef
 	#endif
-	#include "{$v->include_path}@PBP"
+	#include "{$v->include_path}"
 	#undef $incdef
 	#undef this
 
@@ -491,8 +491,8 @@ $max_players_cfg
 $module_prefixes
 #tryinclude "header"
 
-#if defined _inc_header@PBP
-	#undef _inc_header@PBP
+#if defined _inc_header
+	#undef _inc_header
 #endif
 
 #if !defined PBP_MODULE_OFFSET_MULTIPLIER
@@ -577,17 +577,27 @@ EOD;
 	}
 	
 	public function clean_directories() {
-		foreach (glob('gamemodes/modules/*/*@PBP.inc') as $file)
-			unlink($file);
+		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('gamemodes/.build'), RecursiveIteratorIterator::CHILD_FIRST);
 		
-		foreach (glob('gamemodes/modules/*/callbacks/*@PBP.inc') as $file)
-			unlink($file);
+		foreach ($iterator as $path) {
+			if ($path->isDir())
+				rmdir("$path");
+			else
+				unlink("$path");
+		}
 	}
 	
 	private $in_module;
 
 	private function process_file($file, $in_module = null) {
-		$newfile = preg_replace('/(.*?)(\..*)/i', '$1@PBP$2', $file);
+		$newfile = preg_replace('/gamemodes(\/|\\\)/i', 'gamemodes/.build/', $file);
+		
+		if (!file_exists('gamemodes/.build')) {
+			mkdir('gamemodes/.build');
+			
+			if ($this->is_windows)
+				system('attrib +H ' . escapeshellarg(realpath('gamemodes/.build')));
+		}
 		
 		$this->in_module = $in_module;
 		
@@ -619,7 +629,13 @@ EOD;
 			exit;
 		}
 		
+		$newdir = dirname($newfile);
+		
+		if (!file_exists($newdir))
+			mkdir($newdir, 0777, true);
+		
 		file_put_contents($newfile, $contents);
+		
 		$fp = fopen($newfile, 'wb');
 		
 		assert($fp !== null);
