@@ -61,6 +61,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <..\YSI\pawno\include\YSI\y_commands>
 #include <..\YSI\pawno\include\YSI\y_utils>
 #include <..\YSI\pawno\include\YSI\y_colours>
+#include <..\YSI\pawno\include\YSI\y_dialog>
 #include <..\YSI\pawno\include\YSI\y_groups>
 #include <..\YSI\pawno\include\YSI\y_amx>
 #include <..\YSI\pawno\include\YSI\y_debug>
