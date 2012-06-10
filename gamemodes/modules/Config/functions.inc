@@ -149,6 +149,7 @@ this.LoadEntries(bool:initial_load = false) {
 							
 							case this.TYPE_STRING: {
 								if (strcmp(@ptr[this.ConfigEntries[i][Address]], line_buffer, false) || isnull(@ptr[this.ConfigEntries[i][Address]]) != isnull(line_buffer)) {
+									
 									if (this.ConfigEntries[i][Size] & (1 << 31))
 										strpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size] & (-1 >>> 1));
 									else
@@ -168,6 +169,10 @@ this.LoadEntries(bool:initial_load = false) {
 				}
 			}
 		}
+		
+		fclose(fp);
+	} else {
+		printf(!"(Config) Error: Unable to open the file \"%S\" for reading.", this.FILE);
 	}
 }
 
