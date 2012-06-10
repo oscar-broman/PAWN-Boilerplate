@@ -82,6 +82,8 @@
 				
 				if (!found)
 					printf(!"Invalid key: \"%s\".", key);
+				else
+					Config.SaveEntries();
 			} else {
 				print(!"USAGE: config_set [key] [value]");
 			}
