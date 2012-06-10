@@ -106,17 +106,4 @@
 			}
 		}
 	}
-	
-	new UID:uid = this.RegisterAccount("yoyo", "whatup");
-	
-	if (uid == INVALID_UID)
-		uid = this.FindAccountByName("YoYo");
-	
-	printf("auth: %d", this.TestAccountAuth(uid, "whatup"));
-	
-	printf("found: %d", _:uid);
-	printf("rename: %d", this.RenameAccount(uid, "YoYo"));
-	printf("change pw: %d", this.ChangeAccountPassword(uid, "whatsup"));
-	
-	this.IsLoggedIn(2);
 }

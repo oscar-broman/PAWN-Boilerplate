@@ -13,9 +13,9 @@ stock this.PrepareStatements() {
 }
 
 // UID or player ID -> UID
-stock bool:this.ResolveUID(&{UID, _}:uid) {
+stock bool:this.ResolveUID(&{UID, _}:uid, bool:only_logged_in = true) {
 	if (0 <= _:uid < MAX_PLAYERS)
-		uid = IsPlayerConnected(_:uid) ? (this.PlayerUID[_:uid]) : (INVALID_UID);
+		uid = IsPlayerConnected(_:uid) ? (only_logged_in ? (this.PlayerUID[_:uid]) : (this.PlayerNameUID[_:uid])) : (INVALID_UID);
 	else if (_:uid < MINIMUM_UID)
 	 	uid = INVALID_UID;
 	
@@ -30,14 +30,30 @@ stock bool:this.ResolvePlayerID(&{UID, _}:playerid) {
 	return !!IsPlayerConnected(_:playerid);
 }
 
+stock bool:this.RegisterPlayer(playerid, const password[]) {
+	if (isnull(password))
+		return false;
+	
+	new UID:uid = this.RegisterAccount(Player.Info[playerid][Name], password);
+	
+	if (uid == INVALID_UID)
+		return false;
+	
+	this.PlayerUID[playerid] = uid;
+	
+	SetTimerEx(!"OnPlayerLogIn", 0, false, !"ii", playerid, false);
+	
+	return true;
+}
+
 stock UID:this.RegisterAccount(const name[], const password[]) {
 	if (isnull(name) || isnull(password))
 		return INVALID_UID;
-	
+	print(password);
 	stmt_bind_value(this.StmtRegister, 0, DB::TYPE_STRING,  name);
 	stmt_bind_value(this.StmtRegister, 1, DB::TYPE_WP_HASH, password);
 	
-	if (stmt_execute(this.StmtRegister) && stmt_fetch_row(this.StmtRegister)) {
+	if (stmt_execute(this.StmtRegister)) {
 		new UID:uid = UID:db_last_insert_rowid(this.DB);
 		
 		if (_:uid >= MINIMUM_UID)
@@ -67,20 +83,33 @@ stock bool:this.ChangeAccountPassword({UID, _}:uid, const new_password[]) {
 	return !!stmt_execute(this.StmtChangePasshash);
 }
 
-/*stock this.SaveAccount({UID, _}:uid) {
+stock this.SaveAccount({UID, _}:_playerid) {
+	new playerid = _:_playerid;
 	
-}*/
-
-/*stock this.SaveAccounts() {
+	if (!this.ResolvePlayerID(playerid))
+		return;
 	
-}*/
+	
+}
 
 /*stock this.DeleteAccount({UID, _}:uid) {
 	
 }*/
 
+stock bool:this.LogPlayerIn(playerid, const password[]) {
+	if (!this.IsRegistered(playerid) || this.IsLoggedIn(playerid))
+		return false;
+	
+	if (!this.TestAccountAuth(playerid, password))
+		return false;
+	
+	SetTimerEx(!"OnPlayerLogIn", 0, false, !"ii", playerid, false);
+	
+	return true;
+}
+
 stock bool:this.TestAccountAuth({UID, _}:uid, const password[]) {
-	if (!this.ResolveUID(uid))
+	if (!this.ResolveUID(uid, false))
 		return false;
 	
 	new bool:success = false;
@@ -148,6 +177,13 @@ stock this.ShowDialog(playerid) {
 				this.ShowDialog(playerid);
 		}
 		
+		inline LogInFailedResponse(_playerid, dialogid, response, listitem, string:inputtext[])
+		{
+			#pragma unused _playerid, dialogid, response, listitem, inputtext
+			
+			this.ShowDialog(playerid);
+		}
+		
 		inline LogInResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
@@ -155,7 +191,23 @@ stock this.ShowDialog(playerid) {
 			if (!response)
 				Dialog_ShowCallback(playerid, using inline LogInQuitConfirmResponse, DIALOG_STYLE_MSGBOX, "Quit", "Are you sure you want to quit the server?", "Quit", "Cancel");
 			else {
-				
+				if (isnull(inputtext)) {
+					this.ShowDialog(playerid);
+				} else if (this.LogPlayerIn(playerid, inputtext)) {
+					
+				} else {
+					if (++this.LogInAttempts[playerid] >= this.MaxLogInAttempts) {
+						SendClientMessage(playerid, COLOR_GENERIC_ERROR, "* You were kicked from the server because of too many failed log in attempts.");
+						
+						Kick(playerid);
+					} else {
+						new msg[80], attempts = this.MaxLogInAttempts - this.LogInAttempts[playerid];
+						
+						format(msg, _, "Invalid password. You have %d more %s, then you'll get kicked.", attempts, attempts == 1 ? ("attempt") : ("attempts"));
+						
+						Dialog_ShowCallback(playerid, using inline LogInFailedResponse, DIALOG_STYLE_MSGBOX, "Log in failed", msg, "Retry");
+					}
+				}
 			}
 		}
 		
@@ -178,7 +230,15 @@ stock this.ShowDialog(playerid) {
 			if (!response)
 				Dialog_ShowCallback(playerid, using inline RegisterQuitConfirmResponse, DIALOG_STYLE_MSGBOX, "Quit", "Are you sure you want to quit the server?", "Quit", "Cancel");
 			else {
-				SendClientMessagef(playerid, -1, "pass: %s", inputtext);
+				if (isnull(inputtext)) {
+					this.ShowDialog(playerid);
+				} else if (this.RegisterPlayer(playerid, inputtext)) {
+					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, "Success", "This nickname is now registered!", "Cool");
+				} else {
+					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, "Success", "Failed to register. Try with another nickname or contact server management if the problem persists.", "OK");
+					
+					Kick(playerid);
+				}
 			}
 		}
 		

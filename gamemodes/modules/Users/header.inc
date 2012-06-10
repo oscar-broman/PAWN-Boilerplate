@@ -42,6 +42,7 @@ new const
 
 new
 	            this.DatabaseName[32 char] = !"users.db",
+	            this.MaxLogInAttempts = 3,
 	         DB:this.DB,
 	DBStatement:this.StmtTestAuth,
 	DBStatement:this.StmtRegister,
@@ -52,21 +53,24 @@ new
 	        UID:this.PlayerNameUID[MAX_PLAYERS],
 	       bool:this.PlayerIsLoggedIn[MAX_PLAYERS char],
 	            this.RegisterDate[MAX_PLAYERS],
-	      Alloc:this.Email[MAX_PLAYERS]
+	      Alloc:this.Email[MAX_PLAYERS],
+	            this.LogInAttempts[MAX_PLAYERS]
 ;
 
 RegisterConfigVariable: this.DatabaseName;
+RegisterConfigVariable: this.MaxLogInAttempts;
 
 // Function forward-declarations
 forward  UID:this.RegisterAccount(const name[], const password[]);
 forward bool:this.RenameAccount({UID, _}:uid, const new_name[]);
 forward bool:this.ChangeAccountPassword({UID, _}:uid, const new_password[]);
-forward      this.SaveAccount({UID, _}:uid);
-forward      this.SaveAccounts();
+forward      this.SaveAccount({UID, _}:_playerid);
 forward      this.DeleteAccount({UID, _}:uid);
+forward bool:this.LogPlayerIn(playerid, const password[]);
 forward bool:this.TestAccountAuth({UID, _}:uid, const password[]);
 forward  UID:this.FindAccountByName(const name[]);
 forward      this.FindPlayerByAccount(UID:uid);
 
 forward bool:this.IsLoggedIn({UID, _}:playerid);
 forward bool:this.IsRegistered({UID, _}:playerid);
+forward bool:this.RegisterPlayer(playerid, const password[]);

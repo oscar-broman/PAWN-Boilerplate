@@ -9,6 +9,5 @@
 {
 	this.PlayerUID[playerid] = INVALID_UID;
 	this.PlayerNameUID[playerid] = this.FindAccountByName(Player.Info[playerid][Name]);
-	
-	ClassSelection.AllowSpawning(playerid, false);
+	this.LogInAttempts[playerid] = 0;
 }
