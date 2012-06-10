@@ -1,5 +1,5 @@
 /*
-	SQLite Improved v0.9 by Slice
+	SQLite Improved v0.9.1 by Slice
 	
 	Changelog:
 			2012-08-27:
@@ -560,7 +560,7 @@ stock DB::LazyInitialize() {
 	bIsInitialized = true;
 	
 	#if defined HTTP
-		HTTP(0x7FEDCBA0, HTTP_GET, !"spelsajten.net/sqlitei_version.php?version=090", "", !"DB_VersionCheckReponse");
+		HTTP(0x7FEDCBA0, HTTP_GET, !"spelsajten.net/sqlitei_version.php?version=091", "", !"DB_VersionCheckReponse");
 	#endif
 }
 
@@ -650,6 +650,24 @@ stock db_insert(DB:db, const szQuery[]) {
 }
 
 stock db_get_struct_info(DB:db, {_, e_SQLITE3}:iOffset) {
+	if (db_is_persistent(db)) {
+		if (!db_is_valid_persistent(db)) {
+			DB::Errorf("(db_get_struct_info) Invalid persistent database given (%04x%04x).", _:db >>> 16, _:db & 0xFFFF);
+			
+			return 0;
+		}
+		
+		new iIndex = (_:db & 0x7FFFFFFF);
+		
+		db = gs_PersistentDatabases[iIndex][e_dbDatabase];
+		
+		if (!db) {
+			DB::Errorf("(db_get_struct_info) Closed persistent database given (%04x%04x).", _:db >>> 16, _:db & 0xFFFF);
+			
+			return 0;
+		}
+	}
+	
 	new
 		iAddress = (_:db & 0x7FFFFFFF) - DB::GetAmxBaseRelative() + iOffset,
 		iValue
@@ -662,6 +680,24 @@ stock db_get_struct_info(DB:db, {_, e_SQLITE3}:iOffset) {
 }
 
 stock db_set_struct_info(DB:db, {_, e_SQLITE3}:iOffset, iValue) {
+	if (db_is_persistent(db)) {
+		if (!db_is_valid_persistent(db)) {
+			DB::Errorf("(db_set_struct_info) Invalid persistent database given (%04x%04x).", _:db >>> 16, _:db & 0xFFFF);
+			
+			return 0;
+		}
+		
+		new iIndex = (_:db & 0x7FFFFFFF);
+		
+		db = gs_PersistentDatabases[iIndex][e_dbDatabase];
+		
+		if (!db) {
+			DB::Errorf("(db_set_struct_info) Closed persistent database given (%04x%04x).", _:db >>> 16, _:db & 0xFFFF);
+			
+			return 0;
+		}
+	}
+	
 	new
 		iAddress = (_:db & 0x7FFFFFFF) - DB::GetAmxBaseRelative() + iOffset
 	;
