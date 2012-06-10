@@ -577,6 +577,7 @@ EOD;
 	}
 	
 	public function clean_directories() {
+		if (!file_exists('gamemodes/.build')) return;
 		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('gamemodes/.build'), RecursiveIteratorIterator::CHILD_FIRST);
 		
 		foreach ($iterator as $path) {
