@@ -48,5 +48,5 @@ new
 RegisterConfigVariable: this.UsePlayerPedAnimations;
 
 // Function forward declarations
-forward bool:this.IsInAnyGroup(playerid, Group:...);
+forward bool:this.IsInAnyOfGroups(playerid, Group:...);
 forward this.CheckForNewAdmins();

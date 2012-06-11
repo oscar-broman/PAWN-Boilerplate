@@ -5,7 +5,7 @@
  */
 
 // Test whether a player is in any of the groups given
-stock bool:this.IsInAnyGroup(playerid, Group:...) {
+stock bool:this.IsInAnyOfGroups(playerid, Group:...) {
 	for (new i = numargs(); --i; ) {
 		if (Group_GetPlayer(playerid, Group:getarg(i)))
 			return true;
