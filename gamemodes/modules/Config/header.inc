@@ -1,7 +1,7 @@
 /*!
  * Config/header.inc
  *
- > Priority: 0
+ > Priority: 10
  */
 
 // This will cause errors if the macros below fails (i.e. they're not used properly).
