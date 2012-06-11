@@ -607,22 +607,7 @@ EOD;
 		$contents = preg_replace_callback('/^\s*#define\s+(this|' . implode('|', $this->modules) . ')\.([a-zA-Z0-9_@]+)/sm', array($this, 'module_prefix_macro'), $contents);
 		$contents = preg_replace_callback('/^\s*#emit(\s+\S+\s+)(this|' . implode('|', $this->modules) . ')\.([a-zA-Z0-9_@]+)/sm', array($this, 'module_prefix_emit'), $contents);
 		
-		$contents = preg_replace_callback('/\b_([IH])(?:\<(.*?)\>|\((.*?)\))/', function ($matches) {
-			$characters = !empty($matches[2]) ? $matches[2] : str_replace(',', '', $matches[3]);
-			$characters = strrev($characters);
-			
-			if ($matches[1] == 'I')
-				$characters = strtoupper($characters);
-			
-			$characters = explode(',', preg_replace('/((?<!^).)/s', ',$1', $characters));
-			
-			$hash = '-1';
-			
-			foreach ($characters as $character)
-				$hash = "($hash*33+" . ord($character) . ")";
-			
-			return $hash;
-		}, $contents);
+		$contents = preg_replace_callback('/\b_([IH])(?:\<(.*?)\>|\((.*?)\))/', array($this, 'y_stringhash_regex_callback'), $contents);
 		
 		if ($count) {
 			echo $contents;
@@ -644,6 +629,24 @@ EOD;
 		fwrite($fp, "#file \"$file\"\n#line 0\n");
 		fwrite($fp, $contents);
 		fclose($fp);
+	}
+	
+	public function y_stringhash_regex_callback($matches) {
+		$characters = !empty($matches[2]) ? $matches[2] : str_replace(',', '', $matches[3]);
+		$characters = preg_replace('/^this(?=\.)/', $this->modules[$this->in_module], $characters);
+		$characters = strrev($characters);
+		
+		if ($matches[1] == 'I')
+			$characters = strtoupper($characters);
+		
+		$characters = explode(',', preg_replace('/((?<!^).)/s', ',$1', $characters));
+		
+		$hash = '-1';
+		
+		foreach ($characters as $character)
+			$hash = "($hash*33+" . ord($character) . ")";
+		
+		return $hash;
 	}
 	
 	public function module_prefix_macro($matches) {
