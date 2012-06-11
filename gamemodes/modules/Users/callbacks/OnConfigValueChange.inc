@@ -8,7 +8,7 @@
 
 {
 	switch (key_hash) {
-		case _H<Users.DatabaseName>: {
+		case _H<this.DatabaseName>: {
 			print(!"(Users) The new database will be used when the server restarts.");
 		}
 	}

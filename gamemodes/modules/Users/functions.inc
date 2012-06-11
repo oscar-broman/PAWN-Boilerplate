@@ -245,3 +245,18 @@ stock this.ShowDialog(playerid) {
 		Dialog_ShowCallback(playerid, using inline RegisterResponse, DIALOG_STYLE_PASSWORD, "Register", "You must register this nickname before playing.\n\nEnter a password:", "OK", "Cancel");
 	}
 }
+
+stock this.RegisterUserVariable(const _name[], tag, size, ...) {
+	new tagname[32], name[64];
+	
+	strunpack(name, _name);
+	
+	PBP.ResolveSymbolName(name);
+	
+	if (tag == tagof(Float:))
+		tagname = "Float";
+	else
+		tagname = "_";
+	
+	printf("%s:%s[][%d]", tagname, name, size);
+}

@@ -106,4 +106,11 @@
 			}
 		}
 	}
+	
+	for (new buf[32], idx; (idx = AMX_GetPublicName(idx, buf, !"@Pu_")); ) {
+		if (strfind(buf, !".") != -1)
+			continue;
+		
+		CallLocalFunction(buf, !"");
+	}
 }

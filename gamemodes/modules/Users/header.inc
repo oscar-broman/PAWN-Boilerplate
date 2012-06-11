@@ -1,8 +1,30 @@
 /*!
  * Users/header.inc
  *
- > Priority: 0
+ > Priority: 9
  */
+
+// Get a syntax error instead of "unknown symbol" error when macros used incorrectly.
+stock RegisterUserVariable;
+
+// Entry points
+#define RegisterUserVariable:%1; \
+	@Pu_E1:@Pu_E2:%1;
+
+// "alias" => variable
+#define @Pu_E1:@Pu_E2:%1=>%2; \
+	forward %2@Pu_(); \
+	public %2@Pu_() { \
+		Users.RegisterUserVariable(%1, tagof((%2)), sizeof((%2[])), _:%2); \
+	}
+
+// variable
+#define @Pu_E2:%1; \
+	@Pu_X(); \
+	forward %1@Pu_(); \
+	public %1@Pu_() { \
+		Users.RegisterUserVariable(#%1, tagof((%1)), sizeof((%1[])), _:%1); \
+	}
 
 enum {
 	this.DIALOG_REGISTER = this.OFFSET,
@@ -74,3 +96,5 @@ forward      this.FindPlayerByAccount(UID:uid);
 forward bool:this.IsLoggedIn({UID, _}:playerid);
 forward bool:this.IsRegistered({UID, _}:playerid);
 forward bool:this.RegisterPlayer(playerid, const password[]);
+
+forward this.RegisterUserVariable(const _name[], tag, size, ...);
