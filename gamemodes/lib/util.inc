@@ -18,6 +18,31 @@ stock GetIPFromString(const ip[])
 	return ipv;
 }
 
+// ispacked for arguments (starting at 0)
+stock bool:isargpacked(arg) {
+	#emit LOAD.S.pri  arg
+	#emit SMUL.C      4
+	#emit LOAD.S.alt  0
+	#emit ADD
+	#emit ADD.C       12
+	#emit LOAD.I
+	#emit PUSH.pri
+	#emit PUSH.C      4
+	#emit SYSREQ.C    ispacked
+	#emit STACK       8
+	#emit RETN
+	
+	return false;
+}
+
+// Safer version, also for packed strings
+stock IsNull(const string[]) {
+	if (string[0] > 255)
+		return string{0} == '\0' || (string[0] & 0xFFFF0000) == 0x01000000;
+	else
+		return string[0] == '\0' || string[0] == '\1' && string[1] == '\0';
+}
+
 #if defined formatex
 	// Packed (or unpacked) string
 	FormatSpecifier<'S'>(output[], string[])
