@@ -10,8 +10,12 @@
 	printf("(Tests) Config value changed: %s (%X)", key, key_hash);
 	
 	switch (key_hash) {
-		case _H<Tests.StringVariable>: {
-			printf("(Tests) Tests.StringVariable = \"%S\".", this.StringVariable);
+		case _H<this.StringVariable>: {
+			printf("(Tests) this.StringVariable = \"%S\".", this.StringVariable);
+		}
+		
+		case _H<this.MallocStringVariable>: {
+			printf("(Tests) this.MallocStringVariable = \"%S\".", mget(this.MallocStringVariable, 0));
 		}
 	}
 }

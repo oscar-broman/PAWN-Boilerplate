@@ -69,6 +69,26 @@
 								}
 							}
 							
+							case this.TYPE_MALLOC_STRING: {
+								new len = strlen(value);
+								
+								if (value[0] == '"' && value[len - 1] == '"')
+									strdel(value, 0, 1), value[len - 2] = '\0';
+								
+								if (!@ptr[this.ConfigEntries[i][Address]] || strcmp(mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0), value, false) || IsNull(mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0)) != IsNull(value)) {
+									if (@ptr[this.ConfigEntries[i][Address]])
+										free(Alloc:@ptr[this.ConfigEntries[i][Address]]);
+									
+									@ptr[this.ConfigEntries[i][Address]] = _:Malloc_NewS(value, !!(this.ConfigEntries[i][Size] & (1 << 31)));
+									
+									CallFunction(this.CB_OnConfigValueChange, ref(key), key_hash);
+									
+									printf(!"The config variable \"%S\" was set to \"%s\".", key, value);
+								} else {
+									print(!"The variable already has that value.");
+								}
+							}
+							
 							default: {
 								print(!"You can only set the value of ints, floats, or strings.");
 							}

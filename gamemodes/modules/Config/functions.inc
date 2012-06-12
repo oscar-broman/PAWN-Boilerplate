@@ -149,11 +149,25 @@ this.LoadEntries(bool:initial_load = false) {
 							
 							case this.TYPE_STRING: {
 								if (strcmp(@ptr[this.ConfigEntries[i][Address]], line_buffer, false) || isnull(@ptr[this.ConfigEntries[i][Address]]) != isnull(line_buffer)) {
-									
 									if (this.ConfigEntries[i][Size] & (1 << 31))
 										strpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size] & (-1 >>> 1));
 									else
 										strunpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size]);
+									
+									if (!initial_load) {
+										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+
+										CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
+									}
+								}
+							}
+							
+							case this.TYPE_MALLOC_STRING: {
+								if (!@ptr[this.ConfigEntries[i][Address]] || strcmp(mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0), line_buffer, false) || IsNull(mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0)) != IsNull(line_buffer)) {
+									if (@ptr[this.ConfigEntries[i][Address]])
+										free(Alloc:@ptr[this.ConfigEntries[i][Address]]);
+									
+									@ptr[this.ConfigEntries[i][Address]] = _:Malloc_NewS(line_buffer, !!(this.ConfigEntries[i][Size] & (1 << 31)));
 									
 									if (!initial_load) {
 										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
@@ -227,6 +241,14 @@ this.SaveEntries() {
 			
 			case this.TYPE_STRING:
 				strcat(line_buffer, "\""), strcat(line_buffer, @ptr[this.ConfigEntries[i][Address]]), strcat(line_buffer, "\"");
+			
+			case this.TYPE_MALLOC_STRING: {
+				if (@ptr[this.ConfigEntries[i][Address]])
+					strcat(line_buffer, "\""), strcat(line_buffer, mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0)), strcat(line_buffer, "\"");
+				else
+					strcat(line_buffer, "\"\"");
+			}
+				
 		}
 		
 		strcat(line_buffer, !"\n");
@@ -255,6 +277,8 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 	
 	if (tag == tagof(Float:))
 		type = this.TYPE_FLOAT;
+	else if (tag == tagof(Alloc:))
+		type = this.TYPE_MALLOC_STRING;
 	else
 		type = this.TYPE_INT;
 	
@@ -279,4 +303,6 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 	
 	if (type == this.TYPE_STRING)
 		this.ConfigEntries[i][Size] |= (_:ispacked(@ptr[address]) << 31);
+	else if (type == this.TYPE_MALLOC_STRING && @ptr[address])
+		this.ConfigEntries[i][Size] |= (_:ispacked(mget(Alloc:@ptr[address], 0)) << 31);
 }
