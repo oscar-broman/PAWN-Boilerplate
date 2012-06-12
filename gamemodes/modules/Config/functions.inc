@@ -69,7 +69,7 @@ this.LoadEntries(bool:initial_load = false) {
 				static key_unpacked[64];
 				
 				for (new i = 0; i < this.NumConfigEntries; i++) {
-					if (key_hash == this.ConfigEntries[i][KeyHash] && !strcmp(key, mget(this.ConfigEntries[i][Key], 0))) {
+					if (key_hash == this.ConfigEntries[i][KeyHash] && !strcmp(key, mstr(this.ConfigEntries[i][Key]))) {
 						switch (this.ConfigEntries[i][Type] & 0xFF) {
 							case this.TYPE_INT: {
 								new value = strval(line_buffer);
@@ -78,7 +78,7 @@ this.LoadEntries(bool:initial_load = false) {
 									@ptr[this.ConfigEntries[i][Address]] = value;
 									
 									if (!initial_load) {
-										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+										strunpack(key_unpacked, mstr(this.ConfigEntries[i][Key]));
 									
 										CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
 									}
@@ -92,7 +92,7 @@ this.LoadEntries(bool:initial_load = false) {
 									@ptr[this.ConfigEntries[i][Address]] = value;
 									
 									if (!initial_load) {
-										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+										strunpack(key_unpacked, mstr(this.ConfigEntries[i][Key]));
 									
 										CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
 									}
@@ -141,7 +141,7 @@ this.LoadEntries(bool:initial_load = false) {
 								}
 								
 								if (modified && !initial_load) {
-									strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+									strunpack(key_unpacked, mstr(this.ConfigEntries[i][Key]));
 
 									CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
 								}
@@ -155,7 +155,7 @@ this.LoadEntries(bool:initial_load = false) {
 										strunpack(@ptr[this.ConfigEntries[i][Address]], line_buffer, this.ConfigEntries[i][Size]);
 									
 									if (!initial_load) {
-										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+										strunpack(key_unpacked, mstr(this.ConfigEntries[i][Key]));
 
 										CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
 									}
@@ -163,14 +163,14 @@ this.LoadEntries(bool:initial_load = false) {
 							}
 							
 							case this.TYPE_MALLOC_STRING: {
-								if (!@ptr[this.ConfigEntries[i][Address]] || strcmp(mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0), line_buffer, false) || IsNull(mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0)) != IsNull(line_buffer)) {
+								if (!@ptr[this.ConfigEntries[i][Address]] || strcmp(mstr(Alloc:@ptr[this.ConfigEntries[i][Address]]), line_buffer, false) || IsNull(mstr(Alloc:@ptr[this.ConfigEntries[i][Address]])) != IsNull(line_buffer)) {
 									if (@ptr[this.ConfigEntries[i][Address]])
 										free(Alloc:@ptr[this.ConfigEntries[i][Address]]);
 									
 									@ptr[this.ConfigEntries[i][Address]] = _:Malloc_NewS(line_buffer, !!(this.ConfigEntries[i][Size] & (1 << 31)));
 									
 									if (!initial_load) {
-										strunpack(key_unpacked, mget(this.ConfigEntries[i][Key], 0));
+										strunpack(key_unpacked, mstr(this.ConfigEntries[i][Key]));
 
 										CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[i][KeyHash]);
 									}
@@ -207,7 +207,7 @@ this.SaveEntries() {
 	fwrite(fp, "\n");
 	
 	for (new i = 0; i < this.NumConfigEntries; i++) {
-		strunpack(line_buffer, mget(this.ConfigEntries[i][Key], 0));
+		strunpack(line_buffer, mstr(this.ConfigEntries[i][Key]));
 		strcat (line_buffer, !" = ");
 		
 		switch (this.ConfigEntries[i][Type] & 0xFF) {
@@ -244,7 +244,7 @@ this.SaveEntries() {
 			
 			case this.TYPE_MALLOC_STRING: {
 				if (@ptr[this.ConfigEntries[i][Address]])
-					strcat(line_buffer, "\""), strcat(line_buffer, mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0)), strcat(line_buffer, "\"");
+					strcat(line_buffer, "\""), strcat(line_buffer, mstr(Alloc:@ptr[this.ConfigEntries[i][Address]])), strcat(line_buffer, "\"");
 				else
 					strcat(line_buffer, "\"\"");
 			}
@@ -291,7 +291,7 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 	
 	key_ptr = malloc((strlen(key) + 1) char);
 	
-	strpack(mget(key_ptr, 0), key, Malloc_SlotSize(key_ptr));
+	strpack(mstr(key_ptr), key, Malloc_SlotSize(key_ptr));
 	
 	i = this.NumConfigEntries++;
 	
@@ -304,5 +304,5 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 	if (type == this.TYPE_STRING)
 		this.ConfigEntries[i][Size] |= (_:ispacked(@ptr[address]) << 31);
 	else if (type == this.TYPE_MALLOC_STRING && @ptr[address])
-		this.ConfigEntries[i][Size] |= (_:ispacked(mget(Alloc:@ptr[address], 0)) << 31);
+		this.ConfigEntries[i][Size] |= (_:ispacked(mstr(Alloc:@ptr[address])) << 31);
 }

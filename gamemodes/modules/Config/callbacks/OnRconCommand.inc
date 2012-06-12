@@ -19,7 +19,7 @@
 				new key_hash = YHash(key), bool:found = false;
 				
 				for (new i = 0; i < this.NumConfigEntries; i++) {
-					if (key_hash == this.ConfigEntries[i][KeyHash] && !strcmp(key, mget(this.ConfigEntries[i][Key], 0))) {
+					if (key_hash == this.ConfigEntries[i][KeyHash] && !strcmp(key, mstr(this.ConfigEntries[i][Key]))) {
 						switch (this.ConfigEntries[i][Type] & 0xFF) {
 							case this.TYPE_INT: {
 								new val = strval(value);
@@ -75,7 +75,7 @@
 								if (value[0] == '"' && value[len - 1] == '"')
 									strdel(value, 0, 1), value[len - 2] = '\0';
 								
-								if (!@ptr[this.ConfigEntries[i][Address]] || strcmp(mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0), value, false) || IsNull(mget(Alloc:@ptr[this.ConfigEntries[i][Address]], 0)) != IsNull(value)) {
+								if (!@ptr[this.ConfigEntries[i][Address]] || strcmp(mstr(Alloc:@ptr[this.ConfigEntries[i][Address]]), value, false) || IsNull(mstr(Alloc:@ptr[this.ConfigEntries[i][Address]])) != IsNull(value)) {
 									if (@ptr[this.ConfigEntries[i][Address]])
 										free(Alloc:@ptr[this.ConfigEntries[i][Address]]);
 									
