@@ -15,7 +15,7 @@
 		}
 		
 		case _H<this.MallocStringVariable>: {
-			printf("(Tests) this.MallocStringVariable = \"%S\".", mget(this.MallocStringVariable, 0));
+			printf("(Tests) this.MallocStringVariable = \"%S\".", mstr(this.MallocStringVariable));
 		}
 	}
 }

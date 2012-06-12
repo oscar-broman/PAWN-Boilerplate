@@ -10,6 +10,8 @@ stock this.PrepareStatements() {
 	this.StmtRename         = db_prepare(this.DB, !"UPDATE `users` SET `name` = ? WHERE `uid` = ?");
 	this.StmtChangePasshash = db_prepare(this.DB, !"UPDATE `users` SET `passhash` = ? WHERE `uid` = ?");
 	this.StmtFindByName     = db_prepare(this.DB, !"SELECT `uid` FROM `users` WHERE `name` = ?");
+	this.StmtSaveUserVar    = db_prepare(this.DB, !"INSERT OR REPLACE INTO users_info (idx, uid, key, value) VALUES ((SELECT idx FROM users_info WHERE uid = ? AND key = ?), ?, ?, ?)");
+	this.StmtLoadUserVars   = db_prepare(this.DB, !"SELECT key, value FROM users_info WHERE uid = ?");
 }
 
 // UID or player ID -> UID
@@ -49,7 +51,7 @@ stock bool:this.RegisterPlayer(playerid, const password[]) {
 stock UID:this.RegisterAccount(const name[], const password[]) {
 	if (isnull(name) || isnull(password))
 		return INVALID_UID;
-	print(password);
+	
 	stmt_bind_value(this.StmtRegister, 0, DB::TYPE_STRING,  name);
 	stmt_bind_value(this.StmtRegister, 1, DB::TYPE_WP_HASH, password);
 	
@@ -86,10 +88,47 @@ stock bool:this.ChangeAccountPassword({UID, _}:uid, const new_password[]) {
 stock this.SaveAccount({UID, _}:_playerid) {
 	new playerid = _:_playerid;
 	
-	if (!this.ResolvePlayerID(playerid))
+	if (!this.ResolvePlayerID(playerid) || this.PlayerUID[playerid] == INVALID_UID)
 		return;
 	
+	CallLocalFunction(!"OnPlayerAccountBeingSaved", !"i", playerid);
 	
+	db_begin_transaction(this.DB);
+	
+	stmt_bind_value(this.StmtSaveUserVar, 0, DB::TYPE_INT, _:this.PlayerUID[playerid]);
+	stmt_bind_value(this.StmtSaveUserVar, 2, DB::TYPE_INT, _:this.PlayerUID[playerid]);
+	
+	for (new i = 0; i < this.NumUserVariables; i++) {
+		stmt_bind_value(this.StmtSaveUserVar, 1, DB::TYPE_STRING, mstr(this.UserVariables[i][Key]));
+		stmt_bind_value(this.StmtSaveUserVar, 3, DB::TYPE_STRING, mstr(this.UserVariables[i][Key]));
+		
+		switch (this.UserVariables[i][Type]) {
+			case this.TYPE_INT:
+				stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_INT, @ptr[this.UserVariables[i][Address]][playerid]);
+				
+			case this.TYPE_FLOAT:
+				stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_FLOAT, @ptr[this.UserVariables[i][Address]][playerid]);
+				
+			case this.TYPE_STRING:
+				stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_STRING, @ptr[this.UserVariables[i][Address], playerid]);
+				
+			case this.TYPE_MALLOC_STRING: {
+				new Alloc:alloc = Alloc:@ptr[this.UserVariables[i][Address]][playerid];
+				
+				if (alloc)
+					stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_STRING, mstr(alloc));
+				else
+					stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_STRING, "");
+			}
+				
+			default:
+				continue;
+		}
+		
+		stmt_execute(this.StmtSaveUserVar);
+	}
+	
+	db_end_transaction(this.DB);
 }
 
 /*stock this.DeleteAccount({UID, _}:uid) {
@@ -102,6 +141,50 @@ stock bool:this.LogPlayerIn(playerid, const password[]) {
 	
 	if (!this.TestAccountAuth(playerid, password))
 		return false;
+	
+	this.PlayerUID[playerid] = this.PlayerNameUID[playerid];
+	
+	stmt_bind_value(this.StmtLoadUserVars, 0, DB::TYPE_INT, _:this.PlayerUID[playerid]);
+	
+	new key[64];
+	static value[4096];
+	
+	stmt_bind_result_field(this.StmtLoadUserVars, 0, DB::TYPE_STRING, key, sizeof(key));
+	stmt_bind_result_field(this.StmtLoadUserVars, 1, DB::TYPE_STRING, value, sizeof(value));
+	
+	if (stmt_execute(this.StmtLoadUserVars)) {
+		while (stmt_fetch_row(this.StmtLoadUserVars)) {
+			new key_hash = YHash(key);
+			
+			// Clear all user variables
+			for (new i = 0; i < this.NumUserVariables; i++) {
+				if (key_hash != this.UserVariables[i][KeyHash] || strcmp(key, mstr(this.UserVariables[i][Key])))
+					continue;
+				
+				switch (this.UserVariables[i][Type]) {
+					case this.TYPE_INT:
+						@ptr[this.UserVariables[i][Address]][playerid] = strval(value);
+					
+					case this.TYPE_FLOAT:
+						@ptr[this.UserVariables[i][Address]][playerid] = _:floatstr(value);
+
+					case this.TYPE_STRING:
+						strunpack(@ptr[this.UserVariables[i][Address], playerid], value, this.UserVariables[i][Size]);
+
+					case this.TYPE_MALLOC_STRING: {
+						new Alloc:alloc = Alloc:@ptr[this.UserVariables[i][Address]][playerid];
+
+						if (alloc)
+							free(alloc);
+
+						@ptr[this.UserVariables[i][Address]][playerid] = _:Malloc_NewS(value);
+					}
+				}
+				
+				break;
+			}
+		}
+	}
 	
 	SetTimerEx(!"OnPlayerLogIn", 0, false, !"ii", playerid, false);
 	
@@ -246,17 +329,32 @@ stock this.ShowDialog(playerid) {
 	}
 }
 
-stock this.RegisterUserVariable(const _name[], tag, size, ...) {
-	new tagname[32], name[64];
+stock this.RegisterUserVariable(const _key[], tag, size, ...) {
+	new
+		     key[64 char],
+		     type,
+		     i = this.NumUserVariables++
+	;
 	
-	strunpack(name, _name);
+	strpack(key, _key);
 	
-	PBP.ResolveSymbolName(name);
+	PBP.ResolveSymbolName(key);
 	
-	if (tag == tagof(Float:))
-		tagname = "Float";
-	else
-		tagname = "_";
+	if (tag == tagof(Float:)) {
+		type = this.TYPE_FLOAT;
+	} else if (tag == tagof(Alloc:)) {
+		type = this.TYPE_MALLOC_STRING;
+	} else {
+		type = this.TYPE_INT;
+	}
 	
-	printf("%s:%s[][%d]", tagname, name, size);
+	if (size > 1) {
+		type = this.TYPE_STRING;
+	}
+	
+	this.UserVariables[i][Key]     = Malloc_NewS(key, true);
+	this.UserVariables[i][KeyHash] = YHash(key);
+	this.UserVariables[i][Type]    = type;
+	this.UserVariables[i][Size]    = size;
+	this.UserVariables[i][Address] = GetArgumentAddress(3);
 }

@@ -5,3 +5,4 @@
  */
 
 forward OnPlayerLogIn(playerid, bool:autologin);
+forward OnPlayerAccountBeingSaved(playerid);
