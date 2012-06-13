@@ -14,8 +14,6 @@
 	} else {
 		db_set_asynchronous(this.DB);
 		
-		this.PrepareStatements();
-		
 		// Compare the DB table structure to this.Tables and this.Columns, create any non-existing columns.
 		for (new i = 0; i < sizeof(this.Tables); i++) {
 			new DBResult:result = db_query(this.DB, !"PRAGMA table_info(?)", STRING:this.Tables[i][Name]);

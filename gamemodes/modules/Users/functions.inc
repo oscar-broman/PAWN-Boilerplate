@@ -4,16 +4,6 @@
  > Priority: 0
  */
 
-stock this.PrepareStatements() {
-	this.StmtTestAuth       = db_prepare(this.DB, !"SELECT EXISTS(SELECT `uid` FROM `users` WHERE `uid` = ? AND `passhash` = ?)");
-	this.StmtRegister       = db_prepare(this.DB, !"INSERT INTO `users` (`name`, `passhash`) VALUES (?, ?)");
-	this.StmtRename         = db_prepare(this.DB, !"UPDATE `users` SET `name` = ? WHERE `uid` = ?");
-	this.StmtChangePasshash = db_prepare(this.DB, !"UPDATE `users` SET `passhash` = ? WHERE `uid` = ?");
-	this.StmtFindByName     = db_prepare(this.DB, !"SELECT `uid` FROM `users` WHERE `name` = ?");
-	this.StmtSaveUserVar    = db_prepare(this.DB, !"INSERT OR REPLACE INTO users_info (idx, uid, key, value) VALUES ((SELECT idx FROM users_info WHERE uid = ? AND key = ?), ?, ?, ?)");
-	this.StmtLoadUserVars   = db_prepare(this.DB, !"SELECT key, value FROM users_info WHERE uid = ?");
-}
-
 // UID or player ID -> UID
 stock bool:this.ResolveUID(&{UID, _}:uid, bool:only_logged_in = true) {
 	if (0 <= _:uid < MAX_PLAYERS)
@@ -52,10 +42,12 @@ stock UID:this.RegisterAccount(const name[], const password[]) {
 	if (isnull(name) || isnull(password))
 		return INVALID_UID;
 	
-	stmt_bind_value(this.StmtRegister, 0, DB::TYPE_STRING,  name);
-	stmt_bind_value(this.StmtRegister, 1, DB::TYPE_WP_HASH, password);
+	static DBStatement:stmt =: db_prepare(this.DB, !"INSERT INTO `users` (`name`, `passhash`) VALUES (?, ?)");
 	
-	if (stmt_execute(this.StmtRegister)) {
+	stmt_bind_value(stmt, 0, DB::TYPE_STRING,  name);
+	stmt_bind_value(stmt, 1, DB::TYPE_WP_HASH, password);
+	
+	if (stmt_execute(stmt)) {
 		new UID:uid = UID:db_last_insert_rowid(this.DB);
 		
 		if (_:uid >= MINIMUM_UID)
@@ -69,20 +61,24 @@ stock bool:this.RenameAccount({UID, _}:uid, const new_name[]) {
 	if (!this.ResolveUID(uid) || isnull(new_name))
 		return false;
 	
-	stmt_bind_value(this.StmtRename, 0, DB::TYPE_STRING, new_name);
-	stmt_bind_value(this.StmtRename, 1, DB::TYPE_INT, _:uid);
+	static DBStatement:stmt =: db_prepare(this.DB, !"UPDATE `users` SET `name` = ? WHERE `uid` = ?");
 	
-	return !!stmt_execute(this.StmtRename);
+	stmt_bind_value(stmt, 0, DB::TYPE_STRING, new_name);
+	stmt_bind_value(stmt, 1, DB::TYPE_INT, _:uid);
+	
+	return !!stmt_execute(stmt);
 }
 
 stock bool:this.ChangeAccountPassword({UID, _}:uid, const new_password[]) {
 	if (!this.ResolveUID(uid) || isnull(new_password))
 		return false;
 	
-	stmt_bind_value(this.StmtChangePasshash, 0, DB::TYPE_WP_HASH, new_password);
-	stmt_bind_value(this.StmtChangePasshash, 1, DB::TYPE_INT, _:uid);
+	static DBStatement:stmt =: db_prepare(this.DB, !"UPDATE `users` SET `passhash` = ? WHERE `uid` = ?");
 	
-	return !!stmt_execute(this.StmtChangePasshash);
+	stmt_bind_value(stmt, 0, DB::TYPE_WP_HASH, new_password);
+	stmt_bind_value(stmt, 1, DB::TYPE_INT, _:uid);
+	
+	return !!stmt_execute(stmt);
 }
 
 stock this.SaveAccount({UID, _}:_playerid) {
@@ -93,39 +89,41 @@ stock this.SaveAccount({UID, _}:_playerid) {
 	
 	CallLocalFunction(!"OnPlayerAccountBeingSaved", !"i", playerid);
 	
+	static DBStatement:stmt =: db_prepare(this.DB, !"INSERT OR REPLACE INTO users_info (idx, uid, key, value) VALUES ((SELECT idx FROM users_info WHERE uid = ? AND key = ?), ?, ?, ?)");
+	
 	db_begin_transaction(this.DB);
 	
-	stmt_bind_value(this.StmtSaveUserVar, 0, DB::TYPE_INT, _:this.PlayerUID[playerid]);
-	stmt_bind_value(this.StmtSaveUserVar, 2, DB::TYPE_INT, _:this.PlayerUID[playerid]);
+	stmt_bind_value(stmt, 0, DB::TYPE_INT, _:this.PlayerUID[playerid]);
+	stmt_bind_value(stmt, 2, DB::TYPE_INT, _:this.PlayerUID[playerid]);
 	
 	for (new i = 0; i < this.NumUserVariables; i++) {
-		stmt_bind_value(this.StmtSaveUserVar, 1, DB::TYPE_STRING, mstr(this.UserVariables[i][Key]));
-		stmt_bind_value(this.StmtSaveUserVar, 3, DB::TYPE_STRING, mstr(this.UserVariables[i][Key]));
+		stmt_bind_value(stmt, 1, DB::TYPE_STRING, mstr(this.UserVariables[i][Key]));
+		stmt_bind_value(stmt, 3, DB::TYPE_STRING, mstr(this.UserVariables[i][Key]));
 		
 		switch (this.UserVariables[i][Type]) {
 			case this.TYPE_INT:
-				stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_INT, @ptr[this.UserVariables[i][Address]][playerid]);
+				stmt_bind_value(stmt, 4, DB::TYPE_INT, @ptr[this.UserVariables[i][Address]][playerid]);
 				
 			case this.TYPE_FLOAT:
-				stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_FLOAT, @ptr[this.UserVariables[i][Address]][playerid]);
+				stmt_bind_value(stmt, 4, DB::TYPE_FLOAT, @ptr[this.UserVariables[i][Address]][playerid]);
 				
 			case this.TYPE_STRING:
-				stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_STRING, @ptr[this.UserVariables[i][Address], playerid]);
+				stmt_bind_value(stmt, 4, DB::TYPE_STRING, @ptr[this.UserVariables[i][Address], playerid]);
 				
 			case this.TYPE_MALLOC_STRING: {
 				new Alloc:alloc = Alloc:@ptr[this.UserVariables[i][Address]][playerid];
 				
 				if (alloc)
-					stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_STRING, mstr(alloc));
+					stmt_bind_value(stmt, 4, DB::TYPE_STRING, mstr(alloc));
 				else
-					stmt_bind_value(this.StmtSaveUserVar, 4, DB::TYPE_STRING, "");
+					stmt_bind_value(stmt, 4, DB::TYPE_STRING, "");
 			}
 				
 			default:
 				continue;
 		}
 		
-		stmt_execute(this.StmtSaveUserVar);
+		stmt_execute(stmt);
 	}
 	
 	db_end_transaction(this.DB);
@@ -142,18 +140,20 @@ stock bool:this.LogPlayerIn(playerid, const password[]) {
 	if (!this.TestAccountAuth(playerid, password))
 		return false;
 	
+	static DBStatement:stmt =: db_prepare(this.DB, !"SELECT key, value FROM users_info WHERE uid = ?");
+	
 	this.PlayerUID[playerid] = this.PlayerNameUID[playerid];
 	
-	stmt_bind_value(this.StmtLoadUserVars, 0, DB::TYPE_INT, _:this.PlayerUID[playerid]);
+	stmt_bind_value(stmt, 0, DB::TYPE_INT, _:this.PlayerUID[playerid]);
 	
 	new key[64];
 	static value[4096];
 	
-	stmt_bind_result_field(this.StmtLoadUserVars, 0, DB::TYPE_STRING, key, sizeof(key));
-	stmt_bind_result_field(this.StmtLoadUserVars, 1, DB::TYPE_STRING, value, sizeof(value));
+	stmt_bind_result_field(stmt, 0, DB::TYPE_STRING, key, sizeof(key));
+	stmt_bind_result_field(stmt, 1, DB::TYPE_STRING, value, sizeof(value));
 	
-	if (stmt_execute(this.StmtLoadUserVars)) {
-		while (stmt_fetch_row(this.StmtLoadUserVars)) {
+	if (stmt_execute(stmt)) {
+		while (stmt_fetch_row(stmt)) {
 			new key_hash = YHash(key);
 			
 			// Clear all user variables
@@ -197,12 +197,14 @@ stock bool:this.TestAccountAuth({UID, _}:uid, const password[]) {
 	
 	new bool:success = false;
 	
-	stmt_bind_value(this.StmtTestAuth, 0, DB::TYPE_INT, _:uid);
-	stmt_bind_value(this.StmtTestAuth, 1, DB::TYPE_WP_HASH, password);
+	static DBStatement:stmt =: db_prepare(this.DB, !"SELECT EXISTS(SELECT `uid` FROM `users` WHERE `uid` = ? AND `passhash` = ?)");
 	
-	stmt_bind_result_field(this.StmtTestAuth, 0, DB::TYPE_INT, success);
+	stmt_bind_value(stmt, 0, DB::TYPE_INT, _:uid);
+	stmt_bind_value(stmt, 1, DB::TYPE_WP_HASH, password);
 	
-	stmt_execute(this.StmtTestAuth) && stmt_fetch_row(this.StmtTestAuth);
+	stmt_bind_result_field(stmt, 0, DB::TYPE_INT, success);
+	
+	stmt_execute(stmt) && stmt_fetch_row(stmt);
 	
 	return success;
 }
@@ -210,11 +212,13 @@ stock bool:this.TestAccountAuth({UID, _}:uid, const password[]) {
 stock UID:this.FindAccountByName(const name[]) {
 	new UID:uid = INVALID_UID;
 	
-	stmt_bind_value(this.StmtFindByName, 0, DB::TYPE_STRING, name);
+	static DBStatement:stmt =: db_prepare(this.DB, !"SELECT `uid` FROM `users` WHERE `name` = ?");
 	
-	stmt_bind_result_field(this.StmtFindByName, 0, DB::TYPE_INT, _:uid);
+	stmt_bind_value(stmt, 0, DB::TYPE_STRING, name);
 	
-	stmt_execute(this.StmtFindByName) && stmt_fetch_row(this.StmtFindByName);
+	stmt_bind_result_field(stmt, 0, DB::TYPE_INT, _:uid);
+	
+	stmt_execute(stmt) && stmt_fetch_row(stmt);
 	
 	return uid;
 }
