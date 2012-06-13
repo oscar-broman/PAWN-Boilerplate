@@ -9,6 +9,8 @@ Desktop.lnk
 server_log.txt
 *.log
 main.pwn
+crashinfo.txt
+build-info.txt
 server.cfg
 /samp-license.txt
 /server-readme.txt
