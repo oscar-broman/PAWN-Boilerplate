@@ -17,18 +17,18 @@ PBP contains many mature, well-tested libraries and plugins, which are used exte
 
 ### Libraries bundled
 
-* *YSI* by Y_Less
-* *fixes.inc* by Y_Less
-* *amx_assembly* by Zeex
-* *formatex* by Slice
-* *pointers.inc* by Slice
-* *SQLite Improved* by Slice
+* **YSI** by Y_Less
+* **fixes.inc** by Y_Less
+* **amx_assembly** by Zeex
+* **formatex** by Slice
+* **pointers.inc** by Slice
+* **SQLite Improved** by Slice
 
 ### Plugins bundled
 
-* *sscanf* by Y_Less
-* *whirlpool* by Y_Less
-* *crashdetect* by Zeex
+* **sscanf** by Y_Less
+* **whirlpool** by Y_Less
+* **crashdetect** by Zeex
 
 ## Commands
 
