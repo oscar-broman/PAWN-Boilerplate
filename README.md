@@ -11,7 +11,24 @@ Have a look at the **[Wiki](https://github.com/oscar-broman/PAWN-Boilerplate/wik
 
 # Cool features
 
-Let's be concise.
+## Scripting made easy
+
+PBP contains many mature, well-tested libraries and plugins, which are used extensively throughout the system.
+
+### Libraries bundled
+
+* *YSI* by Y_Less
+* *fixes.inc* by Y_Less
+* *amx_assembly* by Zeex
+* *formatex* by Slice
+* *pointers.inc* by Slice
+* *SQLite Improved* by Slice
+
+### Plugins bundled
+
+* *sscanf* by Y_Less
+* *whirlpool* by Y_Less
+* *crashdetect* by Zeex
 
 ## Commands
 
@@ -29,17 +46,32 @@ YCMD(GROUP_RACERS):quit_race(playerid, params[], help) {
 
 ## Configuration variables
 
-Very easily make variables load/saveable. Plain-text file in `scriptfiles/config.cfg` you can edit and reload via RCON.
+Very easily make variables save/load with the gamemode.
 
 ```C++
 new g_SomeVariable = 50; // 50 will be the default value
-
-// g_SomeVariable will now automatically load and save when the gamemode inits/exits
-RegisterConfigVariable<g_SomeVariable>;
-
-// Same here, for the whole array
 new g_SomeArray[20];
-RegisterConfigArray<g_SomeArray>;
+
+// These variables now automatically loads and saves when the gamemode inits/exits
+RegisterConfigVariable: g_SomeVariable;
+RegisterConfigArray: g_SomeArray;
 ```
 
-## LOTS OF MORE AWESOMENESS
+Config values can be changed while the server is running with the following RCON commands:
+
+* Reload all config data from `scriptfiles/config.cfg`: `/rcon config_reload`
+* Change the value of a specific config variable: `/rcon config_set g_SomeVariable 123`
+
+## User system
+
+Seamlessly integrates with the rest of your gamemode. Automatically loaded/saved user variables:
+
+This code will make `g_SomePlayerVariable` load from the database when a player logs in, then save the new value when the player disconnects.
+
+*Auto-magically!*
+
+```C++
+new g_SomePlayerVariable[MAX_PLAYERS];
+
+RegisterUserVariable: g_SomePlayerVariable;
+```
