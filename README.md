@@ -66,12 +66,19 @@ Config values can be changed while the server is running with the following RCON
 
 Seamlessly integrates with the rest of your gamemode. Automatically loaded/saved user variables:
 
-This code will make `g_SomePlayerVariable` load from the database when a player logs in, then save the new value when the player disconnects.
-
 *Auto-magically!*
 
-```C++
-new g_SomePlayerVariable[MAX_PLAYERS];
+Here's how would keep in track how many times a player has logged in:
 
-RegisterUserVariable: g_SomePlayerVariable;
+```C++
+new g_NumTimesConnected[MAX_PLAYERS];
+
+RegisterUserVariable: g_NumTimesConnected;
+
+// OnPlayerLogIn
+g_NumTimesConnected[playerid]++;
+
+SendClientMessagef(playerid, COLOR_GENERIC_INFO, "* Welcome. You have logged in %d times.", g_NumTimesConnected[playerid]);
+
+// ..that's it!
 ```
