@@ -105,5 +105,8 @@ stock this.Prepare(forplayer = INVALID_PLAYER_ID) {
 		this.CurrentPlayer = forplayer;
 	}
 	
-	this.ActiveLanguage = this.PlayerLanguage[this.CurrentPlayer];
+	if (this.CurrentPlayer == INVALID_PLAYER_ID)
+		this.ActiveLanguage = 0;
+	else
+		this.ActiveLanguage = this.PlayerLanguage[this.CurrentPlayer];
 }
