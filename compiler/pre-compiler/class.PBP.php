@@ -487,7 +487,10 @@ $pub$callback({$callbacks[$callback]}) {
 		#else
 			= 1;
 		#endif
-
+	
+	#if defined playerid
+		Languages.CurrentPlayer = playerid;
+	#endif
 
 EOD;
 			
