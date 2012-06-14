@@ -736,12 +736,23 @@ EOD;
 		if ($matches[0]{0} !== '@')
 			return $matches[0];
 		
+		$matches[3] = trim((string) $matches[3]);
+		
+		foreach ($this->translatable_strings as $idx => $string) {
+			if ($string['string'] == $matches[2] && $string['description'] == $matches[3]) {
+				if ($matches[1])
+					return "(_@lp({$matches[1]}),_@ls[_@lc][$idx])";
+				else
+					return "(_@lp(),_@ls[_@lc][$idx])";
+			}
+		}
+		
 		$idx = count($this->translatable_strings);
 		
 		$this->translatable_strings[] = array(
 			'string'      => $matches[2],
 			'player'      => $matches[1],
-			'description' => trim((string) $matches[3])
+			'description' => $matches[3]
 		);
 		
 		if ($matches[1])
