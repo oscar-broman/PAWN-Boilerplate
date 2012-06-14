@@ -14,6 +14,12 @@
 	
 	static temp[1000 char];
 	
+	if (this.PlayerMallocString[playerid] && !strlen(mstr(this.PlayerMallocString[playerid]))) {
+		free(this.PlayerMallocString[playerid]);
+		
+		this.PlayerMallocString[playerid] = NO_ALLOC;
+	}
+	
 	if (this.PlayerMallocString[playerid]) {
 		strpack(temp, mstr(this.PlayerMallocString[playerid]));
 		
@@ -22,6 +28,7 @@
 		strcat(temp, !"n");
 		
 		this.PlayerMallocString[playerid] = Malloc_NewS(temp);
-	} else
+	} else {
 		this.PlayerMallocString[playerid] = Malloc_NewS("yoyo! lege");
+	}
 }

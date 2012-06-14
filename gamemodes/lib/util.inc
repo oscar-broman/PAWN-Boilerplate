@@ -35,6 +35,20 @@ stock bool:isargpacked(arg) {
 	return false;
 }
 
+// Change the address of a dimension in an array. The dimension can't be the last one.
+stock RedirectArraySlot(array[][], slot, address) {
+	#emit LOAD.S.pri  array
+	#emit LOAD.S.alt  slot
+	#emit SHL.C.alt   2
+	#emit ADD
+	#emit PUSH.pri
+	
+	#emit LOAD.S.pri  address
+	#emit POP.alt
+	#emit SUB
+	#emit STOR.I
+}
+
 // Safer version, also for packed strings
 stock IsNull(const string[]) {
 	if (string[0] > 255)
@@ -243,9 +257,160 @@ stock IsNull(const string[]) {
     return 0;
 }
 
-stock bool:strequals(const str1[], const str2[], bool:ignorecase = false) {
-	if ((str1[0] > 255 ? str1{0} : str1[0]) != (str2[0] > 255 ? str2{0} : str2[0]))
+
+
+// compare string hashes first (if any), then the strings
+stock bool:strequals(const str1[], const str2[], hash1 = 0, hash2 = 0, bool:ignorecase = false) {
+	if (hash1 && hash2 && hash1 != hash2)
+		return false;
+	
+	new
+		c1 = (str1[0] > 255) ? str1{0} : str1[0],
+		c2 = (str2[0] > 255) ? str2{0} : str2[0]
+	;
+	
+	if (!c1 != !c2)
 		return false;
 	
 	return !strcmp(str1, str2, ignorecase);
+}
+
+#define ispacked(%1) \
+	((%1)[0] > 255)
+
+stock firstchar(const string[])
+	return ispacked(string) ? string{0} : string[0];
+
+enum trim_edges {
+	trim_left  = 1,
+	trim_right = 2,
+	trim_both = trim_left | trim_right
+};
+
+stock trim(string[], const chars[] = !"", trim_edges:edges = trim_both) {
+	new bool:packed = ispacked(string);
+	
+	// If "chars" is empty, trim whitespace
+	if (!firstchar(chars)) {
+		if (edges & trim_left) {
+			new i = 0;
+			
+			if (packed)
+				while (0 < string{i} <= ' ') i++;
+			else
+				while (0 < string[i] <= ' ') i++;
+			
+			if (i)
+				strdel(string, 0, i);
+		}
+		
+		if (edges & trim_right) {
+			new i = strlen(string);
+			
+			if (i) {
+				if (packed) {
+					while (--i && 0 < string{i} <= ' ') {}
+					
+					string{i + 1} = '\0';
+				} else {
+					while (--i && 0 < string[i] <= ' ') {}
+					
+					string[i + 1] = '\0';
+				}
+			}
+		}
+	} else {
+		if (edges & trim_left) {
+			new i = 0;
+			new sub[2];
+			
+			if (packed) {
+				while ((sub[0] = string{i})) {
+					if (strfind(chars, sub) == -1)
+						break;
+					else
+						i++;
+				}
+				
+				if (i)
+					strdel(string, 0, i);
+			} else {
+				while ((sub[0] = string[i])) {
+					if (strfind(chars, sub) == -1)
+						break;
+					else
+						i++;
+				}
+				
+				if (i)
+					strdel(string, 0, i);
+			}
+		}
+		
+		if (edges & trim_right) {
+			new i = strlen(string);
+			new sub[2];
+			
+			if (i >= 0) {
+				if (packed) {
+					while (i--) {
+						sub[0] = string{i};
+						
+						if (strfind(chars, sub) == -1)
+							break;
+					}
+					
+					string{i + 1} = '\0';
+				} else {
+					while (i--) {
+						sub[0] = string[i];
+						
+						if (strfind(chars, sub) == -1)
+							break;
+					}
+					
+					string[i + 1] = '\0';
+				}
+			}
+		}
+	}
+}
+
+stock strimplode(const glue[], output[], maxlength = sizeof(output), ...) {
+	new args = numargs();
+	
+	output[0] = '\0';
+	
+	// Fix for compiler bug, this code is never executed.
+	while (output[0]) strcat(output, "", 0);
+	
+	for (new arg = 3; arg < args; arg++) {
+		if (arg != 3)
+			strcat(output, glue, maxlength);
+		
+		// Wrap these in braces or they will be a part of the above if statement
+		{
+			// Get the address of argument no. <arg>
+			#emit LCTRL       5
+			#emit ADD.C       12
+			#emit LOAD.S.alt  arg
+			#emit SHL.C.alt   2
+			#emit ADD
+			#emit LOAD.I
+			
+			// Push the maxlength, arg address, and output address
+			#emit PUSH.S      maxlength
+			#emit PUSH.pri
+			#emit PUSH.S      output
+			
+			// Push the argument count
+			#emit PUSH.C      12
+			
+			// call strcat
+			#emit SYSREQ.C    strcat
+			
+			// Restore the stack
+			#emit STACK       16
+		}
+	}
 }

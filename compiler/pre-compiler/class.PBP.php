@@ -246,6 +246,95 @@ EOD;
 			}
 		}
 		
+		$languages_header = 'gamemodes/.build/modules/Languages/header.inc';
+		
+		if (file_exists($languages_header)) {
+			file_put_contents($languages_header, str_replace('{#LANGUAGES_NUM_STRINGS#}', max(1, count($this->translatable_strings)), file_get_contents($languages_header)));
+			
+			$default_values = '';
+			
+			foreach ($this->translatable_strings as $index => $string) {
+				$default_values .= <<<EOD
+RedirectArraySlot(this.Strings[i], $index, ref("{$string['string']}"));
+	RedirectArraySlot(this.Descriptions[i], $index, ref("{$string['description']}"));
+	
+EOD;
+			}
+			
+			$languages_ogmi = 'gamemodes/.build/modules/Languages/callbacks/OnGameModeInit.inc';
+			
+			file_put_contents($languages_ogmi, str_replace('{#LANG_DEFAULT_VALUES#}', $default_values, file_get_contents($languages_ogmi)));
+		}
+		
+		if (!file_exists('scriptfiles/languages'))
+			mkdir('scriptfiles/languages');
+		
+		foreach (glob('scriptfiles/languages/*.lang.inc') as $file) {
+			$existing_data = array();
+			$strings = $this->translatable_strings;
+			
+			foreach ($strings as $i => &$string) {
+				$string = (object) $string;
+				
+				$string->index = count($this->translatable_strings) + $i;
+			}
+			
+			unset($string);
+			
+			if (preg_match_all('/(?:^\/\/[\t ]*(.*?)[\t ]*\r?\n)?"((?:[^"\\\\]|\\\\.)*)"[\t ]*=[\t ]*"((?:[^"\\\\]|\\\\.)*)"/m', file_get_contents($file), $matches, PREG_SET_ORDER)) {
+				foreach ($matches as $i => $match) {
+					$found = false;
+					
+					foreach ($strings as &$string) {
+						if ($string->string == $match[2] && $string->description == $match[1]) {
+							$string->translation = $match[3];
+							$string->index = $i;
+							
+							$found = true;
+							
+							break;
+						}
+					}
+					
+					unset($string);
+					
+					if (!$found) {
+						$strings[] = (object) array(
+							'string'      => $match[2],
+						    'player'      => '',
+						    'description' => $match[1],
+						    'index'       => $i,
+						    'translation' => $match[3]
+						);
+					}
+				}
+			}
+			
+			usort($strings, function ($left, $right) {
+				return $left->index - $right->index;
+			});
+			
+			if (false !== ($fp = fopen($file, 'w'))) {
+				fwrite($fp, "// Please be very careful with the layout of this file. Only change strings on the right side.\n// Do not change comments or strings on the left side.");
+				
+				foreach ($strings as $string) {
+					if (!isset($string->translation))
+						$string->translation = $string->string;
+					
+					fwrite($fp, "\n\n");
+					
+					if ($string->description)
+						fwrite($fp, "// " . $string->description . "\n");
+					
+					fwrite($fp, "\"$string->string\" = \"$string->translation\"");
+				}
+				
+				fwrite($fp, "\n");
+				
+				fclose($fp);
+			}
+		}
+		
 		foreach ($module_includes as $incfile => &$includes) {
 			$priority = array();
 			
@@ -593,6 +682,7 @@ EOD;
 	
 	private $in_module;
 	private $command_descriptions = array();
+	private $translatable_strings = array();
 	
 	private function process_file($file, $in_module = null) {
 		$newfile = preg_replace('/gamemodes(\/|\\\)/i', 'gamemodes/.build/', $file);
@@ -621,11 +711,7 @@ EOD;
 		
 		$contents = preg_replace_callback('/\b_([IH])(?:\<(.*?)\>|\((.*?)\))/', array($this, 'y_stringhash_regex_callback'), $contents);
 		
-		if ($count) {
-			echo $contents;
-			
-			exit;
-		}
+		$contents = preg_replace_callback('/.(?:\<\s*([a-z_@][a-z0-9_@]*)\s*\>)?"((?:[^"\\\\]|\\\\.)*)"(?:\<\s*"((?:[^"\\\\]|\\\\.)*)"\s*\>)?/si', array($this, 'i18n_string_callback'), $contents);
 		
 		$newdir = dirname($newfile);
 		
@@ -641,6 +727,24 @@ EOD;
 		fwrite($fp, "#file \"$file\"\n#line 0\n");
 		fwrite($fp, $contents);
 		fclose($fp);
+	}
+	
+	public function i18n_string_callback($matches) {
+		if ($matches[0]{0} !== '@')
+			return $matches[0];
+		
+		$idx = count($this->translatable_strings);
+		
+		$this->translatable_strings[] = array(
+			'string'      => $matches[2],
+			'player'      => $matches[1],
+			'description' => trim((string) $matches[3])
+		);
+		
+		if ($matches[1])
+			return "(_@lp({$matches[1]}),_@ls[_@lc][$idx])";
+		else
+			return "(_@lp(),_@ls[_@lc][$idx])";
 	}
 	
 	public function y_stringhash_regex_callback($matches) {
