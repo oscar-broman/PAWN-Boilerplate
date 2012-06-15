@@ -27,6 +27,7 @@
 	printf("index: %d", index);
 	
 	this.PlayerLanguage[0] = 0;
+	this.PlayerLanguage[3] = 1;
 	
 	index = this.GetStringIndex(@"I like \"quotes\".");
 	
