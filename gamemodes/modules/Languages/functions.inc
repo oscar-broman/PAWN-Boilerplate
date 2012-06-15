@@ -479,3 +479,60 @@ stock this.SetPlayerObjectMaterialText(playerid, objectid, text[], materialindex
 	#define _ALS_SetPlayerObjectMaterialTex
 #endif
 #define SetPlayerObjectMaterialText Languages.SetPlayerObjectMaterialText
+
+/*
+ * Dialog_ShowCallback
+ * ---------------------------------------------- */
+stock this.Dialog_ShowCallback(playerid, callback:callback, style, string:title[], string:caption[], string:button1[], string:button2[] = "", dialog = -1) {
+	this.CheckStringArgument(3, playerid);
+	this.CheckStringArgument(4, playerid);
+	this.CheckStringArgument(5, playerid);
+	this.CheckStringArgument(6, playerid);
+	
+	return Dialog_ShowCallback(playerid, callback, style, title, caption, button1, button2, dialog);
+}
+
+#if defined _ALS_Dialog_ShowCallback
+	#undef Dialog_ShowCallback
+#else
+	#define _ALS_Dialog_ShowCallback
+#endif
+#define Dialog_ShowCallback Languages.Dialog_ShowCallback
+
+/*
+ * Dialog_ShowCallbackData
+ * ---------------------------------------------- */
+stock this.Dialog_ShowCallbackData(playerid, callback[E_CALLBACK_DATA], style, string:title[], string:caption[], string:button1[], string:button2[] = "", dialog = -1) {
+	this.CheckStringArgument(3, playerid);
+	this.CheckStringArgument(4, playerid);
+	this.CheckStringArgument(5, playerid);
+	this.CheckStringArgument(6, playerid);
+	
+	return Dialog_ShowCallbackData(playerid, callback, style, title, caption, button1, button2, dialog);
+}
+
+#if defined _ALS_Dialog_ShowCallbackData
+	#undef Dialog_ShowCallbackData
+#else
+	#define _ALS_Dialog_ShowCallbackData
+#endif
+#define Dialog_ShowCallbackData Languages.Dialog_ShowCallbackData
+
+/*
+ * Dialog_Show
+ * ---------------------------------------------- */
+stock this.Dialog_Show(playerid, style, string:title[], string:caption[], string:button1[], string:button2[] = "", dialog = -1) {
+	this.CheckStringArgument(2, playerid);
+	this.CheckStringArgument(3, playerid);
+	this.CheckStringArgument(4, playerid);
+	this.CheckStringArgument(5, playerid);
+	
+	return Dialog_Show(playerid, style, title, caption, button1, button2, dialog);
+}
+
+#if defined _ALS_Dialog_Show
+	#undef Dialog_Show
+#else
+	#define _ALS_Dialog_Show
+#endif
+#define Dialog_Show Languages.Dialog_Show
