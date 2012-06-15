@@ -56,7 +56,11 @@ stock this.LoadLanguage(const filename[]) {
 		}
 		
 		fclose(fp);
+		
+		return lang;
 	}
+	
+	return -1;
 }
 
 stock this.GetStringIndex(const string[], &lang = 0) {

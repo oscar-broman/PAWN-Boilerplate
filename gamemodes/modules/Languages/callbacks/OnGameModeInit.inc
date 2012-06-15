@@ -13,28 +13,17 @@
 	
 	{#LANG_DEFAULT_VALUES#}
 	
-	this.LoadLanguage("languages/sv.lang.inc");
-	
-	this.PlayerLanguage[0] = 1;
-	
-	printf(@"Hello world!");
-	printf(@"What's up?"<"Greeting message">);
-	printf(@"I like \"quotes\".");
-	printf(@"Also new\nlines, and\ttabs.");
-	
-	new index = this.GetStringIndex(@"I like \"quotes\".");
-	
-	printf("index: %d", index);
-	
-	this.PlayerLanguage[0] = 0;
-	this.PlayerLanguage[3] = 1;
-	
-	index = this.GetStringIndex(@"I like \"quotes\".");
-	
-	printf("index: %d", index);
-	
-	printf(@"Hello world!");
-	printf(@"What's up?"<"Greeting message">);
-	printf(@"I like \"quotes\".");
-	printf(@"Also new\nlines, and\ttabs.");
+	for (i = 0; i < sizeof(this.LanguageCodes); i++) {
+		new filename[32];
+		
+		format(filename, _, "languages/%L.lang.inc", this.LanguageCodes[i][0]);
+		
+		new lang = this.LoadLanguage(filename);
+		
+		if (lang != -1) {
+			this.LanguageNames[lang] = i;
+			
+			printf("Loaded language \"%S\" from file \"%s\".", this.LanguageCodes[i][1], filename);
+		}
+	}
 }

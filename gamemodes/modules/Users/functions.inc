@@ -247,7 +247,7 @@ stock bool:this.IsRegistered({UID, _}:playerid) {
 }
 
 stock this.ShowLogInFirst(playerid) {
-	SendClientMessage(playerid, COLOR_GENERIC_ERROR, "ERROR: Please log in first.");
+	SendClientMessage(playerid, COLOR_GENERIC_ERROR, @"ERROR: Please log in first.");
 	
 	PlayerPlaySound(playerid, 1055, 0.0, 0.0, 0.0);
 }
@@ -276,7 +276,7 @@ stock this.ShowDialog(playerid) {
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
 			if (!response)
-				Dialog_ShowCallback(playerid, using inline LogInQuitConfirmResponse, DIALOG_STYLE_MSGBOX, "Quit", "Are you sure you want to quit the server?", "Quit", "Cancel");
+				Dialog_ShowCallback(playerid, using inline LogInQuitConfirmResponse, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
 			else {
 				if (isnull(inputtext)) {
 					this.ShowDialog(playerid);
@@ -284,21 +284,21 @@ stock this.ShowDialog(playerid) {
 					
 				} else {
 					if (++this.LogInAttempts[playerid] >= this.MaxLogInAttempts) {
-						SendClientMessage(playerid, COLOR_GENERIC_ERROR, "* You were kicked from the server because of too many failed log in attempts.");
+						SendClientMessage(playerid, COLOR_GENERIC_ERROR, @"* You were kicked from the server because of too many failed log in attempts.");
 						
 						Kick(playerid);
 					} else {
 						new msg[80], attempts = this.MaxLogInAttempts - this.LogInAttempts[playerid];
 						
-						format(msg, _, "Invalid password. You have %d more %s, then you'll get kicked.", attempts, attempts == 1 ? ("attempt") : ("attempts"));
+						format(msg, _, @"Invalid password. You have %d more %s, then you'll get kicked.", attempts, attempts == 1 ? (@"attempt") : (@"attempts"<"Plural of attempt">));
 						
-						Dialog_ShowCallback(playerid, using inline LogInFailedResponse, DIALOG_STYLE_MSGBOX, "Log in failed", msg, "Retry");
+						Dialog_ShowCallback(playerid, using inline LogInFailedResponse, DIALOG_STYLE_MSGBOX, @"Log in failed", msg, @"Retry");
 					}
 				}
 			}
 		}
 		
-		Dialog_ShowCallback(playerid, using inline LogInResponse, DIALOG_STYLE_PASSWORD, "Log in", "This nickname is registered. Please log in or come back with another nickname.\n\nEnter your password:", "OK", "Cancel");
+		Dialog_ShowCallback(playerid, using inline LogInResponse, DIALOG_STYLE_PASSWORD, @"Log in", @"This nickname is registered. Please log in or come back with another nickname.\n\nEnter your password:", @"OK", @"Cancel");
 	} else {
 		inline RegisterQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
@@ -315,21 +315,21 @@ stock this.ShowDialog(playerid) {
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
 			if (!response)
-				Dialog_ShowCallback(playerid, using inline RegisterQuitConfirmResponse, DIALOG_STYLE_MSGBOX, "Quit", "Are you sure you want to quit the server?", "Quit", "Cancel");
+				Dialog_ShowCallback(playerid, using inline RegisterQuitConfirmResponse, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
 			else {
 				if (isnull(inputtext)) {
 					this.ShowDialog(playerid);
 				} else if (this.RegisterPlayer(playerid, inputtext)) {
-					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, "Success", "This nickname is now registered!", "Cool");
+					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, @"Success", @"This nickname is now registered!", @"Cool");
 				} else {
-					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, "Success", "Failed to register. Try with another nickname or contact server management if the problem persists.", "OK");
+					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, @"Success", @"Failed to register. Try with another nickname or contact server management if the problem persists.", @"OK");
 					
 					Kick(playerid);
 				}
 			}
 		}
 		
-		Dialog_ShowCallback(playerid, using inline RegisterResponse, DIALOG_STYLE_PASSWORD, "Register", "You must register this nickname before playing.\n\nEnter a password:", "OK", "Cancel");
+		Dialog_ShowCallback(playerid, using inline RegisterResponse, DIALOG_STYLE_PASSWORD, @"Register", @"You must register this nickname before playing.\n\nEnter a password:", @"OK", @"Cancel");
 	}
 }
 

@@ -8,10 +8,10 @@ CommandDescription<setlevel> = "Set a player's admin level.";
 
 YCMD(GROUP_MANAGEMENT, GROUP_RCON):setlevel(playerid, params[], help) {
 	if (help) {
-		SendClientMessage(playerid, COLOR_COMMAND_HELP, "* Set a player's admin level.");
+		SendClientMessage(playerid, COLOR_COMMAND_HELP, @"* Set a player's admin level.");
 
 usage:
-        SendClientMessage(playerid, COLOR_COMMAND_USAGE, "* Usage: /setlevel [player] [level]");
+        SendClientMessage(playerid, COLOR_COMMAND_USAGE, @"* Usage: /setlevel [player] [level]");
 	} else {
 		new
 			           otherid,
@@ -43,18 +43,18 @@ usage:
 			goto usage;
 		
 		if (otherid == INVALID_PLAYER_ID) {
-			SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* Invalid player.");
+			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* Invalid player.");
 		} else if (!IsPlayerAdmin(playerid) && this.GetPlayerLevel(otherid) >= this.GetPlayerLevel(playerid)) {
-			SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* You may only change the level of players with a level lower than yours.");
+			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* You may only change the level of players with a level lower than yours.");
 		} else if (level == this.INVALID_LEVEL) {
-			SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* Invalid level.");
+			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* Invalid level.");
 		} else {
 			if (this.GetPlayerLevel(otherid) == level)
-				SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* %P%C already has that level.", otherid, COLOR_COMMAND_ERROR);
+				SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* %P%C already has that level.", otherid, COLOR_COMMAND_ERROR);
 			else {
 				this.SetPlayerLevel(otherid, level, playerid);
 			
-				SendClientMessage(playerid, COLOR_COMMAND_INFO, "* You set the level of %P%C to %s (%d).", otherid, COLOR_COMMAND_INFO, this.LevelNames[level], _:level);
+				SendClientMessage(playerid, COLOR_COMMAND_INFO, @"* You set the level of %P%C to %s (%d).", otherid, COLOR_COMMAND_INFO, this.LevelNames[level], _:level);
 			}
 		}
 	}
