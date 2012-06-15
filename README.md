@@ -78,7 +78,7 @@ RegisterUserVariable: g_NumTimesConnected;
 // OnPlayerLogIn
 g_NumTimesConnected[playerid]++;
 
-SendClientMessagef(playerid, COLOR_GENERIC_INFO, "* Welcome. You have logged in %d times.", g_NumTimesConnected[playerid]);
+SendClientMessage(playerid, COLOR_GENERIC_INFO, "* Welcome. You have logged in %d times.", g_NumTimesConnected[playerid]);
 
 // ..that's it!
 ```

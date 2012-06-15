@@ -50,11 +50,11 @@ usage:
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* Invalid level.");
 		} else {
 			if (this.GetPlayerLevel(otherid) == level)
-				SendClientMessagef(playerid, COLOR_COMMAND_ERROR, "* %P%C already has that level.", otherid, COLOR_COMMAND_ERROR);
+				SendClientMessage(playerid, COLOR_COMMAND_ERROR, "* %P%C already has that level.", otherid, COLOR_COMMAND_ERROR);
 			else {
 				this.SetPlayerLevel(otherid, level, playerid);
 			
-				SendClientMessagef(playerid, COLOR_COMMAND_INFO, "* You set the level of %P%C to %s (%d).", otherid, COLOR_COMMAND_INFO, this.LevelNames[level], _:level);
+				SendClientMessage(playerid, COLOR_COMMAND_INFO, "* You set the level of %P%C to %s (%d).", otherid, COLOR_COMMAND_INFO, this.LevelNames[level], _:level);
 			}
 		}
 	}

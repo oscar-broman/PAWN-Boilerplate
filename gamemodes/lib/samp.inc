@@ -4,17 +4,39 @@ static stock
 ;
 
 #if defined va_formatex
-	stock SendClientMessagef(playerid, color, fmat[], va_args<>) {
-		va_formatex(gs_Buffer, _, fmat, va_start<3>);
+	stock FMAT_SendClientMessage(playerid, color, fmat[], va_args<>) {
+		if (numargs() > 3) {
+			va_formatex(gs_Buffer, _, fmat, va_start<3>);
 
-		SendClientMessage(playerid, color, gs_Buffer);
+			return SendClientMessage(playerid, color, gs_Buffer);
+		} else {
+			return SendClientMessage(playerid, color, fmat);
+		}
 	}
+	
+	#if defined _ALS_SendClientMessage
+		#undef SendClientMessage
+	#else
+		#define _ALS_SendClientMessage
+	#endif
+	#define SendClientMessage FMAT_SendClientMessage
 
-	stock SendClientMessageToAllf(color, fmat[], va_args<>) {
-		va_formatex(gs_Buffer, _, fmat, va_start<2>);
+	stock FMAT_SendClientMessageToAll(color, fmat[], va_args<>) {
+		if (numargs() > 2) {
+			va_formatex(gs_Buffer, _, fmat, va_start<2>);
 
-		SendClientMessageToAll(color, gs_Buffer);
+			return SendClientMessageToAll(color, gs_Buffer);
+		} else {
+			return SendClientMessageToAll(color, fmat);
+		}
 	}
+	
+	#if defined _ALS_SendClientMessageToAll
+		#undef SendClientMessageToAll
+	#else
+		#define _ALS_SendClientMessageToAll
+	#endif
+	#define SendClientMessageToAll FMAT_SendClientMessageToAll
 #endif
 
 stock IsValidSkin(skinid)
