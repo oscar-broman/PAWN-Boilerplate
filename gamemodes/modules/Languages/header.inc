@@ -151,7 +151,7 @@ stock const this.LanguageCodes[][] = {
 };
 
 new this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1];
-new this.Descriptions[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1];
+new this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1];
 new this.ActiveLanguage;
 new this.CurrentPlayer;
 new this.PreviousPlayer = INVALID_PLAYER_ID;

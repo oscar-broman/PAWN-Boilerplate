@@ -32,7 +32,7 @@ stock this.LoadLanguage(const filename[]) {
 				this.ParseStringLiteral(translation, buf, start);
 				
 				for (new i = 0; i < sizeof(this.Strings[]); i++) {
-					if (strequals(this.Strings[0][i], string) && strequals(this.Descriptions[0][i], description)) {
+					if (strequals(this.Strings[0][i], string) && strequals(this.Descriptions[i], description)) {
 						new len = strlen(translation);
 						new Alloc:translation_slot = Malloc_Allocate(len + 2);
 						
@@ -41,11 +41,6 @@ stock this.LoadLanguage(const filename[]) {
 						RedirectArraySlot(this.Strings[lang], i, Malloc_GetAddress(translation_slot) + 4);
 						
 						mset(translation_slot, 0, (lang << 16) | i);
-						
-						if (IsNull(description))
-							RedirectArraySlot(this.Descriptions[lang], i, ref(""));
-						else
-							RedirectArraySlot(this.Descriptions[lang], i, Malloc_GetAddress(Malloc_NewS(description)));
 						
 						break;
 					}
@@ -59,7 +54,7 @@ stock this.LoadLanguage(const filename[]) {
 		
 		for (new i = 0; i < sizeof(this.Strings[]); i++) {
 			if (!this.Strings[lang][i][0]) {
-				printf("WARNING: Missing language entry in \"%S\": \"%S\"", filename, this.Strings[0][i]);
+				printf("WARNING: Missing language entry in \"%S\": \"%S\"%c(%S)", filename, this.Strings[0][i], IsNull(this.Descriptions[i]) ? '\0' : ' ', this.Descriptions[i]);
 				
 				new len = strlen(this.Strings[0][i]);
 				new Alloc:translation_slot = Malloc_Allocate(len + 2);
@@ -69,8 +64,6 @@ stock this.LoadLanguage(const filename[]) {
 				RedirectArraySlot(this.Strings[lang], i, Malloc_GetAddress(translation_slot) + 4);
 				
 				mset(translation_slot, 0, (lang << 16) | i);
-				
-				RedirectArraySlot(this.Descriptions[lang], i, ref(""));
 			}
 		}
 		

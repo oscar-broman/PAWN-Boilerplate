@@ -259,7 +259,7 @@ EOD;
 	@ptr[_adr] = (i << 16) | $index;
 	
 	RedirectArraySlot(this.Strings[i], $index, _adr + 4);
-	RedirectArraySlot(this.Descriptions[i], $index, ref("{$string['description']}"));
+	RedirectArraySlot(this.Descriptions, $index, ref(!"{$string['description']}"));
 
 EOD;
 			}

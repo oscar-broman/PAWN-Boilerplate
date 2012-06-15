@@ -25,5 +25,5 @@
 			
 			printf("Loaded language \"%S\" from file \"%s\".", this.LanguageCodes[i][1], filename);
 		}
-	}
+	}this.PlayerLanguage[0]=1;
 }
