@@ -1,8 +1,11 @@
 /*
-	SQLite Improved v0.9.1 by Slice
+	SQLite Improved v0.9.2 by Slice
 	
 	Changelog:
-			2012-08-27:
+			2012-06-15:
+				* Fix compiler crash when db_query isn't used.
+			
+			2012-05-27:
 				* Always throw warnings when invalid results are given to SQLitei functions.
 				* Even more improvements to stability!
 				* GetAmxBase is now updated with a JIT compatible version (all credits to Zeex).
@@ -367,12 +370,16 @@ const
 	#endif
 #endif
 
+// Has to be defined after statement functions.
+stock DBResult:db_query_hook(iTagOf3 = tagof(_bAutoRelease), DB:db, const szQuery[], {bool, DBDataType}:_bAutoRelease = true, {DBDataType, QQPA}:...);
+
 forward DB::funcinc();
 public DB::funcinc() {
 	strcat(gs_szBuffer, "");
 	strpack(gs_szBuffer, "");
 	ispacked(gs_szBuffer);
 	db_get_field(DBResult:0, 0, gs_szBuffer, 0);
+	db_query(DB:0,"");
 }
 
 static stock DB::CompressArray(const aiArray[], iSize = sizeof(aiArray), aiOutput[]) {
@@ -560,7 +567,7 @@ stock DB::LazyInitialize() {
 	bIsInitialized = true;
 	
 	#if defined HTTP
-		HTTP(0x7FEDCBA0, HTTP_GET, !"spelsajten.net/sqlitei_version.php?version=091", "", !"DB_VersionCheckReponse");
+		HTTP(0x7FEDCBA0, HTTP_GET, !"spelsajten.net/sqlitei_version.php?version=092", "", !"DB_VersionCheckReponse");
 	#endif
 }
 
@@ -607,9 +614,6 @@ stock bool:db_is_valid_persistent(DB:db) {
 	
 	return false;
 }
-
-// Has to be defined after statement functions.
-stock DBResult:db_query_hook(iTagOf3 = tagof(_bAutoRelease), DB:db, const szQuery[], {bool, DBDataType}:_bAutoRelease = true, {DBDataType, QQPA}:...);
 
 stock db_rewind(DBResult:dbrResult) {
 	if (dbrResult == DB::INVALID_RESULT) {
