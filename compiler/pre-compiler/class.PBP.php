@@ -251,13 +251,16 @@ EOD;
 		if (file_exists($languages_header)) {
 			file_put_contents($languages_header, str_replace('{#LANGUAGES_NUM_STRINGS#}', max(1, count($this->translatable_strings)), file_get_contents($languages_header)));
 			
-			$default_values = '';
+			$default_values = "new _adr;\n";
 			
 			foreach ($this->translatable_strings as $index => $string) {
 				$default_values .= <<<EOD
-RedirectArraySlot(this.Strings[i], $index, ref("{$string['string']}"));
-	RedirectArraySlot(this.Descriptions[i], $index, ref("{$string['description']}"));
+	_adr = ref("\\1{$string['string']}");
+	@ptr[_adr] = (i << 16) | $index;
 	
+	RedirectArraySlot(this.Strings[i], $index, _adr + 4);
+	RedirectArraySlot(this.Descriptions[i], $index, ref("{$string['description']}"));
+
 EOD;
 			}
 			

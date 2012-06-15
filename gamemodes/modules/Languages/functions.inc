@@ -33,12 +33,19 @@ stock this.LoadLanguage(const filename[]) {
 				
 				for (new i = 0; i < sizeof(this.Strings[]); i++) {
 					if (strequals(this.Strings[0][i], string) && strequals(this.Descriptions[0][i], description)) {
-						RedirectArraySlot(this.Strings[lang], i, ref(mstr(Malloc_NewS(translation))));
+						new len = strlen(translation);
+						new Alloc:translation_slot = Malloc_Allocate(len + 2);
+						
+						strunpack(mstr(translation_slot)[1], translation, len + 1);
+						
+						RedirectArraySlot(this.Strings[lang], i, Malloc_GetAddress(translation_slot) + 4);
+						
+						mset(translation_slot, 0, (lang << 16) | i);
 						
 						if (IsNull(description))
 							RedirectArraySlot(this.Descriptions[lang], i, ref(""));
 						else
-							RedirectArraySlot(this.Descriptions[lang], i, ref(mstr(Malloc_NewS(description))));
+							RedirectArraySlot(this.Descriptions[lang], i, Malloc_GetAddress(Malloc_NewS(description)));
 						
 						break;
 					}
@@ -50,6 +57,20 @@ stock this.LoadLanguage(const filename[]) {
 		
 		fclose(fp);
 	}
+}
+
+stock this.GetStringIndex(const string[]) {
+	new address = GetVariableAddress(string) - 4;
+	new info = @ptr[address];
+	new lang = info >>> 16;
+	new index = info & 0xFFFF;
+	
+	if (0 <= lang < sizeof(this.Strings) && 0 <= index < sizeof(this.Strings[])) {
+		if (ref(this.Strings[lang][index]) == address + 4)
+			return index;
+	}
+	
+	return -1;
 }
 
 stock this.ParseStringLiteral(output[], const input[], start = 0) {

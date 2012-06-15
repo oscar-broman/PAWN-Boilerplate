@@ -49,6 +49,34 @@ stock RedirectArraySlot(array[][], slot, address) {
 	#emit STOR.I
 }
 
+// Get the address to an alloc slot's memory
+stock Malloc_GetAddress(Alloc:slot) {
+	new address = 0;
+	
+	if (0 <= _:slot < sizeof(YSI_gMallocMemory)) {
+		#emit CONST.pri   YSI_gMallocMemory
+		#emit LOAD.S.alt  slot
+		#emit SHL.C.alt   2
+		#emit ADD
+		#emit STOR.S.pri  address
+	}
+	
+	return address;
+}
+
+// Get an alloc slot from a memory address
+stock Alloc:Malloc_FromAddress(address) {
+	new Alloc:slot = NO_ALLOC;
+	
+	static min_address =: GetVariableAddress(YSI_gMallocMemory);
+	static max_address =: GetVariableAddress(YSI_gMallocMemory) + (sizeof(YSI_gMallocMemory) - 1) * 4;
+	
+	if (min_address < address <= max_address)
+		slot = Alloc:((address - min_address) / 4);
+	
+	return slot;
+}
+
 // Safer version, also for packed strings
 stock IsNull(const string[]) {
 	if (string[0] > 255)

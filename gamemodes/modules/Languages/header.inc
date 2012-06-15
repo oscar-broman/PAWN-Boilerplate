@@ -20,3 +20,4 @@ new this.PlayerLanguage[MAX_PLAYERS];
 new this.Languages = 0;
 
 forward this.Prepare(forplayer = INVALID_PLAYER_ID);
+forward this.GetStringIndex(const string[]);

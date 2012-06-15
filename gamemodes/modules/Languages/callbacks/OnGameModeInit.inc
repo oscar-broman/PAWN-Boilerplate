@@ -22,7 +22,15 @@
 	printf(@"I like \"quotes\".");
 	printf(@"Also new\nlines, and\ttabs.");
 	
+	new index = this.GetStringIndex(@"I like \"quotes\".");
+	
+	printf("index: %d", index);
+	
 	this.PlayerLanguage[0] = 0;
+	
+	index = this.GetStringIndex(@"I like \"quotes\".");
+	
+	printf("index: %d", index);
 	
 	printf(@"Hello world!");
 	printf(@"What's up?"<"Greeting message">);
