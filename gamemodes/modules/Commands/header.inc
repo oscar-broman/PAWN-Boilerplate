@@ -22,12 +22,12 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 #define _pC@();_YCMD_0(%1):_YCMD_1:_YCMD_2:%2(  @pC_%2();@pC_%2()Commands.SetupPermissions(#%2, %1);_YCMD_0:_YCMD_1:_YCMD_2:%2(
 
 // Allows easily specifying information about a command, later on accessible in this.Description.
-#define CommandDescription<%1>%2=%3;      \
-	Alloc:@pD_%1();                       \
-	Alloc:@pD_%1() {                      \
-		return Malloc_NewS(!"" %3, true); \
+#define CommandDescription<%1>%2=%3; \
+	@pD_%1();   \
+	@pD_%1() {  \
+		return ref(%3); \
 	}
 
 new
-	Alloc:this.Description[MAX_COMMANDS]
+	this.Description[MAX_COMMANDS]
 ;

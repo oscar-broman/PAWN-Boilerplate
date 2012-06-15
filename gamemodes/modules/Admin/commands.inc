@@ -4,7 +4,7 @@
  > Priority: 0
  */
 
-CommandDescription<setlevel> = "Set a player's admin level.";
+CommandDescription<setlevel> = @"Set a player's admin level.";
 
 YCMD(GROUP_MANAGEMENT, GROUP_RCON):setlevel(playerid, params[], help) {
 	if (help) {

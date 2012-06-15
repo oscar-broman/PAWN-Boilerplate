@@ -8,9 +8,9 @@
 
 {
 	for (new buf[32], idx; (idx = AMX_GetPublicName(idx, buf, !"@pD_")); ) {
-		new Alloc:description, cmd;
+		new description, cmd;
 		
-		description = Alloc:CallLocalFunctionEx(buf);
+		description = CallLocalFunctionEx(buf);
 		
 		strdel(buf, 0, 4), strunpack(buf, buf);
 		

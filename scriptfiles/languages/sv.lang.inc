@@ -63,6 +63,8 @@
 
 "You must register this nickname before playing.\n\nEnter a password:" = "Du måste registrera det här namnet innan du kan spela.\n\nAnge ett lösenord:"
 
+"Set a player's admin level." = "Ändra en spelares admin nivå."
+
 "* %P%C was promoted to %L by %P%C." = "* %P%C blev befodrad till %L av %P%C."
 
 "* %P%C was demoted to %L by %P%C." = "* %P%C blev degraderad till %L av %P%C."
