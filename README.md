@@ -118,7 +118,9 @@ The Text module also brings an **amazing** system for translating text. All you 
 **Your code:**
 
 ```Objective-C
+// OnPlayerConnect:
 SendClientMessage(playerid, color, @"Welcome to the server!");
+SendClientMessageToAll(color, @"%p just joined the server!", playerid);
 ```
 
 The file **`scriptfiles/languages/sv.lang.inc`:**
@@ -127,14 +129,19 @@ When you create this file and run the compile script, it will now look like this
 
 ```C++
 "Welcome to the server!" = "Welcome to the server!"
+
+"%p just joined the server!" = "%p just joined the server!"
 ```
 
 Now, simply change the **right part** of the assignment, such as this:
 
 ```C++
 "Welcome to the server!" = "Välkommen till servern!"
+
+"%p just joined the server!" = "%p anslöt nyss till servern!"
 ```
 
-If a player has his language set to Swedish, then he will see `Välkommen till servern!` when that client message is sent. 
+If a player has his language set to Swedish, then he will see `Välkommen till servern!` when that client message is sent.
+As for everyone else, depending on their language they will see either `Slice just joined the server!` or `Slice anslöt nyss till servern!`.
 
 As always, *auto-magically!*
