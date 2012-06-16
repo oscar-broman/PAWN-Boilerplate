@@ -192,6 +192,35 @@ stock this.CheckStringArgument(arg, playerid) {
 	@ptr[arg] = ref(this.Strings[this.PlayerLanguage[playerid]][index]);
 }
 
+stock this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang = -1) {
+	new address;
+	
+	#emit LOAD.S.pri  string
+	#emit STOR.S.pri  address
+	
+	if (lang == -1) {
+		if (playerid == INVALID_PLAYER_ID) {
+			if (this.CurrentPlayer != INVALID_PLAYER_ID)
+				playerid = this.CurrentPlayer;
+			else
+				return address;
+		}
+		
+		lang = this.PlayerLanguage[playerid];
+	}
+	
+	if (!(0 <= lang < this.Languages))
+		return address;
+	
+	new current_lang;
+	new index = this.GetStringIndex(@ptr[address], current_lang);
+	
+	if (index == -1 || current_lang == lang)
+		return address;
+	
+	return ref(this.Strings[lang][index]);
+}
+
 stock this.DeferredResetActiveLanguage() {
 	if (this.ResetActiveLanguageTimer == -1)
 		this.ResetActiveLanguageTimer = SetTimer(#this.ResetActiveLanguage, 0, false);

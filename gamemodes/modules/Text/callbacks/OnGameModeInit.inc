@@ -13,6 +13,8 @@
 	
 	{#LANG_DEFAULT_VALUES#}
 	
+	#line 16
+	
 	this.LanguageNames[i] = this.DefaultLanguage;
 	
 	for (i = 0; i < sizeof(this.LanguageCodes); i++) {

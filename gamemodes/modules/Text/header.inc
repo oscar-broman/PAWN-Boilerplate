@@ -8,6 +8,11 @@
 #define this.Prepare          _@lp
 #define this.Strings          _@ls
 #define this.ActiveLanguage   _@lc
+#define this.TempAddress      _@la
+
+// Wrap this around any strings to make sure they're in the correct language
+#define this.@(%0) \
+	((this.TempAddress = this.GetStringAddress(%0)), @ptr[this.TempAddress])
 
 const this.MAX_LANGUAGES = 20;
 
@@ -150,7 +155,8 @@ stock const this.LanguageCodes[][] = {
 	{!"ZU", !"Zulu"}
 };
 
-new
+stock
+	     this.TempAddress,
 	     this.DefaultLanguage = 28,
 	     this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1],
 	     this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1],
@@ -170,3 +176,4 @@ forward this.GetStringIndex(const string[], &lang = 0);
 forward this.CheckStringArgument(arg, playerid);
 forward bool:this.SetPlayerLanguage(playerid, lang);
 forward this.ResetActiveLanguage();
+forward this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang = -1);
