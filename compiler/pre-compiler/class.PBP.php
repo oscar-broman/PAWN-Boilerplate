@@ -704,7 +704,7 @@ EOD;
 		
 		$contents = file_get_contents($file);
 		
-		if (preg_match_all('/CommandDescription\<(.*?)\>\s*=\s*"((?:[^"\\\\]|\\\\.)*)"\s*;/', $contents, $matches, PREG_SET_ORDER)) {
+		if (preg_match_all('/CommandDescription\<(.*?)\>\s*=\s*@?"((?:[^"\\\\]|\\\\.)*)"\s*;/', $contents, $matches, PREG_SET_ORDER)) {
 			foreach ($matches as $match) {
 				$match[2] = str_replace('\\"', '"', $match[2]);
 				
