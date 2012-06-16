@@ -62,7 +62,7 @@ Config values can be changed while the server is running with the following RCON
 * Reload all config data from `scriptfiles/config.cfg`: `/rcon config_reload`
 * Change the value of a specific config variable: `/rcon config_set g_SomeVariable 123`
 
-## User system
+## User module
 
 Seamlessly integrates with the rest of your gamemode. Automatically loaded/saved user variables:
 
@@ -82,3 +82,54 @@ SendClientMessage(playerid, COLOR_GENERIC_INFO, "* Welcome. You have logged in %
 
 // ..that's it!
 ```
+
+## Text module
+
+### formatex integration
+
+The Text module adds formatex to many native text functions.
+
+Examples of what now can be done:
+
+```C++
+new dogs = 2, cats = 3, name[] = "John Doe";
+
+SendClientMessage(playerid, color, "You have %d dogs and %d cats. Your name is %s.", dogs, cats, name);
+// Output: You have 2 dogs and 3 cats. Your name is John Doe.
+
+new weapon = GetPlayerWeapon(playerid), modelid = GetVehicleModel(GetPlayerVehicleID(playerid));
+SendClientMessage(playerid, color, "You're currently holding %w and driving a vehicle called %v.", weapon, modelid);
+// Output: You're currently holding an m4 and driving a vehicle called Infernus.
+
+// OnPlayerDeath:
+SendClientMessage(playerid, color, "You were killed by %p using %w.", killerid, reason);
+// Output: You were killed by [ABC]SomeGuy using a minigun.
+```
+
+### Translations
+
+The Text module also brings an **amazing** system for translating text. All you need to do is use an at-sign before strings (`@"my string"`) and create files in `scriptfiles/languages/XX.lang.inc`.
+
+#### Example
+
+**Your code:**
+
+```C++
+SendClientMessage(playerid, color, @"Welcome to the server!");
+```
+
+**`scriptfiles/languages/sv.lang.inc`:**
+
+When you create this file and run the compile script, it will now look like this:
+
+```C++
+"Welcome to the server!" = "Welcome to the server!"
+```
+
+Now, simply change the **right part** of the assignment, such as this:
+
+```C++
+"Welcome to the server!" = "Välkommen till servern!"
+```
+
+If a player has his language set to Swedish, then he will see `Välkommen till servern!` when that client message is sent.
