@@ -38,6 +38,9 @@ PBP uses YCMD, though with some extensions:
 // This will appear in /commands
 CommandDescription<quit_race> = "Quit the race you're currently in.";
 
+// Create the racers group (where you create global variables)
+new StaticGroup<GROUP_RACERS> = "Racers";
+
 // This command is only available for players in the group GROUP_RACERS
 YCMD(GROUP_RACERS):quit_race(playerid, params[], help) {
 	// <quit race code here>
