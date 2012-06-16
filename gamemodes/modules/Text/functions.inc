@@ -127,7 +127,7 @@ stock this.ParseStringLiteral(output[], const input[], start = 0) {
 	return j;
 }
 
-stock this.Prepare(forplayer = INVALID_PLAYER_ID) {
+stock this.Prepare(index, forplayer = INVALID_PLAYER_ID) {
 	if (forplayer == INVALID_PLAYER_ID) {
 		if (this.HasPreviousPlayer) {
 			this.CurrentPlayer = this.PreviousPlayer;
@@ -144,7 +144,12 @@ stock this.Prepare(forplayer = INVALID_PLAYER_ID) {
 	}
 	
 	if (this.CurrentPlayer == INVALID_PLAYER_ID) {
-		this.ActiveLanguage = 0;
+		if (this.ActiveLanguage == -1) {
+			print (!"(Text) WARNING: Current player is not set, falling back to default language.");
+			printf(!"(Text)          String: \"%S\"%c(%S)", this.Strings[0][index], IsNull(this.Descriptions[index]) ? '\0' : ' ', this.Descriptions[index]);
+		
+			this.ActiveLanguage = 0;
+		}
 	} else {
 		this.ActiveLanguage = this.PlayerLanguage[this.CurrentPlayer];
 		
@@ -158,6 +163,13 @@ stock this.SetActivePlayer(playerid) {
 	this.PreviousPlayer = INVALID_PLAYER_ID;
 	
 	this.DeferredResetActiveLanguage();
+}
+
+stock this.SetActiveLanguage(lang) {
+	this.ActiveLanguage = (0 <= lang < this.Languages) ? lang : -1;
+	this.HasPreviousPlayer = false;
+	this.CurrentPlayer = INVALID_PLAYER_ID;
+	this.PreviousPlayer = INVALID_PLAYER_ID;
 }
 
 stock bool:this.SetPlayerLanguage(playerid, lang) {
@@ -229,7 +241,8 @@ stock this.DeferredResetActiveLanguage() {
 public this.ResetActiveLanguage() {
 	this.ResetActiveLanguageTimer = -1;
 	
-	this.ActiveLanguage = 0;
+	this.ActiveLanguage = -1;
+	this.HasPreviousPlayer = false;
 	this.CurrentPlayer = INVALID_PLAYER_ID;
 	this.PreviousPlayer = INVALID_PLAYER_ID;
 }

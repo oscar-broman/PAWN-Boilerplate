@@ -7,6 +7,8 @@
  */
 
 {
+	Text.SetActiveLanguage(0);
+	
 	for (new buf[32], idx; (idx = AMX_GetPublicName(idx, buf, !"@pD_")); ) {
 		new description, cmd;
 		
@@ -24,6 +26,8 @@
 		
 		this.Description[cmd] = description;
 	}
+	
+	Text.SetActiveLanguage(-1);
 
 	// Search for permission setting functions
 	for (new buf[32], idx; (idx = AMX_GetPublicName(idx, buf, !"@pC_")); ) {

@@ -160,7 +160,7 @@ stock
 	     this.DefaultLanguage = 28,
 	     this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1],
 	     this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1],
-	     this.ActiveLanguage = 0,
+	     this.ActiveLanguage = -1,
 	     this.CurrentPlayer = INVALID_PLAYER_ID,
 	     this.PreviousPlayer = INVALID_PLAYER_ID,
 	bool:this.HasPreviousPlayer = false,
@@ -171,9 +171,11 @@ stock
 	     this.ResetActiveLanguageTimer = -1
 ;
 
-forward this.Prepare(forplayer = INVALID_PLAYER_ID);
+forward this.Prepare(index, forplayer = INVALID_PLAYER_ID);
 forward this.GetStringIndex(const string[], &lang = 0);
 forward this.CheckStringArgument(arg, playerid);
 forward bool:this.SetPlayerLanguage(playerid, lang);
 forward this.ResetActiveLanguage();
 forward this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang = -1);
+forward this.SetActivePlayer(playerid);
+forward this.SetActiveLanguage(lang);

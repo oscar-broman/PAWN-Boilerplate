@@ -744,9 +744,9 @@ EOD;
 		foreach ($this->translatable_strings as $idx => $string) {
 			if ($string['string'] == $matches[2] && $string['description'] == $matches[3]) {
 				if ($matches[1])
-					return "(_@lp({$matches[1]}),_@ls[_@lc][$idx])";
+					return "(_@lp($idx,{$matches[1]}),_@ls[_@lc][$idx])";
 				else
-					return "(_@lp(),_@ls[_@lc][$idx])";
+					return "(_@lp($idx),_@ls[_@lc][$idx])";
 			}
 		}
 		
@@ -759,9 +759,9 @@ EOD;
 		);
 		
 		if ($matches[1])
-			return "(_@lp({$matches[1]}),_@ls[_@lc][$idx])";
+			return "(_@lp($idx,{$matches[1]}),_@ls[_@lc][$idx])";
 		else
-			return "(_@lp(),_@ls[_@lc][$idx])";
+			return "(_@lp($idx),_@ls[_@lc][$idx])";
 	}
 	
 	public function y_stringhash_regex_callback($matches) {
