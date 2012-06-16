@@ -114,7 +114,7 @@ The Text module also brings an **amazing** system for translating text. All you 
 
 **Your code:**
 
-```C++
+```Objective-C
 SendClientMessage(playerid, color, @"Welcome to the server!");
 ```
 
