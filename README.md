@@ -118,7 +118,7 @@ The Text module also brings an **amazing** system for translating text. All you 
 SendClientMessage(playerid, color, @"Welcome to the server!");
 ```
 
-**`scriptfiles/languages/sv.lang.inc`:**
+The file **`scriptfiles/languages/sv.lang.inc`:**
 
 When you create this file and run the compile script, it will now look like this:
 
@@ -132,4 +132,6 @@ Now, simply change the **right part** of the assignment, such as this:
 "Welcome to the server!" = "Välkommen till servern!"
 ```
 
-If a player has his language set to Swedish, then he will see `Välkommen till servern!` when that client message is sent.
+If a player has his language set to Swedish, then he will see `Välkommen till servern!` when that client message is sent. 
+
+As always, *auto-magically!*
