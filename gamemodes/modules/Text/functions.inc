@@ -129,21 +129,45 @@ stock this.ParseStringLiteral(output[], const input[], start = 0) {
 
 stock this.Prepare(forplayer = INVALID_PLAYER_ID) {
 	if (forplayer == INVALID_PLAYER_ID) {
-		if (this.PreviousPlayer != INVALID_PLAYER_ID) {
+		if (this.HasPreviousPlayer) {
 			this.CurrentPlayer = this.PreviousPlayer;
 			this.PreviousPlayer = INVALID_PLAYER_ID;
+			this.HasPreviousPlayer = false;
 		}
 	} else {
-		if (this.PreviousPlayer == INVALID_PLAYER_ID)
-			this.PreviousPlayer = forplayer;
+		if (!this.HasPreviousPlayer) {
+			this.HasPreviousPlayer = true;
+			this.PreviousPlayer = this.CurrentPlayer;
+		}
 
 		this.CurrentPlayer = forplayer;
 	}
 	
-	if (this.CurrentPlayer == INVALID_PLAYER_ID)
+	if (this.CurrentPlayer == INVALID_PLAYER_ID) {
 		this.ActiveLanguage = 0;
-	else
+	} else {
 		this.ActiveLanguage = this.PlayerLanguage[this.CurrentPlayer];
+		
+		this.DeferredResetActiveLanguage();
+	}
+}
+
+stock this.SetActivePlayer(playerid) {
+	this.CurrentPlayer = playerid;
+	this.HasPreviousPlayer = false;
+	this.PreviousPlayer = INVALID_PLAYER_ID;
+	
+	this.DeferredResetActiveLanguage();
+}
+
+stock bool:this.SetPlayerLanguage(playerid, lang) {
+	if (0 <= lang < this.Languages) {
+		this.PlayerLanguage[playerid] = lang;
+		
+		return true;
+	}
+	
+	return false;
 }
 
 stock this.CheckStringArgument(arg, playerid) {
@@ -166,6 +190,19 @@ stock this.CheckStringArgument(arg, playerid) {
 	
 	// Redirect the argument to the correct string
 	@ptr[arg] = ref(this.Strings[this.PlayerLanguage[playerid]][index]);
+}
+
+stock this.DeferredResetActiveLanguage() {
+	if (this.ResetActiveLanguageTimer == -1)
+		this.ResetActiveLanguageTimer = SetTimer(#this.ResetActiveLanguage, 0, false);
+}
+
+public this.ResetActiveLanguage() {
+	this.ResetActiveLanguageTimer = -1;
+	
+	this.ActiveLanguage = 0;
+	this.CurrentPlayer = INVALID_PLAYER_ID;
+	this.PreviousPlayer = INVALID_PLAYER_ID;
 }
 
 // Hook all functions that sends text to players, add formatex support,

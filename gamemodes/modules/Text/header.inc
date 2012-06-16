@@ -40,7 +40,7 @@ stock const this.LanguageCodes[][] = {
 	{!"CS", !"Czech"},
 	{!"DA", !"Danish"},
 	{!"NL", !"Dutch"},
-	{!"EN", !"English, American"},
+	{!"EN", !"English"},
 	{!"EO", !"Esperanto"},
 	{!"ET", !"Estonian"},
 	{!"FO", !"Faeroese"},
@@ -150,16 +150,23 @@ stock const this.LanguageCodes[][] = {
 	{!"ZU", !"Zulu"}
 };
 
-new this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1];
-new this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1];
-new this.ActiveLanguage;
-new this.CurrentPlayer;
-new this.PreviousPlayer = INVALID_PLAYER_ID;
-new this.PlayerLanguage[MAX_PLAYERS];
-new this.Languages = 0;
-new this.LanguageNames[this.MAX_LANGUAGES];
-new this.TextBuffer[2048];
+new
+	     this.DefaultLanguage = 28,
+	     this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1],
+	     this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1],
+	     this.ActiveLanguage = 0,
+	     this.CurrentPlayer = INVALID_PLAYER_ID,
+	     this.PreviousPlayer = INVALID_PLAYER_ID,
+	bool:this.HasPreviousPlayer = false,
+	     this.PlayerLanguage[MAX_PLAYERS],
+	     this.Languages = 0,
+	     this.LanguageNames[this.MAX_LANGUAGES],
+	     this.TextBuffer[2048],
+	     this.ResetActiveLanguageTimer = -1
+;
 
 forward this.Prepare(forplayer = INVALID_PLAYER_ID);
 forward this.GetStringIndex(const string[], &lang = 0);
 forward this.CheckStringArgument(arg, playerid);
+forward bool:this.SetPlayerLanguage(playerid, lang);
+forward this.ResetActiveLanguage();

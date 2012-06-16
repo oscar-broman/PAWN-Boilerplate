@@ -13,6 +13,8 @@
 	
 	{#LANG_DEFAULT_VALUES#}
 	
+	this.LanguageNames[i] = this.DefaultLanguage;
+	
 	for (i = 0; i < sizeof(this.LanguageCodes); i++) {
 		new filename[32];
 		

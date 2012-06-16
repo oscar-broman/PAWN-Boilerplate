@@ -492,7 +492,7 @@ $pub$callback({$callbacks[$callback]}) {
 		#endif
 	
 	#if defined playerid
-		Text.CurrentPlayer = playerid;
+		Text.SetActivePlayer(playerid);
 	#endif
 
 EOD;
