@@ -1,5 +1,5 @@
 /*!
- * Languages/header.inc
+ * Text/header.inc
  *
  > Priority: 11
  */

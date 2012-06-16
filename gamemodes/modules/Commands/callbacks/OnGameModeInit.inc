@@ -17,7 +17,7 @@
 		cmd = Command_GetID(buf);
 		
 		if (cmd == COMMAND_NOT_FOUND) {
-			printf("(Core) WARNING: Unable to find command \"%S\".", buf);
+			printf("(Commands) WARNING: Unable to find command \"%S\".", buf);
 
 			continue;
 		}

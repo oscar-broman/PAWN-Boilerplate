@@ -1,5 +1,5 @@
 /*!
- * Languages/functions.inc
+ * Text/functions.inc
  *
  > Priority: 11
  */
@@ -209,7 +209,7 @@ stock this.SendClientMessageToAll(color, message[], va_args<>) {
 #else
 	#define _ALS_SendClientMessageToAll
 #endif
-#define SendClientMessageToAll Languages.SendClientMessageToAll
+#define SendClientMessageToAll Text.SendClientMessageToAll
 
 /*
  * SendClientMessage
@@ -231,7 +231,7 @@ stock this.SendClientMessage(playerid, color, message[], va_args<>) {
 #else
 	#define _ALS_SendClientMessage
 #endif
-#define SendClientMessage Languages.SendClientMessage
+#define SendClientMessage Text.SendClientMessage
 
 /*
  * CreatePlayerTextDraw
@@ -253,7 +253,7 @@ stock PlayerText:this.CreatePlayerTextDraw(playerid, Float:x, Float:y, text[], v
 #else
 	#define _ALS_CreatePlayerTextDraw
 #endif
-#define CreatePlayerTextDraw Languages.CreatePlayerTextDraw
+#define CreatePlayerTextDraw Text.CreatePlayerTextDraw
 
 /*
  * PlayerTextDrawSetString
@@ -275,7 +275,7 @@ stock this.PlayerTextDrawSetString(playerid, PlayerText:text, string[], va_args<
 #else
 	#define _ALS_PlayerTextDrawSetString
 #endif
-#define PlayerTextDrawSetString Languages.PlayerTextDrawSetString
+#define PlayerTextDrawSetString Text.PlayerTextDrawSetString
 
 /*
  * SendPlayerMessageToAll
@@ -315,7 +315,7 @@ stock this.SendPlayerMessageToAll(senderid, const message[], va_args<>) {
 #else
 	#define _ALS_SendPlayerMessageToAll
 #endif
-#define SendPlayerMessageToAll Languages.SendPlayerMessageToAll
+#define SendPlayerMessageToAll Text.SendPlayerMessageToAll
 
 /*
  * SendPlayerMessageToPlayer
@@ -337,7 +337,7 @@ stock this.SendPlayerMessageToPlayer(playerid, senderid, const message[], va_arg
 #else
 	#define _ALS_SendPlayerMessageToPlayer
 #endif
-#define SendPlayerMessageToPlayer Languages.SendPlayerMessageToPlayer
+#define SendPlayerMessageToPlayer Text.SendPlayerMessageToPlayer
 
 /*
  * GameTextForAll
@@ -377,7 +377,7 @@ stock this.GameTextForAll(const string[], time, style, va_args<>) {
 #else
 	#define _ALS_GameTextForAll
 #endif
-#define GameTextForAll Languages.GameTextForAll
+#define GameTextForAll Text.GameTextForAll
 
 /*
  * GameTextForPlayer
@@ -399,7 +399,7 @@ stock this.GameTextForPlayer(playerid, const string[], time, style, va_args<>) {
 #else
 	#define _ALS_GameTextForPlayer
 #endif
-#define GameTextForPlayer Languages.GameTextForPlayer
+#define GameTextForPlayer Text.GameTextForPlayer
 
 /*
  * CreatePlayer3DTextLabel
@@ -421,7 +421,7 @@ stock PlayerText3D:this.CreatePlayer3DTextLabel(playerid, text[], color, Float:x
 #else
 	#define _ALS_CreatePlayer3DTextLabel
 #endif
-#define CreatePlayer3DTextLabel Languages.CreatePlayer3DTextLabel
+#define CreatePlayer3DTextLabel Text.CreatePlayer3DTextLabel
 
 /*
  * UpdatePlayer3DTextLabelText
@@ -443,7 +443,7 @@ stock this.UpdatePlayer3DTextLabelText(playerid, PlayerText3D:id, color, text[],
 #else
 	#define _ALS_UpdatePlayer3DTextLabelTex
 #endif
-#define UpdatePlayer3DTextLabelText Languages.UpdatePlayer3DTextLabelText
+#define UpdatePlayer3DTextLabelText Text.UpdatePlayer3DTextLabelText
 
 /*
  * ShowPlayerDialog
@@ -462,7 +462,7 @@ stock this.ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button
 #else
 	#define _ALS_ShowPlayerDialog
 #endif
-#define ShowPlayerDialog Languages.ShowPlayerDialog
+#define ShowPlayerDialog Text.ShowPlayerDialog
 
 /*
  * SetPlayerObjectMaterialText
@@ -478,7 +478,7 @@ stock this.SetPlayerObjectMaterialText(playerid, objectid, text[], materialindex
 #else
 	#define _ALS_SetPlayerObjectMaterialTex
 #endif
-#define SetPlayerObjectMaterialText Languages.SetPlayerObjectMaterialText
+#define SetPlayerObjectMaterialText Text.SetPlayerObjectMaterialText
 
 /*
  * Dialog_ShowCallback
@@ -497,7 +497,7 @@ stock this.Dialog_ShowCallback(playerid, callback:callback, style, string:title[
 #else
 	#define _ALS_Dialog_ShowCallback
 #endif
-#define Dialog_ShowCallback Languages.Dialog_ShowCallback
+#define Dialog_ShowCallback Text.Dialog_ShowCallback
 
 /*
  * Dialog_ShowCallbackData
@@ -516,7 +516,7 @@ stock this.Dialog_ShowCallbackData(playerid, callback[E_CALLBACK_DATA], style, s
 #else
 	#define _ALS_Dialog_ShowCallbackData
 #endif
-#define Dialog_ShowCallbackData Languages.Dialog_ShowCallbackData
+#define Dialog_ShowCallbackData Text.Dialog_ShowCallbackData
 
 /*
  * Dialog_Show
@@ -535,4 +535,4 @@ stock this.Dialog_Show(playerid, style, string:title[], string:caption[], string
 #else
 	#define _ALS_Dialog_Show
 #endif
-#define Dialog_Show Languages.Dialog_Show
+#define Dialog_Show Text.Dialog_Show

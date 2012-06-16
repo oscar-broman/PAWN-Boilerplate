@@ -1,5 +1,5 @@
 /*!
- * Languages/callbacks/OnGameModeInit.inc
+ * Text/callbacks/OnGameModeInit.inc
  *
  * OnGameModeInit()
  *

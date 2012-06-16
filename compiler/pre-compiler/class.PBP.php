@@ -246,10 +246,10 @@ EOD;
 			}
 		}
 		
-		$languages_header = 'gamemodes/.build/modules/Languages/header.inc';
+		$text_header = 'gamemodes/.build/modules/Text/header.inc';
 		
-		if (file_exists($languages_header)) {
-			file_put_contents($languages_header, str_replace('{#LANGUAGES_NUM_STRINGS#}', max(1, count($this->translatable_strings)), file_get_contents($languages_header)));
+		if (file_exists($text_header)) {
+			file_put_contents($text_header, str_replace('{#LANGUAGES_NUM_STRINGS#}', max(1, count($this->translatable_strings)), file_get_contents($text_header)));
 			
 			$default_values = "new _adr;\n";
 			
@@ -264,9 +264,9 @@ EOD;
 EOD;
 			}
 			
-			$languages_ogmi = 'gamemodes/.build/modules/Languages/callbacks/OnGameModeInit.inc';
+			$text_ogmi = 'gamemodes/.build/modules/Text/callbacks/OnGameModeInit.inc';
 			
-			file_put_contents($languages_ogmi, str_replace('{#LANG_DEFAULT_VALUES#}', $default_values, file_get_contents($languages_ogmi)));
+			file_put_contents($text_ogmi, str_replace('{#LANG_DEFAULT_VALUES#}', $default_values, file_get_contents($text_ogmi)));
 		}
 		
 		if (!file_exists('scriptfiles/languages'))
@@ -492,7 +492,7 @@ $pub$callback({$callbacks[$callback]}) {
 		#endif
 	
 	#if defined playerid
-		Languages.CurrentPlayer = playerid;
+		Text.CurrentPlayer = playerid;
 	#endif
 
 EOD;

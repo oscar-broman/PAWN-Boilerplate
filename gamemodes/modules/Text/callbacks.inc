@@ -1,5 +1,5 @@
 /*!
- * Languages/commands.inc
+ * Text/callbacks.inc
  *
  > Priority: 0
  */
