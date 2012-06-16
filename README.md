@@ -123,7 +123,7 @@ SendClientMessage(playerid, color, @"Welcome to the server!");
 SendClientMessageToAll(color, @"%p just joined the server!", playerid);
 ```
 
-The file **`scriptfiles/languages/sv.lang.inc`:**
+**The file `scriptfiles/languages/sv.lang.inc`:**
 
 When you create this file and run the compile script, it will now look like this:
 
