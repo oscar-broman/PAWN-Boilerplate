@@ -252,8 +252,10 @@ stock this.ShowLogInFirst(playerid) {
 	PlayerPlaySound(playerid, 1055, 0.0, 0.0, 0.0);
 }
 
-stock this.ShowDialog(playerid) {
-	if (this.IsRegistered(playerid)) {
+stock this.ShowDialogIfNeeded(playerid) {
+	if (this.IsLoggedIn(playerid)) {
+		
+	} if (this.IsRegistered(playerid)) {
 		inline LogInQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
@@ -261,14 +263,14 @@ stock this.ShowDialog(playerid) {
 			if (response)
 				Kick(playerid);
 			else
-				this.ShowDialog(playerid);
+				this.ShowDialogIfNeeded(playerid);
 		}
 		
 		inline LogInFailedResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
-			this.ShowDialog(playerid);
+			this.ShowDialogIfNeeded(playerid);
 		}
 		
 		inline LogInResponse(_playerid, dialogid, response, listitem, string:inputtext[])
@@ -279,7 +281,7 @@ stock this.ShowDialog(playerid) {
 				Dialog_ShowCallback(playerid, using inline LogInQuitConfirmResponse, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
 			else {
 				if (isnull(inputtext)) {
-					this.ShowDialog(playerid);
+					this.ShowDialogIfNeeded(playerid);
 				} else if (this.LogPlayerIn(playerid, inputtext)) {
 					
 				} else {
@@ -307,7 +309,7 @@ stock this.ShowDialog(playerid) {
 			if (response)
 				Kick(playerid);
 			else
-				this.ShowDialog(playerid);
+				this.ShowDialogIfNeeded(playerid);
 		}
 		
 		inline RegisterResponse(_playerid, dialogid, response, listitem, string:inputtext[])
@@ -318,7 +320,7 @@ stock this.ShowDialog(playerid) {
 				Dialog_ShowCallback(playerid, using inline RegisterQuitConfirmResponse, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
 			else {
 				if (isnull(inputtext)) {
-					this.ShowDialog(playerid);
+					this.ShowDialogIfNeeded(playerid);
 				} else if (this.RegisterPlayer(playerid, inputtext)) {
 					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, @"Success", @"This nickname is now registered!", @"Cool");
 				} else {

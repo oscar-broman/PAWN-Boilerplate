@@ -182,6 +182,10 @@ stock bool:this.SetPlayerLanguage(playerid, lang) {
 	return false;
 }
 
+stock this.GetPlayerLanguage(playerid) {
+	return this.PlayerLanguage[playerid];
+}
+
 stock this.CheckStringArgument(arg, playerid) {
 	new address, index, lang;
 	
@@ -254,6 +258,10 @@ stock this.GetLanguageFromLanguageCode(this.LANGUAGE_CODE:code) {
 	}
 	
 	return -1;
+}
+
+stock this.ShowsLanguageSelection() {
+	return (this.EnableLanguageSelection && this.Languages > 1);
 }
 
 // Hook all functions that sends text to players, add formatex support,

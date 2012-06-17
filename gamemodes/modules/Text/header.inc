@@ -16,6 +16,7 @@
 
 const this.MAX_LANGUAGES = 20;
 const this.INVALID_LANGUAGE = -1;
+const this.DEFAULT_LANGUAGE = 0;
 
 stock const this.LanguageCodes[][] = {
 	{!"AB", !"Abkhazian"},   {!"AA", !"Afar"},        {!"AF", !"Afrikaans"}, {!"SQ", !"Albanian"},       {!"AM", !"Amharic"},     
@@ -80,20 +81,21 @@ enum this.LANGUAGE_CODE: {
 };
 
 stock
-	     this.TempAddress,
-	     this.DefaultLanguage = _:LANG_EN,
-	     this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1],
-	     this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1],
-	     this.ActiveLanguage = -1,
-	     this.CurrentPlayer = INVALID_PLAYER_ID,
-	     this.PreviousPlayer = INVALID_PLAYER_ID,
-	bool:this.HasPreviousPlayer = false,
-	     this.PlayerLanguage[MAX_PLAYERS],
-	     this.Languages = 0,
-	     this.LanguageNames[this.MAX_LANGUAGES],
-	     this.TextBuffer[2048],
-	     this.ResetActiveLanguageTimer = -1,
-	bool:this.EnableLanguageSelection = true
+	         this.TempAddress,
+	         this.DefaultLanguage = _:LANG_EN,
+	         this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1],
+	         this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1],
+	         this.ActiveLanguage = -1,
+	         this.CurrentPlayer = INVALID_PLAYER_ID,
+	         this.PreviousPlayer = INVALID_PLAYER_ID,
+	    bool:this.HasPreviousPlayer = false,
+	         this.PlayerLanguage[MAX_PLAYERS],
+	BitArray:this.HasSelectedLanguage<MAX_PLAYERS>,
+	         this.Languages = 0,
+	         this.LanguageNames[this.MAX_LANGUAGES],
+	         this.TextBuffer[2048],
+	         this.ResetActiveLanguageTimer = -1,
+	    bool:this.EnableLanguageSelection = true
 ;
 
 RegisterConfigVariable: this.EnableLanguageSelection;
@@ -102,8 +104,10 @@ forward      this.Prepare(index, forplayer = INVALID_PLAYER_ID);
 forward      this.GetStringIndex(const string[], &lang = 0);
 forward      this.CheckStringArgument(arg, playerid);
 forward bool:this.SetPlayerLanguage(playerid, lang);
+forward      this.GetPlayerLanguage(playerid);
 forward      this.ResetActiveLanguage();
 forward      this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang = -1);
 forward      this.SetActivePlayer(playerid);
 forward      this.SetActiveLanguage(lang);
 forward      this.GetLanguageFromLanguageCode(this.LANGUAGE_CODE:code);
+forward      this.ShowsLanguageSelection();

@@ -7,6 +7,6 @@
  */
 
 {
-	if (Dialog_Get(playerid) == -1)
-		this.ShowDialog(playerid);
+	if (!Text.ShowsLanguageSelection() && Dialog_Get(playerid) == -1)
+		this.ShowDialogIfNeeded(playerid);
 }
