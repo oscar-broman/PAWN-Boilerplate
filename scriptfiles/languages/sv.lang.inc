@@ -70,3 +70,5 @@
 "* %P%C was demoted to %L by %P%C." = "* %P%C blev degraderad till %L av %P%C."
 
 "You are now logged in!" = "Du är nu inloggad!"
+
+"* Set your language." = "* Välj ditt språk."
