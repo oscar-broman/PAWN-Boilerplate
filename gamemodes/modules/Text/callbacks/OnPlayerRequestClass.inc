@@ -7,7 +7,7 @@
  */
 
 {
-	if (this.EnableLanguageSelection && !Bit_Get(this.HasSelectedLanguage, playerid)) {
+	if (this.ShowsLanguageSelection() && !Bit_Get(this.HasSelectedLanguage, playerid)) {
 		Bit_Let(this.HasSelectedLanguage, playerid);
 		
 		inline LanguageSelection(_playerid, dialogid, response, listitem, string:inputtext[])
