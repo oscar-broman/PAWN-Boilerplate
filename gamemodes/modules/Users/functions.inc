@@ -247,7 +247,7 @@ stock bool:this.IsRegistered({UID, _}:playerid) {
 }
 
 stock this.ShowLogInFirst(playerid) {
-	SendClientMessage(playerid, COLOR_GENERIC_ERROR, @"ERROR: Please log in first.");
+	SendClientMessage(playerid, COLOR_GENERIC_ERROR, @<playerid>"ERROR: Please log in first.");
 	
 	PlayerPlaySound(playerid, 1055, 0.0, 0.0, 0.0);
 }
@@ -260,6 +260,8 @@ stock this.ShowDialogIfNeeded(playerid) {
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
+			Text.SetActivePlayer(playerid);
+			
 			if (response)
 				Kick(playerid);
 			else
@@ -270,12 +272,16 @@ stock this.ShowDialogIfNeeded(playerid) {
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
+			Text.SetActivePlayer(playerid);
+			
 			this.ShowDialogIfNeeded(playerid);
 		}
 		
 		inline LogInResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
+			
+			Text.SetActivePlayer(playerid);
 			
 			if (!response)
 				Dialog_ShowCallback(playerid, using inline LogInQuitConfirmResponse, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
@@ -306,6 +312,8 @@ stock this.ShowDialogIfNeeded(playerid) {
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
+			Text.SetActivePlayer(playerid);
+			
 			if (response)
 				Kick(playerid);
 			else
@@ -315,6 +323,8 @@ stock this.ShowDialogIfNeeded(playerid) {
 		inline RegisterResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
+			
+			Text.SetActivePlayer(playerid);
 			
 			if (!response)
 				Dialog_ShowCallback(playerid, using inline RegisterQuitConfirmResponse, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
