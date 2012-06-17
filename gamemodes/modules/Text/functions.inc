@@ -262,6 +262,33 @@ stock this.ShowsLanguageSelection() {
 	return (this.EnableLanguageSelection && this.Languages > 1);
 }
 
+stock this.ShowLanguageSelection(playerid) {
+	inline LanguageSelection(_playerid, dialogid, response, listitem, string:inputtext[])
+	{
+		#pragma unused _playerid, dialogid, inputtext
+		
+		Bit_Let(this.HasSelectedLanguage, playerid);
+		
+		if (response == 1)
+			this.SetPlayerLanguage(playerid, listitem);
+		
+		CallRemoteFunction(!"OnPlayerSelectedLanguage", !"ii", playerid, this.PlayerLanguage);
+	}
+	
+	{
+		new langs[this.MAX_LANGUAGES * 16] = " ";
+		
+		for (new i = 0; i < this.Languages; i++) {
+			if (i)
+				strcat(langs, "\n");
+			
+			strcat(langs, this.LanguageCodes[this.LanguageNames[i]][1]);
+		}
+		
+		Dialog_ShowCallback(playerid, using inline LanguageSelection, DIALOG_STYLE_LIST, "Select language", langs[1], "OK", "Cancel");
+	}
+}
+
 // Hook all functions that sends text to players, add formatex support,
 // and make sure the correct language is being sent.
 
