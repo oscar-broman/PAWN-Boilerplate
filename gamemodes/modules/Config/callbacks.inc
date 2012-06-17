@@ -1,7 +1,7 @@
 /*!
  * Config/callbacks.inc
  *
- > Priority: 0
+ > Priority: 15
  */
 
 forward OnConfigValueChange(const key[], key_hash);

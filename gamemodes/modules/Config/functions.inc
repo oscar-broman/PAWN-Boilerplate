@@ -1,7 +1,7 @@
 /*!
  * Config/functions.inc
  *
- > Priority: 0
+ > Priority: 15
  */
 
 this.LoadEntries(bool:initial_load = false) {

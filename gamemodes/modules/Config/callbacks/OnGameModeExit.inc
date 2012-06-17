@@ -3,7 +3,7 @@
  *
  * OnGameModeExit()
  *
- > Priority: -10
+ > Priority: -15
  */
 
 {
