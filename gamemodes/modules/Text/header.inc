@@ -7,8 +7,10 @@
 // Save space (since these will be replaced for all translatable strings)
 #define this.Prepare          _@lp
 #define this.Strings          _@ls
-#define this.ActiveLanguage   _@lc
+#define this.ActiveLanguage   _@lC
 #define this.TempAddress      _@la
+
+#define _@lc _@lC==-1?0:_@lC
 
 // Wrap this around any strings to make sure they're in the correct language
 #define this.@(%0) \

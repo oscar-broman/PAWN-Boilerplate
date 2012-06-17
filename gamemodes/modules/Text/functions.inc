@@ -147,8 +147,6 @@ stock this.Prepare(index, forplayer = INVALID_PLAYER_ID) {
 		if (this.ActiveLanguage == -1) {
 			print (!"(Text) WARNING: Current player is not set, falling back to default language.");
 			printf(!"(Text)          String: \"%S\"%c(%S)", this.Strings[0][index], IsNull(this.Descriptions[index]) ? '\0' : ' ', this.Descriptions[index]);
-		
-			this.ActiveLanguage = 0;
 		}
 	} else {
 		this.ActiveLanguage = this.PlayerLanguage[this.CurrentPlayer];
