@@ -4,3 +4,4 @@
  > Priority: 0
  */
 
+forward OnPlayerSelectedLanguage(playerid, lang);

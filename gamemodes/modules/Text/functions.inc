@@ -247,6 +247,15 @@ public this.ResetActiveLanguage() {
 	this.PreviousPlayer = INVALID_PLAYER_ID;
 }
 
+stock this.GetLanguageFromLanguageCode(this.LANGUAGE_CODE:code) {
+	for (new i = 0; i < this.Languages; i++) {
+		if (this.LanguageNames[i] == _:code)
+			return i;
+	}
+	
+	return -1;
+}
+
 // Hook all functions that sends text to players, add formatex support,
 // and make sure the correct language is being sent.
 
