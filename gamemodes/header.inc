@@ -6,7 +6,12 @@
 #pragma dynamic 262144
 
 // Version info
-#define MODE_NAME            "PBP Test Script"
+#if defined CFG_MODE_NAME
+	#define MODE_NAME         CFG_MODE_NAME
+#else
+	#define MODE_NAME         "Unnamed GM"
+#endif
+
 #define SCRIPT_VERSION_MAJOR  0
 #define SCRIPT_VERSION_MINOR  3
 #define SCRIPT_VERSION_BUILD  0

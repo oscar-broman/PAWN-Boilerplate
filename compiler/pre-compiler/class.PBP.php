@@ -41,6 +41,7 @@ plugins crashdetect sscanf
 
 ;PAWN Boilerplate settings
 debug_level 2
+mode_name PBP Gamemode
 
 EOD;
 			
@@ -520,11 +521,20 @@ $public_functions .= <<<EOD
 EOD;
 		}
 		
-		$max_players_cfg = '';
+		$cfg = '';
+		
+		if (!empty($this->cfg['mode_name'])) {
+			$mode_name = $this->cfg['mode_name'];
+			$mode_name = str_replace('"', '\\"', $mode_name);
+			
+			$cfg .= <<<EOD
+#define CFG_MODE_NAME "$mode_name"
+
+EOD;
+		}
 		
 		if (!empty($this->cfg['maxplayers'])) {
-			$max_players_cfg = <<<EOD
-
+			$cfg .= <<<EOD
 #define CFG_MAX_PLAYERS {$this->cfg['maxplayers']}
 
 EOD;
@@ -583,7 +593,7 @@ stock PBP.ResolveSymbolName(name[], maxlength = sizeof(name)) {
 	return 1;
 }
 
-$max_players_cfg
+$cfg
 $module_prefixes
 #tryinclude "header"
 
