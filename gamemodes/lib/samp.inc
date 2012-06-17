@@ -1,6 +1,41 @@
 stock IsValidSkin(skinid)
 	return (0 <= skinid <= 299);
 
+enum {
+	WEAPONSLOT_NONE = -1,
+	
+	WEAPONSLOT_FIST,
+	WEAPONSLOT_MELEE,
+	WEAPONSLOT_PISTOL,
+	WEAPONSLOT_SHOTGUN,
+	WEAPONSLOT_SMG,
+	WEAPONSLOT_MACHINEGUN,
+	WEAPONSLOT_RIFLE,
+	WEAPONSLOT_HEAVY,
+	WEAPONSLOT_PROJECTILE,
+	WEAPONSLOT_SPECIAL_1,
+	WEAPONSLOT_GIFTS,
+	WEAPONSLOT_SPECIAL_2,
+	WEAPONSLOT_DETONATORS,
+	
+	MAX_WEAPON_SLOT
+};
+
+stock GetWeaponSlot(weaponid) {
+	static const
+		s_weaponslots[] = {
+			0x00000101, 0x01010101, 0x01010A0A, 0x0A0A0A0A,
+			0x080808FF, 0xFFFF0202, 0x02030303, 0x04040505,
+			0x04060607, 0x07070708, 0x0C090909, 0x0B0B0B00
+		}
+	;
+	
+	if (0 <= weaponid <= 46)
+		return s_weaponslots{weaponid} == 0xFF ? WEAPONSLOT_NONE : s_weaponslots{weaponid};
+	
+	return WEAPONSLOT_NONE;
+}
+
 // Credits to JernejL: http://forum.sa-mp.com/showthread.php?t=317303
 stock const
 	// This is a packed array with [modelid - 400]{componentid - 1000}.

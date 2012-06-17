@@ -442,3 +442,23 @@ stock strimplode(const glue[], output[], maxlength = sizeof(output), ...) {
 		}
 	}
 }
+
+// Iterate an array of numbers
+// Can contain any numbers but -1
+stock Numbers@YSII_Ag(const numbers[], start, size = sizeof(numbers)) {
+	if (!size)
+		return -1;
+	
+	if (start == -1)
+		return numbers[0];
+	
+	if (start == numbers[size - 1])
+		return -1;
+	
+	for (new i = 0; i < size; i++) {
+		if (numbers[i] == start)
+			return numbers[i + 1];
+	}
+	
+	return -1;
+}

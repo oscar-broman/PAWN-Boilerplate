@@ -74,6 +74,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #define DB_USE_WHIRLPOOL true
 #include <sqlitei>
 #include <formatex>
+#include <animation_names>
 
 #include "lib\macros"
 #include "lib\util"

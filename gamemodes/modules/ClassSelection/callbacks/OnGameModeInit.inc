@@ -7,5 +7,9 @@
  */
 
 {
-	AddPlayerClass(0, 1958.3783, 1343.1572, 15.3746, 269.1425, 0, 0, 0, 0, 0, 0);
+	AddPlayerClass(0, 0.0, 0.0, 3.0, 0.0, 0, 0, 0, 0, 0, 0);
+	AddPlayerClass(0, 0.0, 0.0, 3.0, 0.0, 0, 0, 0, 0, 0, 0);
+	
+	if (AddPlayerClass(0, 0.0, 0.0, 3.0, 0.0, 0, 0, 0, 0, 0, 0) != 2)
+		printf("(ClassSelection) ERROR: Too many classes existing. Did you use AddPlayerClass? Use CreateClass instead.");
 }
