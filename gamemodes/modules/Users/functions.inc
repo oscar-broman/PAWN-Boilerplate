@@ -255,7 +255,7 @@ stock this.ShowLogInFirst(playerid) {
 stock this.ShowDialogIfNeeded(playerid) {
 	if (this.IsLoggedIn(playerid)) {
 		
-	} if (this.IsRegistered(playerid)) {
+	} else if (this.IsRegistered(playerid)) {
 		inline LogInQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
