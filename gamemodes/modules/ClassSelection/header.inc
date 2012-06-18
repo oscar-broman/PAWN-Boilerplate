@@ -59,6 +59,8 @@ new
 	BitArray:this.PlayerHasRequestedClass<MAX_PLAYERS>,
 	         this.PreviousClassid[MAX_PLAYERS char],
 	         this.RequestedClass[MAX_PLAYERS],
+	         this.PlayerClass[MAX_PLAYERS],
+	   Group:this.GroupSetOnSpawn[MAX_PLAYERS],
 	         this.Interior = 12,
 	   Float:this.PlayerPos[] = {2324.0000, -1143.0000, 1050.4922},
 	   Float:this.PlayerRot = 148.7130,
@@ -73,7 +75,7 @@ RegisterConfigArray:    this.CameraPos;
 RegisterConfigArray:    this.CameraLookAt;
 
 forward      CreateWeaponSet(...);
-forward      CreateSpawnLocation(interior, world, Float:x, Float:y, Float:z, Float:rot, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, weapon_set = INVALID_WEAPON_SET);
+forward      CreateSpawnLocation(interior = 0, world = 0, Float:x, Float:y, Float:z, Float:rot, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, weapon_set = INVALID_WEAPON_SET);
 forward      CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world = 0, Group:group = GROUP_GLOBAL, team = INVALID_TEAM);
 
 forward bool:this.IsValidWeaponSet(ws);
@@ -82,3 +84,5 @@ forward bool:this.IsValidClass(class);
 
 forward bool:this.PlayerCanSelectClass(playerid, class);
 forward bool:this.SetFirstAvailableClass(playerid);
+
+forward this.GetPlayerClass(playerid);

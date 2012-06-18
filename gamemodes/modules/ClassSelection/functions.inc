@@ -55,7 +55,7 @@ stock CreateWeaponSet(...) {
 	return INVALID_WEAPON_SET;
 }
 
-stock CreateSpawnLocation(interior, world, Float:x, Float:y, Float:z, Float:rot, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, weapon_set = INVALID_WEAPON_SET) {
+stock CreateSpawnLocation(interior = 0, world = 0, Float:x, Float:y, Float:z, Float:rot, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, weapon_set = INVALID_WEAPON_SET) {
 	if (this.NumSpawnLocations >= this.MAX_SPAWN_LOCATIONS) {
 		printf("(ClassSelection.CreateSpawnLocation) ERROR: Exceeded this.MAX_SPAWN_LOCATIONS.");
 		
@@ -133,4 +133,8 @@ stock bool:this.SetFirstAvailableClass(playerid) {
 	
 	if (this.RequestedClass[playerid] == INVALID_CLASS)
 		printf("(ClassSelection.SetFirstAvailableClass) ERROR: No classes available for player %d.", playerid);
+}
+
+stock this.GetPlayerClass(playerid) {
+	return this.PlayerClass[playerid];
 }

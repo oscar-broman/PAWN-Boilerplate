@@ -7,6 +7,14 @@
  */
 
 {
+	if (this.GroupSetOnSpawn[playerid] != GROUP_GLOBAL) {
+		Group_SetPlayer(this.GroupSetOnSpawn[playerid], playerid, false);
+		
+		this.GroupSetOnSpawn[playerid] = GROUP_GLOBAL;
+	}
+	
+	this.PlayerClass[playerid] = INVALID_CLASS;
+	
 	if (this.RequestedClass[playerid] == INVALID_CLASS)
 		this.SetFirstAvailableClass(playerid);
 	

@@ -21,6 +21,8 @@
 	
 	new class = this.RequestedClass[playerid];
 	
+	this.PlayerClass[playerid] = class;
+	
 	if (this.Classes[class][World] != 0)
 		SetPlayerVirtualWorld(playerid, this.Classes[class][World]);
 	else if (this.SpawnLocations[this.Classes[class][SpawnLocation]][World] != 0)
@@ -35,10 +37,19 @@
 	else
 		SetPlayerTeam(playerid, NO_TEAM);
 
-	if (this.Classes[class][Group] != GROUP_GLOBAL)
-		Group_SetPlayer(this.Classes[class][Group], playerid, true);
-	else if (this.SpawnLocations[this.Classes[class][SpawnLocation]][Group] != GROUP_GLOBAL)
-		Group_SetPlayer(this.SpawnLocations[this.Classes[class][SpawnLocation]][Group], playerid, true);
+	if (this.Classes[class][Group] != GROUP_GLOBAL) {
+		if (!Group_GetPlayer(this.Classes[class][Group], playerid)) {
+			Group_SetPlayer(this.Classes[class][Group], playerid, true);
+			
+			this.GroupSetOnSpawn[playerid] = this.Classes[class][Group];
+		}
+	} else if (this.SpawnLocations[this.Classes[class][SpawnLocation]][Group] != GROUP_GLOBAL) {
+		if (!Group_GetPlayer(this.SpawnLocations[this.Classes[class][SpawnLocation]][Group], playerid)) {
+			Group_SetPlayer(this.SpawnLocations[this.Classes[class][SpawnLocation]][Group], playerid, true);
+			
+			this.GroupSetOnSpawn[playerid] = this.SpawnLocations[this.Classes[class][SpawnLocation]][Group];
+		}
+	}
 	
 	new weapon_set = INVALID_WEAPON_SET;
 	
