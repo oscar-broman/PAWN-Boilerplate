@@ -18,7 +18,8 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 
 // Re-define YCMD to support the new syntax, while keeping support for the normal one.
 #undef YCMD
-#define YCMD%1:  _pC@();_YCMD_0%1:_YCMD_1:_YCMD_2:
+#define YCMD%1:  _pc@();_pC@();_YCMD_0%1:_YCMD_1:_YCMD_2:
+#define _pc@();_pC@();_YCMD_0%1:_YCMD_1:_YCMD_2:%2(  public @pc_%2=this.INDEX;stock Pc@_%2(){@pc_%2=@pc_%2;}_pC@();_YCMD_0%1:_YCMD_1:_YCMD_2:%2(
 #define _pC@();_YCMD_0(%1):_YCMD_1:_YCMD_2:%2(  @pC_%2();@pC_%2()Commands.SetupPermissions(#%2, %1);_YCMD_0:_YCMD_1:_YCMD_2:%2(
 
 // Allows easily specifying information about a command, later on accessible in this.Description.
@@ -29,5 +30,6 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 	}
 
 new
-	this.Description[MAX_COMMANDS]
+	this.Description[MAX_COMMANDS],
+	this.Module[MAX_COMMANDS] = {-1, ...}
 ;
