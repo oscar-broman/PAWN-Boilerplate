@@ -51,6 +51,7 @@ EOD;
 		}
 		
 		$this->cfg['debug_level'] = 2;
+		$this->cfg['wrap_callbacks'] = 0;
 		
 		foreach (file('server.cfg') as $row) {
 			$row = trim($row);
@@ -62,7 +63,7 @@ EOD;
 			
 			$key = strtolower($key);
 			
-			if (in_array($key, array('lanmode', 'maxplayers', 'port', 'announce', 'query', 'onfoot_rate', 'incar_rate', 'weapon_rate', 'stream_rate', 'maxnpc', 'debug_level'))) {
+			if (in_array($key, array('lanmode', 'maxplayers', 'port', 'announce', 'query', 'onfoot_rate', 'incar_rate', 'weapon_rate', 'stream_rate', 'maxnpc', 'debug_level', 'wrap_callbacks'))) {
 				$value = (int) $value;
 				
 				if ($key == 'debug_level' && ($value < 0 || $value > 3)) {
@@ -243,10 +244,18 @@ EOD;
 				if (!isset($callback_includes[$callback]))
 					$callback_includes[$callback] = array();
 				
+				$wrap = $this->cfg['wrap_callbacks'] || $info['Wrap'];
+				
+				if ($wrap) {
+					$wrapfunc = "$module.$callback$suffix";
+				}
+				
 				$callback_includes[$callback][] = (object) array(
 					'module'       => $module_index,
 					'include_path' => ".build\\modules\\$module\\callbacks\\$callback$suffix",
 					'priority'     => isset($info['Priority']) ? (int) $info['Priority'] : 0,
+					'wrap'         => $wrap,
+					'wrapfunc'     => $wrapfunc,
 				);
 			}
 		}
@@ -484,28 +493,91 @@ EOD;
 EOD;
 			}
 			
+			foreach ($callback_include as $k => &$v) {
+				if ($v->wrap) {
+					$incdef = '_inc_' . substr(preg_replace('/.+\\\\/', '', $v->include_path), 0, 25);
+				
+					$public_functions .= <<<EOD
+
+forward $v->wrapfunc({$callbacks[$callback]});
+public $v->wrapfunc({$callbacks[$callback]}) {
+	#define this. {$modules[$v->module]}.
+	#if defined $incdef
+		#undef $incdef
+	#endif
+	#include "{$v->include_path}"
+	#undef $incdef
+	#undef this
+	
+	return 0;
+}
+
+EOD;
+				}
+			}
+			
 			$public_functions .= <<<EOD
 
 $pub$callback({$callbacks[$callback]}) {
-	new PBP.ReturnValue
-		#if defined DR@$callback
-			= PBP.DEFAULT_RETURN<$callback>;
-		#elseif defined ALS_R_$ALSdef
-			= ALS_R_$ALSdef;
-		#else
-			= 1;
-		#endif
+	#if defined DR@$callback
+		PBP.ReturnValue = PBP.DEFAULT_RETURN<$callback>;
+	#elseif defined ALS_R_$ALSdef
+		PBP.ReturnValue = ALS_R_$ALSdef;
+	#else
+		PBP.ReturnValue = 1;
+	#endif
 	
 	#if defined playerid
 		Text.SetActivePlayer(playerid);
 	#endif
 
+
 EOD;
 			
 			foreach ($callback_include as $k => &$v) {
-				$incdef = '_inc_' . substr(preg_replace('/.+\\\\/', '', $v->include_path), 0, 25);
+				if ($v->wrap) {
+					$wrapfunc = $v->wrapfunc;
+					$wrapfunc = preg_replace_callback('/(.+?)\./', array($this, 'resolve_module_prefix'), $wrapfunc);
+					
+					$public_functions .= <<<EOD
+	#if !defined arg
+		new arg;
+	#endif
+	
+	PBP.DoReturn = false;
+
+	#emit LOAD.S.pri  8
+	#emit STOR.S.pri  arg
+
+	while (arg) {
+		arg -= 4;
+
+		#emit LCTRL      5
+		#emit ADD.C      12
+		#emit LOAD.S.alt arg
+		#emit ADD
+		#emit LOAD.I
+		#emit PUSH.pri
+	}
+
+	#emit PUSH.S      8
+
+	#emit LCTRL       6
+	#emit ADD.C       28
+	#emit PUSH.pri
+
+	#emit CONST.pri   $wrapfunc // $v->wrapfunc
+	#emit SCTRL       6
+	
+	if (PBP.DoReturn)
+		return PBP.ReturnValue;
+
+
+EOD;
+				} else {
+					$incdef = '_inc_' . substr(preg_replace('/.+\\\\/', '', $v->include_path), 0, 25);
 				
-				$public_functions .= <<<EOD
+					$public_functions .= <<<EOD
 	#define this. {$modules[$v->module]}.
 	#if defined $incdef
 		#undef $incdef
@@ -514,11 +586,12 @@ EOD;
 	#undef $incdef
 	#undef this
 
+
 EOD;
+				}
 			}
 
 $public_functions .= <<<EOD
-
 	return PBP.ReturnValue;
 }
 
@@ -557,6 +630,11 @@ enum PBP.e_MODULE {
 
 stock const
 	PBP.Modules[][PBP.e_MODULE] = {{$module_array}}
+;
+
+stock
+	bool:PBP.DoReturn,
+	     PBP.ReturnValue
 ;
 
 // Let's avoid touching anything we shouldn't
@@ -824,6 +902,12 @@ EOD;
 		return $this->modules[$matches[1]] . '.';
 	}
 	
+	public function resolve_module_prefix($matches) {
+		$module_index = array_search($matches[1], $this->modules);
+		
+		return "M$module_index@";
+	}
+	
 	private function human_size($bytes, $decimals = 2) {
 		$suffixes = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
 		$factor = floor((strlen($bytes) - 1) / 3);
@@ -866,7 +950,7 @@ EOD;
 			}
 		}
 		
-		$retval = 0;
+		$retval = 0;//exit;
 		$retval = $pawnc->compile();
 		
 		if (!empty($pawnc->output)) {
