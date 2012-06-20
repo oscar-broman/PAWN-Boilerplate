@@ -94,12 +94,18 @@ EOD;
 		));
 		
 		$modules = array();
+		$modules_folder = array();
 		
-		foreach (glob('gamemodes/modules/*') as $dir) {
+		foreach (array_merge(glob('gamemodes/modules/*'), glob('gamemodes/modules/PBP/*')) as $dir) {
 			if (!is_dir($dir))
 				continue;
 			
 			$basename = basename($dir);
+			
+			if ($basename == 'PBP')
+				continue;
+			
+			$dirname = preg_replace('/^gamemodes\/modules\/(.+?\/)?[^\/]+$/', '$1', $dir);
 			
 			if (!preg_match('/^[a-z@_][a-z0-9_@]*$/i', $basename)) {
 				echo "PBP Error: Invalid module name: \"$basename\".";
@@ -108,6 +114,7 @@ EOD;
 			}
 			
 			$modules[] = $basename;
+			$modules_folder[$basename] = $dirname;
 		}
 		
 		$this->modules = $modules;
@@ -124,7 +131,7 @@ EOD;
 		$callbacks = $this->syntax_intel->data->callbacks;
 		$this->syntax_intel->data->callbacks = array();
 		
-		foreach (glob('gamemodes/modules/*/callbacks.inc') as $file) {
+		foreach (array_merge(glob('gamemodes/modules/*/callbacks.inc'), glob('gamemodes/modules/PBP/*/callbacks.inc')) as $file) {
 			$contents = file_get_contents($file);
 			
 			if (preg_match('/^\s*public\s+/m', $contents)) {
@@ -145,11 +152,11 @@ EOD;
 		$callbacks['main'] = '';
 		
 		foreach ($modules as $module_index => $module) {
-			if (!file_exists("gamemodes/modules/$module/callbacks"))
-				mkdir("gamemodes/modules/$module/callbacks");
+			if (!file_exists("gamemodes/modules/{$modules_folder[$module]}$module/callbacks"))
+				mkdir("gamemodes/modules/{$modules_folder[$module]}$module/callbacks");
 			
 			foreach (array_keys($module_includes) as $incfile) {
-				$file = "gamemodes/modules/$module/$incfile.inc";
+				$file = "gamemodes/modules/{$modules_folder[$module]}$module/$incfile.inc";
 				
 				if (!file_exists($file))
 					touch($file);
@@ -172,9 +179,11 @@ EOD;
 					}
 				}
 				
+				$dirname = str_replace('/', '\\', $modules_folder[$module]) . $module;
+				
 				$module_includes[$incfile][] = (object) array(
 					'module'       => $module_index,
-					'include_path' => ".build\\modules\\$module\\$incfile",
+					'include_path' => ".build\\modules\\$dirname\\$incfile",
 					'priority'     => isset($info['Priority']) ? (int) $info['Priority'] : 0,
 				);
 			}
@@ -183,7 +192,7 @@ EOD;
 		$active_callbacks = array();
 		
 		foreach ($modules as $module_index => $module) {
-			foreach (glob("gamemodes/modules/$module/callbacks/*.inc") as $file) {
+			foreach (glob("gamemodes/modules/{$modules_folder[$module]}$module/callbacks/*.inc") as $file) {
 				$cbfile = basename($file);
 				
 				$this->process_file($file, $module_index);
@@ -207,7 +216,7 @@ EOD;
 						
 						echo "PBP Notice: Renaming $fileshort to \"$callback.inc\" (correct case).\n";
 						
-						$newfile = "gamemodes/modules/$module/callbacks/$callback$suffix.inc";
+						$newfile = "gamemodes/modules/{$modules_folder[$module]}$module/callbacks/$callback$suffix.inc";
 						
 						rename($file, $newfile);
 						
@@ -250,9 +259,11 @@ EOD;
 					$wrapfunc = "$module.$callback$suffix";
 				}
 				
+				$dirname = str_replace('/', '\\', $modules_folder[$module]) . $module;
+				
 				$callback_includes[$callback][] = (object) array(
 					'module'       => $module_index,
-					'include_path' => ".build\\modules\\$module\\callbacks\\$callback$suffix",
+					'include_path' => ".build\\modules\\$dirname\\callbacks\\$callback$suffix",
 					'priority'     => isset($info['Priority']) ? (int) $info['Priority'] : 0,
 					'wrap'         => $wrap,
 					'wrapfunc'     => $wrapfunc,
@@ -260,7 +271,7 @@ EOD;
 			}
 		}
 		
-		$text_header = 'gamemodes/.build/modules/Text/header.inc';
+		$text_header = 'gamemodes/.build/modules/PBP/Text/header.inc';
 		
 		if (file_exists($text_header)) {
 			file_put_contents($text_header, str_replace('{#LANGUAGES_NUM_STRINGS#}', max(1, count($this->translatable_strings)), file_get_contents($text_header)));
@@ -278,7 +289,7 @@ EOD;
 EOD;
 			}
 			
-			$text_ogmi = 'gamemodes/.build/modules/Text/callbacks/OnGameModeInit.inc';
+			$text_ogmi = 'gamemodes/.build/modules/PBP/Text/callbacks/OnGameModeInit.inc';
 			
 			file_put_contents($text_ogmi, str_replace('{#LANG_DEFAULT_VALUES#}', $default_values, file_get_contents($text_ogmi)));
 		}
