@@ -7,5 +7,5 @@
  */
 
 {
-	this.SetPlayerLevel(playerid, this.LEVEL_NONE);
+	SetPlayerAdminLevel(playerid, this.LEVEL_NONE);
 }

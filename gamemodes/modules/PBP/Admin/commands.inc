@@ -44,15 +44,15 @@ usage:
 		
 		if (otherid == INVALID_PLAYER_ID) {
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* Invalid player.");
-		} else if (!IsPlayerAdmin(playerid) && this.GetPlayerLevel(otherid) >= this.GetPlayerLevel(playerid)) {
+		} else if (!IsPlayerAdmin(playerid) && GetPlayerAdminLevel(otherid) >= GetPlayerAdminLevel(playerid)) {
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* You may only change the level of players with a level lower than yours.");
 		} else if (level == this.INVALID_LEVEL) {
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* Invalid level.");
 		} else {
-			if (this.GetPlayerLevel(otherid) == level)
+			if (GetPlayerAdminLevel(otherid) == level)
 				SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* %P%C already has that level.", otherid, COLOR_COMMAND_ERROR);
 			else {
-				this.SetPlayerLevel(otherid, level, playerid);
+				SetPlayerAdminLevel(otherid, level, playerid);
 			
 				SendClientMessage(playerid, COLOR_COMMAND_INFO, @"* You set the level of %P%C to %s (%d).", otherid, COLOR_COMMAND_INFO, this.LevelNames[level], _:level);
 			}

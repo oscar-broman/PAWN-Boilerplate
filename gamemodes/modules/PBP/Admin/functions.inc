@@ -4,15 +4,15 @@
  > Priority: 0
  */
 
-stock AdminLevel:this.GetPlayerLevel(playerid) {
-	return this.PlayerLevel{playerid};
+stock AdminLevel:GetPlayerAdminLevel(playerid) {
+	return this.PlayerLevel[playerid];
 }
 
 // This essentially creates a simple group inheritance
-stock this.SetPlayerLevel(playerid, AdminLevel:level, by_player = INVALID_PLAYER_ID) {
-	new AdminLevel:old_level = this.PlayerLevel{playerid};
+stock SetPlayerAdminLevel(playerid, AdminLevel:level, by_player = INVALID_PLAYER_ID) {
+	new AdminLevel:old_level = this.PlayerLevel[playerid];
 	
-	this.PlayerLevel{playerid} = level;
+	this.PlayerLevel[playerid] = level;
 	
 	Group_SetPlayer(GROUP_MOD       , playerid, (level >= this.LEVEL_MOD       ));
 	Group_SetPlayer(GROUP_ADMIN     , playerid, (level >= this.LEVEL_ADMIN     ));

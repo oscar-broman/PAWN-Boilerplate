@@ -25,7 +25,7 @@ stock const
 ;
 
 new
-	AdminLevel:this.PlayerLevel[MAX_PLAYERS char],
+	AdminLevel:this.PlayerLevel[MAX_PLAYERS],
 	
 	StaticGroup<GROUP_MOD>        = "Moderator",
 	StaticGroup<GROUP_ADMIN>      = "Administrator",
@@ -34,6 +34,8 @@ new
 	StaticGroup<GROUP_RCON>       = "RCON Administrator"
 ;
 
+RegisterUserVariable: "admin-level" => this.PlayerLevel;
+
 // Forward-declarations
-forward AdminLevel:this.GetPlayerLevel(playerid);
-forward this.SetPlayerLevel(playerid, AdminLevel:level, by_player = INVALID_PLAYER_ID);
+forward AdminLevel:GetPlayerAdminLevel(playerid);
+forward SetPlayerAdminLevel(playerid, AdminLevel:level, by_player = INVALID_PLAYER_ID);
