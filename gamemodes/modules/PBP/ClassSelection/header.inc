@@ -55,7 +55,6 @@ new
 	         this.NumSpawnLocations = 0,
 	         this.NumClasses = 0,
 	
-	BitArray:this.PlayerMaySpawn<MAX_PLAYERS>,
 	BitArray:this.PlayerHasRequestedClass<MAX_PLAYERS>,
 	         this.PreviousClassid[MAX_PLAYERS char],
 	         this.RequestedClass[MAX_PLAYERS],

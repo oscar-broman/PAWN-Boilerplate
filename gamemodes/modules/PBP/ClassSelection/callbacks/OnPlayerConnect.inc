@@ -7,8 +7,6 @@
  */
 
 {
-	this.AllowSpawning(playerid);
-	
 	Bit_Vet(this.PlayerHasRequestedClass, playerid);
 	
 	this.PreviousClassid{playerid} = 0;

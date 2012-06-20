@@ -4,10 +4,6 @@
  > Priority: 0
  */
 
-stock this.AllowSpawning(playerid, bool:set = true) {
-	Bit_Set(this.PlayerMaySpawn, playerid, set);
-}
-
 stock bool:this.IsValidWeaponSet(ws) {
 	return (ws == INVALID_WEAPON_SET || 0 <= ws < this.NumWeaponSets);
 }

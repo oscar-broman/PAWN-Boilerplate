@@ -12,10 +12,4 @@
 		
 		return 0;
 	}
-	
-	if (!Bit_Get(this.PlayerMaySpawn, playerid)) {
-		CallRemoteFunction(!"OnPlayerSpawnDenied", !"i", playerid);
-		
-		return 0;
-	}
 }
