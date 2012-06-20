@@ -187,7 +187,11 @@ EOD;
 				
 				$this->process_file($file, $module_index);
 				
-				$callback = substr($cbfile, 0, strpos($cbfile, '.'));
+				$callback = preg_replace('/(_.*?)?\..*?$/', '', $cbfile);
+				$suffix = '';
+				
+				if (preg_match('/(_.+?)\./', $cbfile, $matches))
+					$suffix = $matches[1];
 				
 				if (!isset($callbacks[$callback])) {
 					$fileshort = preg_replace('/^gamemodes(\\\|\/)/', '', $file);
@@ -202,7 +206,7 @@ EOD;
 						
 						echo "PBP Notice: Renaming $fileshort to \"$callback.inc\" (correct case).\n";
 						
-						$newfile = "gamemodes/modules/$module/callbacks/$callback.inc";
+						$newfile = "gamemodes/modules/$module/callbacks/$callback$suffix.inc";
 						
 						rename($file, $newfile);
 						
@@ -241,7 +245,7 @@ EOD;
 				
 				$callback_includes[$callback][] = (object) array(
 					'module'       => $module_index,
-					'include_path' => ".build\\modules\\$module\\callbacks\\$callback",
+					'include_path' => ".build\\modules\\$module\\callbacks\\$callback$suffix",
 					'priority'     => isset($info['Priority']) ? (int) $info['Priority'] : 0,
 				);
 			}
@@ -499,7 +503,7 @@ $pub$callback({$callbacks[$callback]}) {
 EOD;
 			
 			foreach ($callback_include as $k => &$v) {
-				$incdef = '_inc_' . substr("$callback", 0, 25);
+				$incdef = '_inc_' . substr(preg_replace('/.+\\\\/', '', $v->include_path), 0, 25);
 				
 				$public_functions .= <<<EOD
 	#define this. {$modules[$v->module]}.
