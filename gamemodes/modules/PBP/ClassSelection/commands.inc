@@ -1,5 +1,5 @@
 /*!
- * ClassSelection/commands.inc
+ * PBP/ClassSelection/commands.inc
  *
  > Priority: 0
  */

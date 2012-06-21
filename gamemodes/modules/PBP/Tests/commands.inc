@@ -1,5 +1,5 @@
 /*!
- * Tests/commands.inc
+ * PBP/Tests/commands.inc
  *
  > Priority: 0
  */

@@ -1,5 +1,5 @@
 /*!
- * Commands/header.inc
+ * PBP/Commands/header.inc
  *
  > Priority: 0
  > Requires: StaticGroups

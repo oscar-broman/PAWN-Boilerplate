@@ -1,5 +1,5 @@
 /*!
- * Config/callbacks/OnRconCommand.inc
+ * PBP/Config/callbacks/OnRconCommand.inc
  *
  * OnRconCommand(cmd[])
  *

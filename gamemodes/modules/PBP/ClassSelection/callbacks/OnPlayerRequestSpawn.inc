@@ -1,5 +1,5 @@
 /*!
- * ClassSelection/callbacks/OnPlayerRequestSpawn.inc
+ * PBP/ClassSelection/callbacks/OnPlayerRequestSpawn.inc
  *
  * OnPlayerRequestSpawn(playerid)
  *

@@ -1,5 +1,5 @@
 /*!
- * ClassSelection/callbacks/OnPlayerConnect.inc
+ * PBP/ClassSelection/callbacks/OnPlayerConnect.inc
  *
  * OnPlayerConnect(playerid)
  *

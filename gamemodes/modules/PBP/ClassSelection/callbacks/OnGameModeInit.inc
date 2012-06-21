@@ -1,5 +1,5 @@
 /*!
- * ClassSelection/callbacks/OnGameModeInit.inc
+ * PBP/ClassSelection/callbacks/OnGameModeInit.inc
  *
  * OnGameModeInit()
  *

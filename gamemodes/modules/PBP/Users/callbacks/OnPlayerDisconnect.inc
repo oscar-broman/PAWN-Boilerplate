@@ -1,5 +1,5 @@
 /*!
- * Users/callbacks/OnPlayerDisconnect.inc
+ * PBP/Users/callbacks/OnPlayerDisconnect.inc
  *
  * OnPlayerDisconnect(playerid, reason)
  *

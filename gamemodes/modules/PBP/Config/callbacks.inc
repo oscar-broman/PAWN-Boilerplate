@@ -1,5 +1,5 @@
 /*!
- * Config/callbacks.inc
+ * PBP/Config/callbacks.inc
  *
  > Priority: 15
  */

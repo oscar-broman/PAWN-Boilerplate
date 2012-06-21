@@ -1,5 +1,5 @@
 /*!
- * Player/callbacks/OnRconLoginAttempt.inc
+ * PBP/Player/callbacks/OnRconLoginAttempt.inc
  *
  * OnRconLoginAttempt(ip[], password[], success)
  *

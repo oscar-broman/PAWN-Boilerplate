@@ -1,5 +1,5 @@
 /*!
- * Admin/functions.inc
+ * PBP/Admin/functions.inc
  *
  > Priority: 0
  */

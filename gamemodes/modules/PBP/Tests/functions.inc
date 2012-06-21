@@ -1,5 +1,5 @@
 /*!
- * Tests/functions.inc
+ * PBP/Tests/functions.inc
  *
  > Priority: 0
  */

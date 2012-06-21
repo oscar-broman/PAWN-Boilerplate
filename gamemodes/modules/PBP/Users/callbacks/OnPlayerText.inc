@@ -1,5 +1,5 @@
 /*!
- * Users/callbacks/OnPlayerText.inc
+ * PBP/Users/callbacks/OnPlayerText.inc
  *
  * OnPlayerText(playerid, text[])
  *

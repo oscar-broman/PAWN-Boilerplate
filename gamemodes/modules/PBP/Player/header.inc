@@ -1,5 +1,5 @@
 /*!
- * Player/header.inc
+ * PBP/Player/header.inc
  *
  > Priority: 0
  */

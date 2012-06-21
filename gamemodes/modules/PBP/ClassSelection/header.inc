@@ -1,5 +1,5 @@
 /*!
- * ClassSelection/header.inc
+ * PBP/ClassSelection/header.inc
  *
  > Priority: 0
  */

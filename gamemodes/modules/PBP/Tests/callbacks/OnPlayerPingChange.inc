@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerPingChange.inc
+ * PBP/Tests/callbacks/OnPlayerPingChange.inc
  *
  * OnPlayerPingChange(playerid, ping, previous_ping)
  *

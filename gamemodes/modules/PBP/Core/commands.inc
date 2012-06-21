@@ -1,5 +1,5 @@
 /*!
- * Core/commands.inc
+ * PBP/Core/commands.inc
  *
  > Priority: 0
  */

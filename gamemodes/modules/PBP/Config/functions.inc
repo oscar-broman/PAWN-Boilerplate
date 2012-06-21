@@ -1,5 +1,5 @@
 /*!
- * Config/functions.inc
+ * PBP/Config/functions.inc
  *
  > Priority: 15
  */

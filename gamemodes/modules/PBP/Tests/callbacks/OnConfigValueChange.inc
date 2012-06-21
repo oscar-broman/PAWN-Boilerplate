@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnConfigValueChange.inc
+ * PBP/Tests/callbacks/OnConfigValueChange.inc
  *
  * OnConfigValueChange(const key[], key_hash)
  *

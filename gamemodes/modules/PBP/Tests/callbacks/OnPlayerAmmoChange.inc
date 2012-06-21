@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerAmmoChange.inc
+ * PBP/Tests/callbacks/OnPlayerAmmoChange.inc
  *
  * OnPlayerAmmoChange(playerid, ammo, previous_ammo)
  *

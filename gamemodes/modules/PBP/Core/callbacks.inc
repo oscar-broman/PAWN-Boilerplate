@@ -1,5 +1,5 @@
 /*!
- * Core/callbacks.inc
+ * PBP/Core/callbacks.inc
  *
  > Priority: 0
  */

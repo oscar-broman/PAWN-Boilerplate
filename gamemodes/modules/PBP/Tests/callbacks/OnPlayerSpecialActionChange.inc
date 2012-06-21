@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerSpecialActionChange.inc
+ * PBP/Tests/callbacks/OnPlayerSpecialActionChange.inc
  *
  * OnPlayerSpecialActionChange(playerid, special_action, previous_special_action)
  *

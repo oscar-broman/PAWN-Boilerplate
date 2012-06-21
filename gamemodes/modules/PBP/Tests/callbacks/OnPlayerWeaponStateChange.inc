@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerWeaponStateChange.inc
+ * PBP/Tests/callbacks/OnPlayerWeaponStateChange.inc
  *
  * OnPlayerWeaponStateChange(playerid, weaponstate, previous_weaponstate)
  *

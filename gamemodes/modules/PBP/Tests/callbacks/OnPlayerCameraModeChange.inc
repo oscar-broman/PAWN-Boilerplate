@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerCameraModeChange.inc
+ * PBP/Tests/callbacks/OnPlayerCameraModeChange.inc
  *
  * OnPlayerCameraModeChange(playerid, camera_mode, previous_camera_mode)
  *

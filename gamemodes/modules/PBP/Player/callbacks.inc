@@ -1,5 +1,5 @@
 /*!
- * Player/callbacks.inc
+ * PBP/Player/callbacks.inc
  *
  > Priority: 0
  */

@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerVelocityUpdate.inc
+ * PBP/Tests/callbacks/OnPlayerVelocityUpdate.inc
  *
  * OnPlayerVelocityUpdate(playerid, Float:vx, Float:vy, Float:vz)
  *

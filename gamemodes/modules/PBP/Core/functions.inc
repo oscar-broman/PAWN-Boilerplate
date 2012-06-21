@@ -1,5 +1,5 @@
 /*!
- * Core/functions.inc
+ * PBP/Core/functions.inc
  *
  > Priority: 0
  */

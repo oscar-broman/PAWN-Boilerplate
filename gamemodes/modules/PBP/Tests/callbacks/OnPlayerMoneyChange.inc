@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerMoneyChange.inc
+ * PBP/Tests/callbacks/OnPlayerMoneyChange.inc
  *
  * OnPlayerMoneyChange(playerid, money, previous_money)
  *

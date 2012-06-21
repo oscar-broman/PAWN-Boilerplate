@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerPositionUpdate.inc
+ * PBP/Tests/callbacks/OnPlayerPositionUpdate.inc
  *
  * OnPlayerPositionUpdate(playerid, Float:x, Float:y, Float:z)
  *

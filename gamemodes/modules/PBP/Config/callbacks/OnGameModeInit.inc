@@ -1,5 +1,5 @@
 /*!
- * Config/callbacks/OnGameModeInit.inc
+ * PBP/Config/callbacks/OnGameModeInit.inc
  *
  * OnGameModeInit()
  *

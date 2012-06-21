@@ -1,5 +1,5 @@
 /*!
- * Core/header.inc
+ * PBP/Core/header.inc
  *
  > Priority: 10
  */

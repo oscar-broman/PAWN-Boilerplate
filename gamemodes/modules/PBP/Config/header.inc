@@ -1,5 +1,5 @@
 /*!
- * Config/header.inc
+ * PBP/Config/header.inc
  *
  > Priority: 15
  */

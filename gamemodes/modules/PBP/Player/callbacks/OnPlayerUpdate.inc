@@ -1,5 +1,5 @@
 /*!
- * Player/callbacks/OnPlayerUpdate.inc
+ * PBP/Player/callbacks/OnPlayerUpdate.inc
  *
  * OnPlayerUpdate(playerid)
  *

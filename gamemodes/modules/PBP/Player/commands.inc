@@ -1,5 +1,5 @@
 /*!
- * Player/commands.inc
+ * PBP/Player/commands.inc
  *
  > Priority: 0
  */

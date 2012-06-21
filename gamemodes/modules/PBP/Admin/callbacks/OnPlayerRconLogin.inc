@@ -1,5 +1,5 @@
 /*!
- * Admin/callbacks/OnPlayerRconLogin.inc
+ * PBP/Admin/callbacks/OnPlayerRconLogin.inc
  *
  * OnPlayerRconLogin(playerid)
  *

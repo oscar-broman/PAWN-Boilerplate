@@ -1,5 +1,5 @@
 /*!
- * Config/callbacks/OnGameModeExit.inc
+ * PBP/Config/callbacks/OnGameModeExit.inc
  *
  * OnGameModeExit()
  *

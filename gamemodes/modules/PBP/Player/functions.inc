@@ -1,5 +1,5 @@
 /*!
- * Player/functions.inc
+ * PBP/Player/functions.inc
  *
  > Priority: 0
  */

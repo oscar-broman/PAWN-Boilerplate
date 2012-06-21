@@ -1,5 +1,5 @@
 /*!
- * Users/callbacks/OnPlayerCommandReceived.inc
+ * PBP/Users/callbacks/OnPlayerCommandReceived.inc
  *
  * OnPlayerCommandReceived(playerid, cmdtext[])
  *

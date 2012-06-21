@@ -1,5 +1,5 @@
 /*!
- * Commands/callbacks.inc
+ * PBP/Commands/callbacks.inc
  *
  > Priority: 0
  */

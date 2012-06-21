@@ -1,5 +1,5 @@
 /*!
- * Tests/callbacks/OnPlayerLogIn.inc
+ * PBP/Tests/callbacks/OnPlayerLogIn.inc
  *
  * OnPlayerLogIn(playerid, bool:autologin)
  *
