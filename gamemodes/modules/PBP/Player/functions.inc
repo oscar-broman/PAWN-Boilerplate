@@ -1,7 +1,7 @@
 /*!
  * PBP/Player/functions.inc
  *
- > Priority: 0
+ > Priority: 10
  */
 
 // Test whether a player is in any of the groups given
@@ -62,3 +62,27 @@ public this.CheckForNewAdmins() {
 		return foundplayer;
 	}
 #endif
+
+// Hook SetPlayerName
+stock this.SetPlayerName(playerid, name[]) {
+	new old_name[MAX_PLAYER_NAME], retval;
+	
+	GetPlayerName(playerid, old_name, sizeof(old_name));
+	
+	retval = SetPlayerName(playerid, name);
+	
+	if (retval == 1) {
+		strunpack(Player.Info[playerid][Name], name, MAX_PLAYER_NAME);
+		
+		CallFunction(this.CB_OnPlayerNameChange, playerid, ref(old_name));
+	}
+	
+	return retval;
+}
+
+#if defined _ALS_SetPlayerName
+	#undef SetPlayerName
+#else
+	#define _ALS_SetPlayerName
+#endif
+#define SetPlayerName Player.SetPlayerName

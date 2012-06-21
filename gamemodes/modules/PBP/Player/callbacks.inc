@@ -16,3 +16,4 @@ forward OnPlayerMoneyChange(playerid, money, previous_money);
 forward OnPlayerPingChange(playerid, ping, previous_ping);
 forward OnPlayerSpecialActionChange(playerid, special_action, previous_special_action);
 forward OnPlayerCameraModeChange(playerid, camera_mode, previous_camera_mode);
+forward OnPlayerNameChange(playerid, const old_name[]);

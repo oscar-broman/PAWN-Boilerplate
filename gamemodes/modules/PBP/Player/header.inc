@@ -42,6 +42,7 @@ new
 	     this.CB_OnPlayerPingChange,
 	     this.CB_OnPlayerSpecialActionChg,
 	     this.CB_OnPlayerCameraModeChange,
+	     this.CB_OnPlayerNameChange,
 	bool:this.UsePlayerPedAnimations = true
 ;
 

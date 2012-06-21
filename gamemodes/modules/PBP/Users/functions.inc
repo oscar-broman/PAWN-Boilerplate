@@ -1,7 +1,7 @@
 /*!
  * PBP/Users/functions.inc
  *
- > Priority: 0
+ > Priority: 11
  */
 
 // UID or player ID -> UID
@@ -374,3 +374,18 @@ stock this.RegisterUserVariable(const _key[], tag, size, ...) {
 	this.UserVariables[i][Size]    = size;
 	this.UserVariables[i][Address] = GetArgumentAddress(3);
 }
+
+// Hook SetPlayerName
+stock this.SetPlayerName(playerid, name[]) {
+	if (this.FindAccountByName(name) != INVALID_UID)
+		return 0;
+	
+	return SetPlayerName(playerid, name);
+}
+
+#if defined _ALS_SetPlayerName
+	#undef SetPlayerName
+#else
+	#define _ALS_SetPlayerName
+#endif
+#define SetPlayerName Users.SetPlayerName
