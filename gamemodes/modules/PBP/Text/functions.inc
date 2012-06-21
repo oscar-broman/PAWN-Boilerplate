@@ -663,3 +663,48 @@ stock this.Dialog_Show(playerid, style, string:title[], string:caption[], string
 	#define _ALS_Dialog_Show
 #endif
 #define Dialog_Show Text.Dialog_Show
+
+/*
+ * Group_SetName
+ * ---------------------------------------------- */
+stock this.Group_SetName(Group:g, name[]) {
+	if (this.IsTranslatable(name)) {
+		GROUP_FIX(g);
+		
+		this.GroupName[g] = ref(name);
+	} else {
+		Group_SetName(g, name);
+	}
+}
+
+#if defined _ALS_Group_SetName
+	#undef Group_SetName
+#else
+	#define _ALS_Group_SetName
+#endif
+#define Group_SetName Text.Group_SetName
+
+/*
+ * Group_GetName
+ * ---------------------------------------------- */
+stock this.Group_GetName(Group:g) {
+	new ret[YSI_MAX_STRING], Group:gidx;
+	
+	gidx = g;
+	
+	GROUP_FIX(gidx);
+	
+	if (this.GroupName[gidx])
+		strunpack(ret, this.@(@ptr[this.GroupName[gidx]]));
+	else
+		ret = Group_GetName(g);
+	
+	return ret;
+}
+
+#if defined _ALS_Group_GetName
+	#undef Group_GetName
+#else
+	#define _ALS_Group_GetName
+#endif
+#define Group_GetName Text.Group_GetName
