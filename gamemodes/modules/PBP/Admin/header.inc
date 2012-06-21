@@ -15,17 +15,9 @@ enum AdminLevel:{
 	this.NUM_LEVELS
 };
 
-stock const
-	this.LevelNames[this.NUM_LEVELS][] = {
-		"Nothing",
-		"Moderator",
-		"Administrator",
-		"Management"
-	}
-;
-
 new
 	AdminLevel:this.PlayerLevel[MAX_PLAYERS],
+	           this.LevelNames[this.NUM_LEVELS][1],
 	
 	StaticGroup<GROUP_MOD>        = @"Moderator",
 	StaticGroup<GROUP_ADMIN>      = @"Administrator",

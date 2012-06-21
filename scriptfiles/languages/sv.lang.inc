@@ -80,3 +80,5 @@
 "Management" = "Ledning"
 
 "RCON Administrator" = "RCON Administratör"
+
+"Nothing" = "Ingenting"
