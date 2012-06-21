@@ -1,5 +1,5 @@
 /*!
- * Text/header.inc
+ * PBP/Text/header.inc
  *
  > Priority: 11
  */
@@ -8,13 +8,12 @@
 #define this.Prepare          _@lp
 #define this.Strings          _@ls
 #define this.ActiveLanguage   _@lC
-#define this.TempAddress      _@la
 
 #define _@lc _@lC==-1?0:_@lC
 
 // Wrap this around any strings to make sure they're in the correct language
 #define this.@(%0) \
-	((this.TempAddress = this.GetStringAddress(%0)), @ptr[this.TempAddress])
+	(@ptr[Text.GetStringAddress(%0)])
 
 const this.MAX_LANGUAGES = 20;
 const this.INVALID_LANGUAGE = -1;
@@ -83,7 +82,6 @@ enum this.LANGUAGE_CODE: {
 };
 
 stock
-	         this.TempAddress,
 	         this.DefaultLanguage = _:LANG_EN,
 	         this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1],
 	         this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1],
@@ -109,6 +107,7 @@ forward bool:this.SetPlayerLanguage(playerid, lang);
 forward      this.GetPlayerLanguage(playerid);
 forward      this.ResetActiveLanguage();
 forward      this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang = -1);
+forward bool:this.IsTranslatable(const string[]);
 forward      this.SetActivePlayer(playerid);
 forward      this.SetActiveLanguage(lang);
 forward      this.GetLanguageFromLanguageCode(this.LANGUAGE_CODE:code);

@@ -1,5 +1,5 @@
 /*!
- * Text/commands.inc
+ * PBP/Text/commands.inc
  *
  > Priority: 0
  */

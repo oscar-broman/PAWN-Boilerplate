@@ -1,5 +1,5 @@
 /*!
- * Text/callbacks/OnPlayerRequestClass.inc
+ * PBP/Text/callbacks/OnPlayerRequestClass.inc
  *
  * OnPlayerRequestClass(playerid, classid)
  *

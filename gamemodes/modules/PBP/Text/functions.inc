@@ -1,5 +1,5 @@
 /*!
- * Text/functions.inc
+ * PBP/Text/functions.inc
  *
  > Priority: 11
  */
@@ -215,12 +215,14 @@ stock this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang =
 	if (lang == -1) {
 		if (playerid == INVALID_PLAYER_ID) {
 			if (this.CurrentPlayer != INVALID_PLAYER_ID)
-				playerid = this.CurrentPlayer;
+				playerid = this.CurrentPlayer, lang = this.PlayerLanguage[playerid];
+			else if (this.ActiveLanguage != -1)
+				lang = this.ActiveLanguage;
 			else
 				return address;
+		} else {
+			lang = this.PlayerLanguage[playerid];
 		}
-		
-		lang = this.PlayerLanguage[playerid];
 	}
 	
 	if (!(0 <= lang < this.Languages))
@@ -233,6 +235,10 @@ stock this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang =
 		return address;
 	
 	return ref(this.Strings[lang][index]);
+}
+
+stock bool:this.IsTranslatable(const string[]) {
+	return this.GetStringIndex(string) != -1;
 }
 
 stock this.DeferredResetActiveLanguage() {

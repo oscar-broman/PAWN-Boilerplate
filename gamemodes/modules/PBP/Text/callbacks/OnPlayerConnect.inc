@@ -1,5 +1,5 @@
 /*!
- * Text/callbacks/OnPlayerConnect.inc
+ * PBP/Text/callbacks/OnPlayerConnect.inc
  *
  * OnPlayerConnect(playerid)
  *
