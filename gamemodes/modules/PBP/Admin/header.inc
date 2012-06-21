@@ -1,5 +1,5 @@
 /*!
- * Admin/header.inc
+ * PBP/Admin/header.inc
  *
  > Priority: 0
  */
@@ -27,11 +27,11 @@ stock const
 new
 	AdminLevel:this.PlayerLevel[MAX_PLAYERS],
 	
-	StaticGroup<GROUP_MOD>        = "Moderator",
-	StaticGroup<GROUP_ADMIN>      = "Administrator",
-	StaticGroup<GROUP_MANAGEMENT> = "Management",
+	StaticGroup<GROUP_MOD>        = @"Moderator",
+	StaticGroup<GROUP_ADMIN>      = @"Administrator",
+	StaticGroup<GROUP_MANAGEMENT> = @"Management",
 	
-	StaticGroup<GROUP_RCON>       = "RCON Administrator"
+	StaticGroup<GROUP_RCON>       = @"RCON Administrator"
 ;
 
 RegisterUserVariable: "admin-level" => this.PlayerLevel;

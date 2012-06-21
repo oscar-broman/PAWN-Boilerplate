@@ -1,6 +1,6 @@
 /*!
- * StaticGroups/functions.inc
+ * PBP/StaticGroups/functions.inc
  *
- > Priority: 0
+ > Priority: 15
  */
 

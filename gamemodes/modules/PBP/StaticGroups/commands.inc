@@ -1,5 +1,5 @@
 /*!
- * StaticGroups/commands.inc
+ * PBP/StaticGroups/commands.inc
  *
  > Priority: 0
  */

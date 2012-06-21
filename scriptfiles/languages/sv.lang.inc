@@ -72,3 +72,11 @@
 "You are now logged in!" = "Du är nu inloggad!"
 
 "* Set your language." = "* Välj ditt språk."
+
+"Moderator" = "Moderator"
+
+"Administrator" = "Administratör"
+
+"Management" = "Ledning"
+
+"RCON Administrator" = "RCON Administratör"

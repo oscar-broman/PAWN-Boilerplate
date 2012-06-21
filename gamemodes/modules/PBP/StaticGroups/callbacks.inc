@@ -1,5 +1,5 @@
 /*!
- * StaticGroups/callbacks.inc
+ * PBP/StaticGroups/callbacks.inc
  *
  > Priority: 0
  */
