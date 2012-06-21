@@ -82,3 +82,21 @@
 "RCON Administrator" = "RCON Administratör"
 
 "Nothing" = "Ingenting"
+
+"* Change your nickname." = "* Ändra ditt nicknamn."
+
+"* Usage: /setname [name]" = "* Användning: /setname [namn]"
+
+"* Your nickname was successfully changed to %s." = "* Ditt nicknamn är nu ändrat till %s."
+
+"* Invalid name." = "* Ogiltigt namn."
+
+"See a list of available commands." = "Se en lista över tillgängliga kommandon."
+
+"Commands" = "Kommandon"
+
+"Close" = "Stäng"
+
+"< Back" = "< Bakåt"
+
+"Next >" = "Nästa >"

@@ -30,6 +30,12 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 	}
 
 new
-	this.Description[MAX_COMMANDS],
-	this.Module[MAX_COMMANDS] = {-1, ...}
+	         this.Description[MAX_COMMANDS],
+	         this.Module[MAX_COMMANDS] = {-1, ...},
+	BitArray:this.VisibleModules[MAX_PLAYERS]<sizeof(PBP.Modules)>,
+	         this.CommandsPerPage = 25
 ;
+
+RegisterConfigVariable: this.CommandsPerPage;
+
+forward this.ShowCommandsDialog(playerid, module = -1, page = 0);
