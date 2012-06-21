@@ -36,14 +36,15 @@ stock bool:isargpacked(arg) {
 }
 
 // Change the address of a dimension in an array. The dimension can't be the last one.
-stock RedirectArraySlot(array[][], slot, address) {
-	#emit LOAD.S.pri  array
-	#emit LOAD.S.alt  slot
+// stock RedirectArraySlot(array[][], slot, index)
+stock RedirectArraySlot(...) {
+	#emit LOAD.S.pri  12
+	#emit LREF.S.alt  16
 	#emit SHL.C.alt   2
 	#emit ADD
 	#emit PUSH.pri
 	
-	#emit LOAD.S.pri  address
+	#emit LREF.S.pri  20
 	#emit POP.alt
 	#emit SUB
 	#emit STOR.I
