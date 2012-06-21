@@ -295,6 +295,11 @@ stock this.ShowLanguageSelection(playerid) {
 	}
 }
 
+// formatex specifier for translatable strings
+FormatSpecifier<'@'>(output[], string[]) {
+	strunpack(output, this.@(string));
+}
+
 // Hook all functions that sends text to players, add formatex support,
 // and make sure the correct language is being sent.
 
