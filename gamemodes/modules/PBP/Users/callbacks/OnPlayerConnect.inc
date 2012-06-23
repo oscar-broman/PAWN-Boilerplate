@@ -29,6 +29,14 @@
 				
 				@ptr[this.UserVariables[i][Address]][playerid] = 0;
 			}
+			
+			case this.TYPE_Y_BIT: {
+				Bit_Set(Bit:@ptr[this.UserVariables[i][Address]], playerid, false);
+			}
+			
+			case this.TYPE_CHAR: {
+				@ptr[this.UserVariables[i][Address]]{playerid} = 0;
+			}
 				
 			default:
 				continue;

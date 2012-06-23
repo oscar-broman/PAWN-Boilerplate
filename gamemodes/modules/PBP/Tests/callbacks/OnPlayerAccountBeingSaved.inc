@@ -31,4 +31,8 @@
 	} else {
 		this.PlayerMallocString[playerid] = Malloc_NewS("yoyo! lege");
 	}
+	
+	Bit_Set(this.PlayerBit, playerid, !Bit_Get(this.PlayerBit, playerid));
+	
+	this.PlayerChar{playerid} += 50;
 }

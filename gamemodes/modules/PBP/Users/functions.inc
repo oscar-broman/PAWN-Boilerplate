@@ -117,6 +117,14 @@ stock this.SaveAccount({UID, _}:_playerid) {
 					stmt_bind_value(stmt, 4, DB::TYPE_STRING, mstr(alloc));
 				else
 					stmt_bind_value(stmt, 4, DB::TYPE_STRING, "");
+			}		
+			
+			case this.TYPE_Y_BIT: {
+				stmt_bind_value(stmt, 4, DB::TYPE_INT, !!Bit_Get(Bit:@ptr[this.UserVariables[i][Address]], playerid));
+			}
+			
+			case this.TYPE_CHAR: {
+				stmt_bind_value(stmt, 4, DB::TYPE_INT, @ptr[this.UserVariables[i][Address]]{playerid});
 			}
 				
 			default:
@@ -178,6 +186,14 @@ stock bool:this.LogPlayerIn(playerid, const password[]) {
 							free(alloc);
 
 						@ptr[this.UserVariables[i][Address]][playerid] = _:Malloc_NewS(value);
+					}
+					
+					case this.TYPE_Y_BIT: {
+						Bit_Set(Bit:@ptr[this.UserVariables[i][Address]], playerid, strval(value) || false);
+					}
+					
+					case this.TYPE_CHAR: {
+						@ptr[this.UserVariables[i][Address]]{playerid} = strval(value);
 					}
 				}
 				
@@ -345,7 +361,7 @@ stock this.ShowDialogIfNeeded(playerid) {
 	}
 }
 
-stock this.RegisterUserVariable(const _key[], tag, size, ...) {
+stock this.RegisterUserVariable(const _key[], tag, size1, size2, ...) {
 	new
 		     key[64 char],
 		     type,
@@ -360,19 +376,23 @@ stock this.RegisterUserVariable(const _key[], tag, size, ...) {
 		type = this.TYPE_FLOAT;
 	} else if (tag == tagof(Alloc:)) {
 		type = this.TYPE_MALLOC_STRING;
+	} else if (tag == tagof(Bit:)) {
+		type = this.TYPE_Y_BIT;
+	} else if (size1 == MAX_PLAYERS char) {
+		type = this.TYPE_CHAR;
 	} else {
 		type = this.TYPE_INT;
 	}
 	
-	if (size > 1) {
+	if (size2 > 1) {
 		type = this.TYPE_STRING;
 	}
 	
 	this.UserVariables[i][Key]     = Malloc_NewS(key, true);
 	this.UserVariables[i][KeyHash] = YHash(key);
 	this.UserVariables[i][Type]    = type;
-	this.UserVariables[i][Size]    = size;
-	this.UserVariables[i][Address] = GetArgumentAddress(3);
+	this.UserVariables[i][Size]    = (type == this.TYPE_STRING) ? size2 : size1;
+	this.UserVariables[i][Address] = GetArgumentAddress(4);
 }
 
 // Hook SetPlayerName

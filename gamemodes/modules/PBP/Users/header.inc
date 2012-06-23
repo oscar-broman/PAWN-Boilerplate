@@ -15,7 +15,7 @@ stock RegisterUserVariable;
 #define @Pu_E1:@Pu_E2:%1=>%2; \
 	forward %2@Pu_(); \
 	public %2@Pu_() { \
-		Users.RegisterUserVariable(%1, tagof((%2)), sizeof((%2[])), _:%2); \
+		Users.RegisterUserVariable(%1, tagof((%2)), sizeof((%2)), sizeof((%2[])), _:%2); \
 	}
 
 // variable
@@ -23,7 +23,7 @@ stock RegisterUserVariable;
 	@Pu_X(); \
 	forward %1@Pu_(); \
 	public %1@Pu_() { \
-		Users.RegisterUserVariable(#%1, tagof((%1)), sizeof((%1[])), _:%1); \
+		Users.RegisterUserVariable(#%1, tagof((%1)), sizeof((%1)), sizeof((%1[])), _:%1); \
 	}
 
 enum {
@@ -51,7 +51,9 @@ enum {
 	this.TYPE_INT,
 	this.TYPE_FLOAT,
 	this.TYPE_STRING,
-	this.TYPE_MALLOC_STRING
+	this.TYPE_MALLOC_STRING,
+	this.TYPE_Y_BIT,
+	this.TYPE_CHAR
 };
 
 enum this.E_USER_VARIABLE {
@@ -113,4 +115,4 @@ forward bool:this.IsLoggedIn({UID, _}:playerid);
 forward bool:this.IsRegistered({UID, _}:playerid);
 forward bool:this.RegisterPlayer(playerid, const password[]);
 
-forward this.RegisterUserVariable(const _key[], tag, size, ...);
+forward this.RegisterUserVariable(const _key[], tag, size1, size2, ...);

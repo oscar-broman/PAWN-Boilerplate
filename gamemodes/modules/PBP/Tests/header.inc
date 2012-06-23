@@ -13,13 +13,17 @@ RegisterConfigVariable: this.StringVariable;
 RegisterConfigVariable: this.MallocStringVariable;
 
 new
-	      this.PlayerInt[MAX_PLAYERS],
-	Float:this.PlayerFloat[MAX_PLAYERS],
-	      this.PlayerString[MAX_PLAYERS][50],
-	Alloc:this.PlayerMallocString[MAX_PLAYERS]
+	         this.PlayerInt[MAX_PLAYERS],
+	   Float:this.PlayerFloat[MAX_PLAYERS],
+	         this.PlayerString[MAX_PLAYERS][50],
+	   Alloc:this.PlayerMallocString[MAX_PLAYERS],
+	         this.PlayerChar[MAX_PLAYERS char],
+	BitArray:this.PlayerBit<MAX_PLAYERS>
 ;
 
 RegisterUserVariable: "integer"       => this.PlayerInt;
 RegisterUserVariable: "float"         => this.PlayerFloat;
 RegisterUserVariable: "string"        => this.PlayerString;
 RegisterUserVariable: "malloc-string" => this.PlayerMallocString;
+RegisterUserVariable: "char"          => this.PlayerChar;
+RegisterUserVariable: "bit"           => this.PlayerBit;
