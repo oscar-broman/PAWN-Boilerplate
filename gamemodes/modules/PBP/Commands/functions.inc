@@ -65,31 +65,33 @@ stock this.ShowCommandsDialog(playerid, module = -1, page = 0) {
 	;
 	
 	if (module == -1) {
-		new
-			     buf[32],
-			bool:has_commands[sizeof(PBP.Modules)],
-			     cmd,
-			     cmds = Command_GetPlayerCommandCount(playerid)
-		;
+		{
+			new
+				     buf[32],
+				bool:has_commands[sizeof(PBP.Modules)],
+				     cmd,
+				     cmds = Command_GetPlayerCommandCount(playerid)
+			;
 		
-		for (new i = 0; i < cmds; i++) {
-			strunpack(buf, Command_GetNext(i, playerid));
+			for (new i = 0; i < cmds; i++) {
+				strunpack(buf, Command_GetNext(i, playerid));
 			
-			if ((cmd = Command_GetID(buf)) == COMMAND_NOT_FOUND || this.Module[cmd] == -1)
-				continue;
+				if ((cmd = Command_GetID(buf)) == COMMAND_NOT_FOUND || this.Module[cmd] == -1)
+					continue;
 			
-			has_commands[this.Module[cmd]] = true;
-		}
+				has_commands[this.Module[cmd]] = true;
+			}
 		
-		info[0] = '\0';
+			info[0] = '\0';
 		
-		for (new i = 0; i < sizeof(PBP.Modules); i++) {
-			Bit_Set(this.VisibleModules[playerid], i, has_commands[i]);
+			for (new i = 0; i < sizeof(PBP.Modules); i++) {
+				Bit_Set(this.VisibleModules[playerid], i, has_commands[i]);
 			
-			if (!has_commands[i])
-				continue;
+				if (!has_commands[i])
+					continue;
 			
-			strcatf(info, _, "- %s\n", PBP.Modules[i][Name]);
+				strcatf(info, _, "- %s\n", PBP.Modules[i][Name]);
+			}
 		}
 		
 		inline ModuleSelectionResponse(_playerid, dialogid, response, listitem, string:inputtext[]) {
@@ -150,7 +152,7 @@ stock this.ShowCommandsDialog(playerid, module = -1, page = 0) {
 			strcatf(info, _, "{DDDDDD}/{FFFFFF}%s", buf[1]);
 			
 			if (this.Description[cmd])
-				strcatf(info, _, " {F4FCE8}- %@", @ptr[this.Description[cmd]]);
+				strcatf(info, _, " {DDDDDD}- %@", @ptr[this.Description[cmd]]);
 			
 			strcat(info, "\n");
 		}
