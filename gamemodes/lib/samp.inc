@@ -36,6 +36,38 @@ stock GetWeaponSlot(weaponid) {
 	return WEAPONSLOT_NONE;
 }
 
+stock Text:CreateTextDrawBox(color, Float:x1, Float:y1, Float:x2, Float:y2, playerid = INVALID_PLAYER_ID) {
+	new Text:td, Float:height;
+	
+	// Coords less than 0 will be relative to the bottom-right corner
+	if (x2 < 0.0) x2 += 640.0;
+	if (y2 < 0.0) y2 += 480.0;
+	
+	// Make sure the box is from top/left towards right/bottom
+	// If not, swap the variables (XOR swap).
+	if (x1 > x2) x1 ^= x2, x2 ^= x1, x1 ^= x2;
+	if (y1 > y2) y1 ^= y2, y2 ^= y1, y1 ^= y2;
+	
+	height = y2 - y1;
+	
+	if (playerid != INVALID_PLAYER_ID)
+		td = CreatePlayerTextDraw(playerid, x1 * 1.003, y1 * 0.941, "_");
+	else
+		td = TextDrawCreate(x1 * 1.003, y1 * 0.941, "_");
+	
+	TextDrawUseBox(td, true);
+	TextDrawSetShadow(td, 0);
+	TextDrawAlignment(td, 1);
+	TextDrawSetOutline(td, 0);
+	TextDrawBoxColor(td, color);
+	TextDrawColor(td, 0);
+	TextDrawBackgroundColor(td, 0);
+	TextDrawTextSize(td, (x2 - 4.7) * 1.0025, 0.0);
+	TextDrawLetterSize(td, 0.0, height * 0.1045 - 0.55);
+	
+	return td;
+}
+
 // Credits to JernejL: http://forum.sa-mp.com/showthread.php?t=317303
 stock const
 	// This is a packed array with [modelid - 400]{componentid - 1000}.
