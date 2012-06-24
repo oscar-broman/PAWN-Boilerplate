@@ -80,6 +80,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <sqlitei>
 #include <formatex>
 #include <animation_names>
+#include <td-helper>
 
 #include "lib\macros"
 #include "lib\util"
