@@ -37,7 +37,7 @@ stream_distance 300.0
 stream_rate 1000
 maxnpc 0
 logtimeformat [%H:%M:%S]
-plugins crashdetect sscanf
+plugins crashdetect sscanf whirlpool
 
 ;PAWN Boilerplate settings
 debug_level 2
