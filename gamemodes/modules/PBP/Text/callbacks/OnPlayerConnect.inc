@@ -7,7 +7,7 @@
  */
 
 {
-	this.SetPlayerLanguage(playerid, this.DEFAULT_LANGUAGE);
+	this.SetPlayerLanguage(playerid, this.DefaultLanguage);
 	
 	Bit_Vet(this.HasSelectedLanguage, playerid);
 }

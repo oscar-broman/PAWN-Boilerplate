@@ -15,14 +15,14 @@
 	
 	#line 16
 	
-	this.LanguageNames[i] = this.DefaultLanguage;
+	this.LanguageNames[i] = this.DefaultLanguageCode;
 	
 	for (i = 0; i < sizeof(this.LanguageCodes); i++) {
 		new filename[32];
 		
 		format(filename, _, "languages/%L.lang.inc", this.LanguageCodes[i][0]);
 		
-		new lang = this.LoadLanguage(filename);
+		new lang = this.LoadLanguage(filename, i);
 		
 		if (lang != -1) {
 			this.LanguageNames[lang] = i;

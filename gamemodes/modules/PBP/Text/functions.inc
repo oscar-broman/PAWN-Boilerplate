@@ -4,7 +4,7 @@
  > Priority: 11
  */
 
-stock this.LoadLanguage(const filename[]) {
+stock this.LoadLanguage(const filename[], lang_code) {
 	new File:fp;
 	
 	if (fexist(filename) && (fp = fopen(filename, io_read))) {
@@ -16,6 +16,9 @@ stock this.LoadLanguage(const filename[]) {
 			lang = this.Languages++,
 			line = 0
 		;
+		
+		if (lang_code == this.DefaultLanguageCode)
+			this.DefaultLanguage = lang;
 		
 		while (fread(fp, buf, .pack = true)) {
 			if (++line <= 2)

@@ -8,8 +8,9 @@
 #define this.Prepare          _@lp
 #define this.Strings          _@ls
 #define this.ActiveLanguage   _@lC
+#define this.DefaultLanguage  _@ld
 
-#define _@lc _@lC==-1?0:_@lC
+#define _@lc _@lC==-1?_@ld:_@lC
 
 // Wrap this around any strings to make sure they're in the correct language
 #define this.@(%0) \
@@ -17,7 +18,6 @@
 
 const this.MAX_LANGUAGES = 20;
 const this.INVALID_LANGUAGE = -1;
-const this.DEFAULT_LANGUAGE = 0;
 
 enum {
 	this.DIALOG_LANGUAGE_SELECTION = this.OFFSET
@@ -86,7 +86,8 @@ enum this.LANGUAGE_CODE: {
 };
 
 stock
-	         this.DefaultLanguage = _:LANG_EN,
+	         this.DefaultLanguageCode = _:LANG_EN,
+	         this.DefaultLanguage = 0,
 	         this.Strings[this.MAX_LANGUAGES][{#LANGUAGES_NUM_STRINGS#}][1],
 	         this.Descriptions[{#LANGUAGES_NUM_STRINGS#}][1],
 	         this.ActiveLanguage = -1,
