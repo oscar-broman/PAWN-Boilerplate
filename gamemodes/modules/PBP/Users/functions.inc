@@ -272,7 +272,7 @@ stock this.ShowDialogIfNeeded(playerid) {
 	if (this.IsLoggedIn(playerid)) {
 		
 	} else if (this.IsRegistered(playerid)) {
-		inline LogInQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
+/*		inline LogInQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
@@ -282,18 +282,18 @@ stock this.ShowDialogIfNeeded(playerid) {
 				Kick(playerid);
 			else
 				this.ShowDialogIfNeeded(playerid);
-		}
+		}*/
 		
-		inline LogInFailedResponse(_playerid, dialogid, response, listitem, string:inputtext[])
+/*		inline LogInFailedResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
 			Text.SetActivePlayer(playerid);
 			
 			this.ShowDialogIfNeeded(playerid);
-		}
+		}*/
 		
-		inline LogInResponse(_playerid, dialogid, response, listitem, string:inputtext[])
+/*		inline LogInResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
@@ -320,11 +320,12 @@ stock this.ShowDialogIfNeeded(playerid) {
 					}
 				}
 			}
-		}
+		}*/
 		
-		Dialog_ShowCallback(playerid, using inline LogInResponse, DIALOG_STYLE_PASSWORD, @"Log in", @"This nickname is registered. Please log in or come back with another nickname.\n\nEnter your password:", @"OK", @"Cancel");
+		ShowPlayerDialog(playerid, this.DIALOG_LOG_IN, DIALOG_STYLE_PASSWORD, @"Log in", @"This nickname is registered. Please log in or come back with another nickname.\n\nEnter your password:", @"OK", @"Cancel");
+		//Dialog_ShowCallback(playerid, using inline LogInResponse, DIALOG_STYLE_PASSWORD, @"Log in", @"This nickname is registered. Please log in or come back with another nickname.\n\nEnter your password:", @"OK", @"Cancel");
 	} else {
-		inline RegisterQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
+/*		inline RegisterQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
@@ -334,9 +335,9 @@ stock this.ShowDialogIfNeeded(playerid) {
 				Kick(playerid);
 			else
 				this.ShowDialogIfNeeded(playerid);
-		}
+		}*/
 		
-		inline RegisterResponse(_playerid, dialogid, response, listitem, string:inputtext[])
+/*		inline RegisterResponse(_playerid, dialogid, response, listitem, string:inputtext[])
 		{
 			#pragma unused _playerid, dialogid, response, listitem, inputtext
 			
@@ -355,9 +356,10 @@ stock this.ShowDialogIfNeeded(playerid) {
 					Kick(playerid);
 				}
 			}
-		}
+		}*/
 		
-		Dialog_ShowCallback(playerid, using inline RegisterResponse, DIALOG_STYLE_PASSWORD, @"Register", @"You must register this nickname before playing.\n\nEnter a password:", @"OK", @"Cancel");
+		ShowPlayerDialog(playerid, this.DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, @"Register", @"You must register this nickname before playing.\n\nEnter a password:", @"OK", @"Cancel");
+		//Dialog_ShowCallback(playerid, using inline RegisterResponse, DIALOG_STYLE_PASSWORD, @"Register", @"You must register this nickname before playing.\n\nEnter a password:", @"OK", @"Cancel");
 	}
 }
 

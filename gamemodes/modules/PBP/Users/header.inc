@@ -27,10 +27,11 @@ stock RegisterUserVariable;
 	}
 
 enum {
-	this.DIALOG_REGISTER = this.OFFSET,
-	this.DIALOG_REGISTER_QUIT_CONFIRM,
+	this.DIALOG_LOG_IN_QUIT_CONFIRM = this.OFFSET,
+	this.DIALOG_LOG_IN_FAILED,
 	this.DIALOG_LOG_IN,
-	this.DIALOG_LOG_IN_QUIT_CONFIRM
+	this.DIALOG_REGISTER_QUIT_CONFIRM,
+	this.DIALOG_REGISTER
 };
 
 enum this.e_COLUMN {

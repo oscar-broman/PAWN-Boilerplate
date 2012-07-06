@@ -269,30 +269,16 @@ stock this.ShowsLanguageSelection() {
 }
 
 stock this.ShowLanguageSelection(playerid) {
-	inline LanguageSelection(_playerid, dialogid, response, listitem, string:inputtext[])
-	{
-		#pragma unused _playerid, dialogid, inputtext
+	new langs[this.MAX_LANGUAGES * 16] = " ";
+	
+	for (new i = 0; i < this.Languages; i++) {
+		if (i)
+			strcat(langs, "\n");
 		
-		Bit_Let(this.HasSelectedLanguage, playerid);
-		
-		if (response == 1)
-			this.SetPlayerLanguage(playerid, listitem);
-		
-		CallRemoteFunction(!"OnPlayerSelectedLanguage", !"ii", playerid, this.PlayerLanguage);
+		strcat(langs, this.LanguageCodes[this.LanguageNames[i]][1]);
 	}
 	
-	{
-		new langs[this.MAX_LANGUAGES * 16] = " ";
-		
-		for (new i = 0; i < this.Languages; i++) {
-			if (i)
-				strcat(langs, "\n");
-			
-			strcat(langs, this.LanguageCodes[this.LanguageNames[i]][1]);
-		}
-		
-		Dialog_ShowCallback(playerid, using inline LanguageSelection, DIALOG_STYLE_LIST, "Select language", langs[1], "OK", "Cancel");
-	}
+	ShowPlayerDialog(playerid, this.DIALOG_LANGUAGE_SELECTION, DIALOG_STYLE_LIST, "Select language", langs[1], "OK", "Cancel");
 }
 
 // formatex specifier for translatable strings

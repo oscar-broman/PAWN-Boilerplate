@@ -19,6 +19,10 @@ const this.MAX_LANGUAGES = 20;
 const this.INVALID_LANGUAGE = -1;
 const this.DEFAULT_LANGUAGE = 0;
 
+enum {
+	this.DIALOG_LANGUAGE_SELECTION = this.OFFSET
+};
+
 stock const this.LanguageCodes[][] = {
 	{!"AB", !"Abkhazian"},   {!"AA", !"Afar"},        {!"AF", !"Afrikaans"}, {!"SQ", !"Albanian"},       {!"AM", !"Amharic"},     
 	{!"AR", !"Arabic"},      {!"HY", !"Armenian"},    {!"AS", !"Assamese"},  {!"AY", !"Aymara"},         {!"AZ", !"Azerbaijani"},
