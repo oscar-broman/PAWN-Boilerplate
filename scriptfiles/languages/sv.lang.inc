@@ -102,3 +102,11 @@
 "< Back" = "< Bakåt"
 
 "Next >" = "Nästa >"
+
+"View information about a certain command." = "Visa information för ett specifikt kommando."
+
+"* View information about a certain command." = "* Visa information för ett specifikt kommando."
+
+"* Usage: /help [command]" = "* Användning: /help [kommando]"
+
+"* Invalid command." = "* Ogiltigt kommando."
