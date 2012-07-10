@@ -16,42 +16,9 @@
 #define this.@(%0) \
 	(@ptr[Text.GetStringAddress(%0)])
 
-const this.MAX_LANGUAGES = 20;
-const this.INVALID_LANGUAGE = -1;
 
 enum {
 	this.DIALOG_LANGUAGE_SELECTION = this.OFFSET
-};
-
-stock const this.LanguageCodes[][] = {
-	{!"AB", !"Abkhazian"},   {!"AA", !"Afar"},        {!"AF", !"Afrikaans"}, {!"SQ", !"Albanian"},       {!"AM", !"Amharic"},     
-	{!"AR", !"Arabic"},      {!"HY", !"Armenian"},    {!"AS", !"Assamese"},  {!"AY", !"Aymara"},         {!"AZ", !"Azerbaijani"},
-	{!"BA", !"Bashkir"},     {!"EU", !"Basque"},      {!"BN", !"Bengali"},   {!"DZ", !"Bhutani"},        {!"BH", !"Bihari"},      
-	{!"BI", !"Bislama"},     {!"BR", !"Breton"},      {!"BG", !"Bulgarian"}, {!"MY", !"Burmese"},        {!"BE", !"Byelorussian"},
-	{!"KM", !"Cambodian"},   {!"CA", !"Catalan"},     {!"ZH", !"Chinese"},   {!"CO", !"Corsican"},       {!"HR", !"Croatian"},    
-	{!"CS", !"Czech"},       {!"DA", !"Danish"},      {!"NL", !"Dutch"},     {!"EN", !"English"},        {!"EO", !"Esperanto"},
-	{!"ET", !"Estonian"},    {!"FO", !"Faeroese"},    {!"FJ", !"Fiji"},      {!"FI", !"Finnish"},        {!"FR", !"French"},      
-	{!"FY", !"Frisian"},     {!"GD", !"Gaelic"},      {!"GL", !"Galician"},  {!"KA", !"Georgian"},       {!"DE", !"German"},
-	{!"EL", !"Greek"},       {!"KL", !"Greenlandic"}, {!"GN", !"Guarani"},   {!"GU", !"Gujarati"},       {!"HA", !"Hausa"},       
-	{!"IW", !"Hebrew"},      {!"HI", !"Hindi"},       {!"HU", !"Hungarian"}, {!"IS", !"Icelandic"},      {!"IN", !"Indonesian"},
-	{!"IA", !"Interlingua"}, {!"IE", !"Interlingue"}, {!"IK", !"Inupiak"},   {!"GA", !"Irish"},          {!"IT", !"Italian"},     
-	{!"JA", !"Japanese"},    {!"JW", !"Javanese"},    {!"KN", !"Kannada"},   {!"KS", !"Kashmiri"},       {!"KK", !"Kazakh"},
-	{!"RW", !"Kinyarwanda"}, {!"KY", !"Kirghiz"},     {!"RN", !"Kirundi"},   {!"KO", !"Korean"},         {!"KU", !"Kurdish"},     
-	{!"LO", !"Laothian"},    {!"LA", !"Latin"},       {!"LV", !"Latvian"},   {!"LN", !"Lingala"},        {!"LT", !"Lithuanian"},
-	{!"MK", !"Macedonian"},  {!"MG", !"Malagasy"},    {!"MS", !"Malay"},     {!"ML", !"Malayalam"},      {!"MT", !"Maltese"},     
-	{!"MI", !"Maori"},       {!"MR", !"Marathi"},     {!"MO", !"Moldavian"}, {!"MN", !"Mongolian"},      {!"NA", !"Nauru"},
-	{!"NE", !"Nepali"},      {!"NO", !"Norwegian"},   {!"OC", !"Occitan"},   {!"OR", !"Oriya"},          {!"OM", !"Oromo, Afan"}, 
-	{!"PS", !"Pashto"},      {!"FA", !"Persian"},     {!"PL", !"Polish"},    {!"PT", !"Portuguese"},     {!"PA", !"Punjabi"},
-	{!"QU", !"Quechua"},     {!"RM", !"Rhaeto-Rom"},  {!"RO", !"Romanian"},  {!"RU", !"Russian"},        {!"SM", !"Samoan"},      
-	{!"SG", !"Sangro"},      {!"SA", !"Sanskrit"},    {!"SR", !"Serbian"},   {!"SH", !"Serbo-Croatian"}, {!"ST", !"Sesotho"},
-	{!"TN", !"Setswana"},    {!"SN", !"Shona"},       {!"SD", !"Sindhi"},    {!"SI", !"Singhalese"},     {!"SS", !"Siswati"},     
-	{!"SK", !"Slovak"},      {!"SL", !"Slovenian"},   {!"SO", !"Somali"},    {!"ES", !"Spanish"},        {!"SU", !"Sudanese"},
-	{!"SW", !"Swahili"},     {!"SV", !"Swedish"},     {!"TL", !"Tagalog"},   {!"TG", !"Tajik"},          {!"TA", !"Tamil"},       
-	{!"TT", !"Tatar"},       {!"TE", !"Tegulu"},      {!"TH", !"Thai"},      {!"BO", !"Tibetan"},        {!"TI", !"Tigrinya"},
-	{!"TO", !"Tonga"},       {!"TS", !"Tsonga"},      {!"TR", !"Turkish"},   {!"TK", !"Turkmen"},        {!"TW", !"Twi"},         
-	{!"UK", !"Ukrainian"},   {!"UR", !"Urdu"},        {!"UZ", !"Uzbek"},     {!"VI", !"Vietnamese"},     {!"VO", !"Volapuk"},
-	{!"CY", !"Welsh"},       {!"WO", !"Wolof"},       {!"XH", !"Xhosa"},     {!"JI", !"Yiddish"},        {!"YO", !"Yoruba"},      
-	{!"ZU", !"Zulu"}
 };
 
 enum this.LANGUAGE_CODE: {
@@ -85,6 +52,42 @@ enum this.LANGUAGE_CODE: {
 	LANG_ZU
 };
 
+stock const this.LanguageCodes[][] = {
+	{!"AB", !"Abkhazian"},   {!"AA", !"Afar"},        {!"AF", !"Afrikaans"}, {!"SQ", !"Albanian"},       {!"AM", !"Amharic"},     
+	{!"AR", !"Arabic"},      {!"HY", !"Armenian"},    {!"AS", !"Assamese"},  {!"AY", !"Aymara"},         {!"AZ", !"Azerbaijani"},
+	{!"BA", !"Bashkir"},     {!"EU", !"Basque"},      {!"BN", !"Bengali"},   {!"DZ", !"Bhutani"},        {!"BH", !"Bihari"},      
+	{!"BI", !"Bislama"},     {!"BR", !"Breton"},      {!"BG", !"Bulgarian"}, {!"MY", !"Burmese"},        {!"BE", !"Byelorussian"},
+	{!"KM", !"Cambodian"},   {!"CA", !"Catalan"},     {!"ZH", !"Chinese"},   {!"CO", !"Corsican"},       {!"HR", !"Croatian"},    
+	{!"CS", !"Czech"},       {!"DA", !"Danish"},      {!"NL", !"Dutch"},     {!"EN", !"English"},        {!"EO", !"Esperanto"},
+	{!"ET", !"Estonian"},    {!"FO", !"Faeroese"},    {!"FJ", !"Fiji"},      {!"FI", !"Finnish"},        {!"FR", !"French"},      
+	{!"FY", !"Frisian"},     {!"GD", !"Gaelic"},      {!"GL", !"Galician"},  {!"KA", !"Georgian"},       {!"DE", !"German"},
+	{!"EL", !"Greek"},       {!"KL", !"Greenlandic"}, {!"GN", !"Guarani"},   {!"GU", !"Gujarati"},       {!"HA", !"Hausa"},       
+	{!"IW", !"Hebrew"},      {!"HI", !"Hindi"},       {!"HU", !"Hungarian"}, {!"IS", !"Icelandic"},      {!"IN", !"Indonesian"},
+	{!"IA", !"Interlingua"}, {!"IE", !"Interlingue"}, {!"IK", !"Inupiak"},   {!"GA", !"Irish"},          {!"IT", !"Italian"},     
+	{!"JA", !"Japanese"},    {!"JW", !"Javanese"},    {!"KN", !"Kannada"},   {!"KS", !"Kashmiri"},       {!"KK", !"Kazakh"},
+	{!"RW", !"Kinyarwanda"}, {!"KY", !"Kirghiz"},     {!"RN", !"Kirundi"},   {!"KO", !"Korean"},         {!"KU", !"Kurdish"},     
+	{!"LO", !"Laothian"},    {!"LA", !"Latin"},       {!"LV", !"Latvian"},   {!"LN", !"Lingala"},        {!"LT", !"Lithuanian"},
+	{!"MK", !"Macedonian"},  {!"MG", !"Malagasy"},    {!"MS", !"Malay"},     {!"ML", !"Malayalam"},      {!"MT", !"Maltese"},     
+	{!"MI", !"Maori"},       {!"MR", !"Marathi"},     {!"MO", !"Moldavian"}, {!"MN", !"Mongolian"},      {!"NA", !"Nauru"},
+	{!"NE", !"Nepali"},      {!"NO", !"Norwegian"},   {!"OC", !"Occitan"},   {!"OR", !"Oriya"},          {!"OM", !"Oromo, Afan"}, 
+	{!"PS", !"Pashto"},      {!"FA", !"Persian"},     {!"PL", !"Polish"},    {!"PT", !"Portuguese"},     {!"PA", !"Punjabi"},
+	{!"QU", !"Quechua"},     {!"RM", !"Rhaeto-Rom"},  {!"RO", !"Romanian"},  {!"RU", !"Russian"},        {!"SM", !"Samoan"},      
+	{!"SG", !"Sangro"},      {!"SA", !"Sanskrit"},    {!"SR", !"Serbian"},   {!"SH", !"Serbo-Croatian"}, {!"ST", !"Sesotho"},
+	{!"TN", !"Setswana"},    {!"SN", !"Shona"},       {!"SD", !"Sindhi"},    {!"SI", !"Singhalese"},     {!"SS", !"Siswati"},     
+	{!"SK", !"Slovak"},      {!"SL", !"Slovenian"},   {!"SO", !"Somali"},    {!"ES", !"Spanish"},        {!"SU", !"Sudanese"},
+	{!"SW", !"Swahili"},     {!"SV", !"Swedish"},     {!"TL", !"Tagalog"},   {!"TG", !"Tajik"},          {!"TA", !"Tamil"},       
+	{!"TT", !"Tatar"},       {!"TE", !"Tegulu"},      {!"TH", !"Thai"},      {!"BO", !"Tibetan"},        {!"TI", !"Tigrinya"},
+	{!"TO", !"Tonga"},       {!"TS", !"Tsonga"},      {!"TR", !"Turkish"},   {!"TK", !"Turkmen"},        {!"TW", !"Twi"},         
+	{!"UK", !"Ukrainian"},   {!"UR", !"Urdu"},        {!"UZ", !"Uzbek"},     {!"VI", !"Vietnamese"},     {!"VO", !"Volapuk"},
+	{!"CY", !"Welsh"},       {!"WO", !"Wolof"},       {!"XH", !"Xhosa"},     {!"JI", !"Yiddish"},        {!"YO", !"Yoruba"},      
+	{!"ZU", !"Zulu"}
+};	
+
+
+const this.MAX_LANGUAGES = 20;
+const this.INVALID_LANGUAGE = -1;
+
+
 stock
 	         this.DefaultLanguageCode = _:LANG_EN,
 	         this.DefaultLanguage = 0,
@@ -104,17 +107,42 @@ stock
 	         this.GroupName[Group:MAX_GROUPS]
 ;
 
+
 RegisterConfigVariable: this.EnableLanguageSelection;
 
-forward      this.Prepare(index, forplayer = INVALID_PLAYER_ID);
-forward      this.GetStringIndex(const string[], &lang = 0);
-forward      this.CheckStringArgument(arg, playerid);
-forward bool:this.SetPlayerLanguage(playerid, lang);
-forward      this.GetPlayerLanguage(playerid);
-forward      this.ResetActiveLanguage();
-forward      this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang = -1);
-forward bool:this.IsTranslatable(const string[]);
-forward      this.SetActivePlayer(playerid);
-forward      this.SetActiveLanguage(lang);
-forward      this.GetLanguageFromLanguageCode(this.LANGUAGE_CODE:code);
-forward      this.ShowsLanguageSelection();
+
+forward              this.LoadLanguage(const filename[], lang_code);
+forward              this.GetStringIndex(const string[], &lang = 0);
+forward              this.ParseStringLiteral(output[], const input[], start = 0);
+forward              this.Prepare(index, forplayer = INVALID_PLAYER_ID);
+forward              this.SetActivePlayer(playerid);
+forward              this.SetActiveLanguage(lang);
+forward         bool:this.SetPlayerLanguage(playerid, lang);
+forward              this.GetPlayerLanguage(playerid);
+forward              this.CheckStringArgument(arg, playerid);
+forward              this.GetStringAddress(const string[], playerid = INVALID_PLAYER_ID, lang = -1);
+forward         bool:this.IsTranslatable(const string[]);
+forward              this.DeferredResetActiveLanguage();
+forward              this.ResetActiveLanguage();
+forward              this.GetLanguageFromLanguageCode(this.LANGUAGE_CODE:code);
+forward              this.ShowsLanguageSelection();
+forward              this.ShowLanguageSelection(playerid);
+
+// Hooks
+forward              this.SendClientMessageToAll(color, message[], va_args<>);
+forward              this.SendClientMessage(playerid, color, message[], va_args<>);
+forward   PlayerText:this.CreatePlayerTextDraw(playerid, Float:x, Float:y, text[], va_args<>);
+forward              this.PlayerTextDrawSetString(playerid, PlayerText:text, string[], va_args<>);
+forward              this.SendPlayerMessageToAll(senderid, const message[], va_args<>);
+forward              this.SendPlayerMessageToPlayer(playerid, senderid, const message[], va_args<>);
+forward              this.GameTextForAll(const string[], time, style, va_args<>);
+forward              this.GameTextForPlayer(playerid, const string[], time, style, va_args<>);
+forward PlayerText3D:this.CreatePlayer3DTextLabel(playerid, text[], color, Float:x, Float:y, Float:z, Float:DrawDistance, attachedplayer = INVALID_PLAYER_ID, attachedvehicle = INVALID_VEHICLE_ID, testLOS = 0, va_args<>);
+forward              this.UpdatePlayer3DTextLabelText(playerid, PlayerText3D:id, color, text[], va_args<>);
+forward              this.ShowPlayerDialog(playerid, dialogid, style, caption[], info[], button1[], button2[]);
+forward              this.SetPlayerObjectMaterialText(playerid, objectid, text[], materialindex = 0, materialsize = OBJECT_MATERIAL_SIZE_256x128, fontface[] = "Arial", fontsize = 24, bold = 1, fontcolor = 0xFFFFFFFF, backcolor = 0, textalignment = 0);
+forward              this.Dialog_ShowCallback(playerid, callback:callback, style, string:title[], string:caption[], string:button1[], string:button2[] = "", dialog = -1);
+forward              this.Dialog_ShowCallbackData(playerid, callback[E_CALLBACK_DATA], style, string:title[], string:caption[], string:button1[], string:button2[] = "", dialog = -1);
+forward              this.Dialog_Show(playerid, style, string:title[], string:caption[], string:button1[], string:button2[] = "", dialog = -1);
+forward              this.Group_SetName(Group:g, name[]);
+forward              this.Group_GetName(Group:g);

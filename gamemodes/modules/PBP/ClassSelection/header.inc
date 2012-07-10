@@ -22,6 +22,7 @@ const INVALID_CLASS = -1;
 	#define WEAPON_ARMOUR  (100)
 #endif
 
+
 enum this.E_WEAPON_SET {
 	Weapon,
 	Ammo
@@ -46,6 +47,7 @@ enum this.E_CLASS {
 	Group:Group
 };
 
+
 new
 	         this.WeaponSets[this.MAX_WEAPON_SETS][this.MAX_WEAPON_SLOT][this.E_WEAPON_SET],
 	         this.SpawnLocations[this.MAX_SPAWN_LOCATIONS][this.E_SPAWN_LOCATION],
@@ -67,21 +69,20 @@ new
 	   Float:this.CameraLookAt[] = {2324.0000, -1143.0000, 1050.5000}
 ;
 
+
 RegisterConfigVariable: this.Interior;
 RegisterConfigArray:    this.PlayerPos;
 RegisterConfigVariable: this.PlayerRot;
 RegisterConfigArray:    this.CameraPos;
 RegisterConfigArray:    this.CameraLookAt;
 
+
 forward      CreateWeaponSet(...);
 forward      CreateSpawnLocation(interior = 0, world = 0, Float:x, Float:y, Float:z, Float:rot, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, weapon_set = INVALID_WEAPON_SET);
 forward      CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world = 0, Group:group = GROUP_GLOBAL, team = INVALID_TEAM);
-
 forward bool:this.IsValidWeaponSet(ws);
 forward bool:this.IsValidSpawnLocation(spawn);
 forward bool:this.IsValidClass(class);
-
 forward bool:this.PlayerCanSelectClass(playerid, class);
 forward bool:this.SetFirstAvailableClass(playerid);
-
-forward this.GetPlayerClass(playerid);
+forward      this.GetPlayerClass(playerid);

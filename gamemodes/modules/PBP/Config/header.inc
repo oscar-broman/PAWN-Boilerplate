@@ -19,8 +19,6 @@ stock RegisterConfigVariable;
 		Config.RegisterVariableEntry(#%1, tagof((%1)), sizeof((%1)), _:%1, true); \
 	}
 
-// Forward this since most RegisterConfigVariable will be in headers
-this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...);
 
 enum this.e_CONFIG_ENTRY {
 	      KeyHash,
@@ -38,12 +36,17 @@ enum {
 	this.TYPE_MALLOC_STRING
 };
 
+
 stock const
 	this.FILE[] = !"config.cfg"
 ;
+
 
 new
 	this.NumConfigEntries = 0,
 	this.ConfigEntries[1024][this.e_CONFIG_ENTRY],
 	this.CB_OnConfigValueChange
 ;
+
+
+forward this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...);

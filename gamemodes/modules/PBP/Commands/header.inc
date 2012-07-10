@@ -38,4 +38,6 @@ new
 
 RegisterConfigVariable: this.CommandsPerPage;
 
+forward this.SetupPermissions(command[], Group:...);
+forward this.PadWithTabsForMsgbox(string[], tabs, maxlength = sizeof(string));
 forward this.ShowCommandsDialog(playerid, module = -1, page = 0);

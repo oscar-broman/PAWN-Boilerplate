@@ -15,6 +15,7 @@ enum AdminLevel:{
 	this.NUM_LEVELS
 };
 
+
 new
 	AdminLevel:this.PlayerLevel[MAX_PLAYERS],
 	           this.LevelNames[this.NUM_LEVELS][1],
@@ -26,8 +27,9 @@ new
 	StaticGroup<GROUP_RCON>       = @"RCON Administrator"
 ;
 
+
 RegisterUserVariable: "admin-level" => this.PlayerLevel;
 
-// Forward-declarations
+
 forward AdminLevel:GetPlayerAdminLevel(playerid);
-forward SetPlayerAdminLevel(playerid, AdminLevel:level, by_player = INVALID_PLAYER_ID);
+forward            SetPlayerAdminLevel(playerid, AdminLevel:level, by_player = INVALID_PLAYER_ID);

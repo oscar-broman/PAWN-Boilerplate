@@ -92,7 +92,6 @@ stock this.Teleport(playerid, Float:x, Float:y, Float:z, Float:rot = 0.0, interi
 	SetPVarInt(playerid, #this.TeleportTimer, timer);
 }
 
-forward this.TeleportStep(playerid);
 public this.TeleportStep(playerid) {
 	if (!IsPlayerConnected(playerid) || !this.TeleportStart[playerid])
 		return;

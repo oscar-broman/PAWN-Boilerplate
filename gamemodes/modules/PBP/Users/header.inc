@@ -26,6 +26,7 @@ stock RegisterUserVariable;
 		Users.RegisterUserVariable(#%1, tagof((%1)), sizeof((%1)), sizeof((%1[])), _:%1); \
 	}
 
+
 enum {
 	this.DIALOG_LOG_IN_QUIT_CONFIRM = this.OFFSET,
 	this.DIALOG_LOG_IN_FAILED,
@@ -66,8 +67,10 @@ enum this.E_USER_VARIABLE {
 	 bool:Packed
 };
 
+
 const UID:INVALID_UID = UID:-1;
 const MINIMUM_UID     = 1000;
+
 
 new const
 	this.Tables[][this.e_TABLE] = {
@@ -86,6 +89,7 @@ new const
 	}
 ;
 
+
 new
 	            this.DatabaseName[32 char] = !"users.db",
 	            this.MaxLogInAttempts = 3,
@@ -98,22 +102,27 @@ new
 	            this.UserVariables[1024][this.E_USER_VARIABLE]
 ;
 
+
 RegisterConfigVariable: this.DatabaseName;
 RegisterConfigVariable: this.MaxLogInAttempts;
 
-// Function forward-declarations
+
+forward bool:this.ResolveUID(&{UID, _}:uid, bool:only_logged_in = true);
+forward bool:this.ResolvePlayerID(&{UID, _}:playerid);
+forward bool:this.RegisterPlayer(playerid, const password[]);
 forward  UID:this.RegisterAccount(const name[], const password[]);
 forward bool:this.RenameAccount({UID, _}:uid, const new_name[]);
 forward bool:this.ChangeAccountPassword({UID, _}:uid, const new_password[]);
 forward      this.SaveAccount({UID, _}:_playerid);
-forward      this.DeleteAccount({UID, _}:uid);
 forward bool:this.LogPlayerIn(playerid, const password[]);
 forward bool:this.TestAccountAuth({UID, _}:uid, const password[]);
 forward  UID:this.FindAccountByName(const name[]);
 forward      this.FindPlayerByAccount(UID:uid);
-
 forward bool:this.IsLoggedIn({UID, _}:playerid);
 forward bool:this.IsRegistered({UID, _}:playerid);
-forward bool:this.RegisterPlayer(playerid, const password[]);
+forward      this.ShowLogInFirst(playerid);
+forward      this.ShowDialogIfNeeded(playerid);
+forward      this.RegisterUserVariable(const _key[], tag, size1, size2, ...);
 
-forward this.RegisterUserVariable(const _key[], tag, size1, size2, ...);
+// Hooks
+forward      this.SetPlayerName(playerid, name[]);

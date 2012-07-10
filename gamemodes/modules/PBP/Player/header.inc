@@ -31,6 +31,7 @@ enum (<<= 1) {
 	HP_ARMOUR
 };
 
+
 new
 	         this.Info[MAX_PLAYERS][e_PLAYER_INFO],
 	    Text:this.TeleportTextDraw[MAX_PLAYERS] = {INVALID_TEXT_DRAW, ...},
@@ -51,12 +52,14 @@ new
 	    bool:this.UsePlayerPedAnimations = true
 ;
 
+
 RegisterConfigVariable: this.UsePlayerPedAnimations;
 RegisterConfigVariable: this.TeleportDuration;
 RegisterConfigVariable: this.TeleportTimerStep;
 
-// Function forward declarations
-forward bool:this.IsInAnyOfGroups(playerid, Group:...);
-forward this.CheckForNewAdmins();
 
-forward this.Teleport(playerid, Float:x, Float:y, Float:z, Float:rot = 0.0, interior = -1, world = -1);
+forward bool:this.IsInAnyOfGroups(playerid, Group:...);
+forward      this.CheckForNewAdmins();
+forward      this.Teleport(playerid, Float:x, Float:y, Float:z, Float:rot = 0.0, interior = -1, world = -1);
+forward      this.TeleportStep(playerid);
+forward      this.SetPlayerName(playerid, name[]);

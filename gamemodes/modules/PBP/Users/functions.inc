@@ -272,94 +272,9 @@ stock this.ShowDialogIfNeeded(playerid) {
 	if (this.IsLoggedIn(playerid)) {
 		
 	} else if (this.IsRegistered(playerid)) {
-/*		inline LogInQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
-		{
-			#pragma unused _playerid, dialogid, response, listitem, inputtext
-			
-			Text.SetActivePlayer(playerid);
-			
-			if (response)
-				Kick(playerid);
-			else
-				this.ShowDialogIfNeeded(playerid);
-		}*/
-		
-/*		inline LogInFailedResponse(_playerid, dialogid, response, listitem, string:inputtext[])
-		{
-			#pragma unused _playerid, dialogid, response, listitem, inputtext
-			
-			Text.SetActivePlayer(playerid);
-			
-			this.ShowDialogIfNeeded(playerid);
-		}*/
-		
-/*		inline LogInResponse(_playerid, dialogid, response, listitem, string:inputtext[])
-		{
-			#pragma unused _playerid, dialogid, response, listitem, inputtext
-			
-			Text.SetActivePlayer(playerid);
-			
-			if (!response)
-				Dialog_ShowCallback(playerid, using inline LogInQuitConfirmResponse, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
-			else {
-				if (isnull(inputtext)) {
-					this.ShowDialogIfNeeded(playerid);
-				} else if (this.LogPlayerIn(playerid, inputtext)) {
-					
-				} else {
-					if (++this.LogInAttempts[playerid] >= this.MaxLogInAttempts) {
-						SendClientMessage(playerid, COLOR_GENERIC_ERROR, @"* You were kicked from the server because of too many failed log in attempts.");
-						
-						Kick(playerid);
-					} else {
-						new msg[80], attempts = this.MaxLogInAttempts - this.LogInAttempts[playerid];
-						
-						format(msg, _, @"Invalid password. You have %d more %s, then you'll get kicked.", attempts, attempts == 1 ? (@"attempt") : (@"attempts"<"Plural of attempt">));
-						
-						Dialog_ShowCallback(playerid, using inline LogInFailedResponse, DIALOG_STYLE_MSGBOX, @"Log in failed", msg, @"Retry");
-					}
-				}
-			}
-		}*/
-		
 		ShowPlayerDialog(playerid, this.DIALOG_LOG_IN, DIALOG_STYLE_PASSWORD, @"Log in", @"This nickname is registered. Please log in or come back with another nickname.\n\nEnter your password:", @"OK", @"Cancel");
-		//Dialog_ShowCallback(playerid, using inline LogInResponse, DIALOG_STYLE_PASSWORD, @"Log in", @"This nickname is registered. Please log in or come back with another nickname.\n\nEnter your password:", @"OK", @"Cancel");
 	} else {
-/*		inline RegisterQuitConfirmResponse(_playerid, dialogid, response, listitem, string:inputtext[])
-		{
-			#pragma unused _playerid, dialogid, response, listitem, inputtext
-			
-			Text.SetActivePlayer(playerid);
-			
-			if (response)
-				Kick(playerid);
-			else
-				this.ShowDialogIfNeeded(playerid);
-		}*/
-		
-/*		inline RegisterResponse(_playerid, dialogid, response, listitem, string:inputtext[])
-		{
-			#pragma unused _playerid, dialogid, response, listitem, inputtext
-			
-			Text.SetActivePlayer(playerid);
-			
-			if (!response)
-				Dialog_ShowCallback(playerid, using inline RegisterQuitConfirmResponse, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
-			else {
-				if (isnull(inputtext)) {
-					this.ShowDialogIfNeeded(playerid);
-				} else if (this.RegisterPlayer(playerid, inputtext)) {
-					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, @"Success", @"This nickname is now registered!", @"Cool");
-				} else {
-					Dialog_Show(playerid, DIALOG_STYLE_MSGBOX, @"Success", @"Failed to register. Try with another nickname or contact server management if the problem persists.", @"OK");
-					
-					Kick(playerid);
-				}
-			}
-		}*/
-		
 		ShowPlayerDialog(playerid, this.DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, @"Register", @"You must register this nickname before playing.\n\nEnter a password:", @"OK", @"Cancel");
-		//Dialog_ShowCallback(playerid, using inline RegisterResponse, DIALOG_STYLE_PASSWORD, @"Register", @"You must register this nickname before playing.\n\nEnter a password:", @"OK", @"Cancel");
 	}
 }
 
