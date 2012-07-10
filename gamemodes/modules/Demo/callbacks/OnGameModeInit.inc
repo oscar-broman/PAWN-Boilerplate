@@ -7,9 +7,14 @@
  */
 
 {
+	// Set the gamemode's name to MODE_NAME and version information (from gamemodes/header.inc).
 	SetGameModeText(MODE_NAME " v" #SCRIPT_VERSION_MAJOR "." #SCRIPT_VERSION_MINOR "." #SCRIPT_VERSION_BUILD);
 	
-	new pizza_place = CreateSpawnLocation(
+	// Spawn locations
+	new pizza_place, ammu_nation, container;
+	
+	// Outside of pizza place in Blueberry
+	pizza_place = CreateSpawnLocation(
 		.interior = 0,
 		.x        = 203.7050,
 		.y        = -205.3500,
@@ -17,7 +22,8 @@
 		.rot      = 180.0
 	);
 	
-	new ammu_nation = CreateSpawnLocation(
+	// Outside of Ammu-Nation in Blueberry
+	ammu_nation = CreateSpawnLocation(
 		.interior = 0,
 		.x        = 240.0390,
 		.y        = -178.2970,
@@ -25,7 +31,8 @@
 		.rot      = 90.0
 	);
 	
-	new container = CreateSpawnLocation(
+	// On top of a container in Blueberry
+	container = CreateSpawnLocation(
 		.interior = 0,
 		.x        = 164.0287,
 		.y        = -239.0828,
