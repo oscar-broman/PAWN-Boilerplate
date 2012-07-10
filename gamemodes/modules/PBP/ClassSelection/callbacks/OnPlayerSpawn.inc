@@ -12,6 +12,8 @@
 	new class = this.RequestedClass[playerid];
 	
 	this.PlayerClass[playerid] = class;
+	this.LastClass[playerid] = class;
+	this.LastClassSkin[playerid] = this.Classes[class][Skin];
 	
 	if (this.Classes[class][World] != 0)
 		SetPlayerVirtualWorld(playerid, this.Classes[class][World]);

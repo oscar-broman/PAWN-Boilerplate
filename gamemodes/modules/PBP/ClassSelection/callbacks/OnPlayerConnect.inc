@@ -14,4 +14,6 @@
 	this.PlayerClass[playerid] = INVALID_CLASS;
 	
 	SetFirstAvailableClass(playerid);
+	
+	this.LastClass[playerid] = -1;
 }

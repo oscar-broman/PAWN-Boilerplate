@@ -66,7 +66,9 @@ new
 	   Float:this.PlayerPos[] = {2324.0000, -1143.0000, 1050.4922},
 	   Float:this.PlayerRot = 148.7130,
 	   Float:this.CameraPos[] = {2322.5078, -1146.3310, 1050.7100},
-	   Float:this.CameraLookAt[] = {2324.0000, -1143.0000, 1050.5000}
+	   Float:this.CameraLookAt[] = {2324.0000, -1143.0000, 1050.5000},
+	         this.LastClass[MAX_PLAYERS],
+	         this.LastClassSkin[MAX_PLAYERS]
 ;
 
 
@@ -75,6 +77,10 @@ RegisterConfigArray:    this.PlayerPos;
 RegisterConfigVariable: this.PlayerRot;
 RegisterConfigArray:    this.CameraPos;
 RegisterConfigArray:    this.CameraLookAt;
+
+
+RegisterUserVariable: "last-class" => this.LastClass;
+RegisterUserVariable: "last-class-skin" => this.LastClassSkin;
 
 
 forward      CreateWeaponSet(...);
