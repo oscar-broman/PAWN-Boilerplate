@@ -1092,6 +1092,8 @@ EOD;
 							$maxcmdlen = $len;
 					}
 					
+					unset($description);
+					
 					foreach ($commands as $command => $description) {
 						if (!empty($description))
 							$description = " - $description";
