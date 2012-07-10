@@ -275,6 +275,9 @@ stock this.ShowLanguageSelection(playerid) {
 	new langs[this.MAX_LANGUAGES * 16] = " ";
 	
 	for (new i = 0; i < this.Languages; i++) {
+		if (this.DefaultLanguage != 0 && i == 0)
+			continue;
+		
 		if (i)
 			strcat(langs, "\n");
 		
