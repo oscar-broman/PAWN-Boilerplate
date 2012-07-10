@@ -16,7 +16,7 @@
 	this.PlayerClass[playerid] = INVALID_CLASS;
 	
 	if (this.RequestedClass[playerid] == INVALID_CLASS)
-		this.SetFirstAvailableClass(playerid);
+		SetFirstAvailableClass(playerid);
 	
 	if (this.RequestedClass[playerid] != INVALID_CLASS) {
 		new class = this.RequestedClass[playerid];
@@ -40,11 +40,11 @@
 				do {
 					search_class = (search_class + dir) % this.NumClasses;
 				
-					if (this.PlayerCanSelectClass(playerid, search_class))
+					if (PlayerCanSelectClass(playerid, search_class))
 						break;
 				} while (search_class != this.RequestedClass[playerid]);
 			
-				if (search_class != this.RequestedClass[playerid] && this.PlayerCanSelectClass(playerid, search_class))
+				if (search_class != this.RequestedClass[playerid] && PlayerCanSelectClass(playerid, search_class))
 					class = this.RequestedClass[playerid] = search_class;
 			}
 		}

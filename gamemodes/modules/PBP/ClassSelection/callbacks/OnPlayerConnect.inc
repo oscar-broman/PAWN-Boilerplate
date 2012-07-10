@@ -13,5 +13,5 @@
 	this.GroupSetOnSpawn[playerid] = GROUP_GLOBAL;
 	this.PlayerClass[playerid] = INVALID_CLASS;
 	
-	this.SetFirstAvailableClass(playerid);
+	SetFirstAvailableClass(playerid);
 }
