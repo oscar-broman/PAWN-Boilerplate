@@ -4,6 +4,8 @@
  > Priority: 0
  */
 
+CommandDescription<language> = @"Set your language.";
+
 YCMD:language(playerid, params[], help) {
 	if (help) {
 		SendClientMessage(playerid, COLOR_COMMAND_HELP, @"* Set your language.");

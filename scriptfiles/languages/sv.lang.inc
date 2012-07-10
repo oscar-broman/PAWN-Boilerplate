@@ -73,6 +73,8 @@
 
 "* Set your language." = "* Välj ditt språk."
 
+"Set your language." = "Välj ditt språk."
+
 "Moderator" = "Moderator"
 
 "Administrator" = "Administratör"
