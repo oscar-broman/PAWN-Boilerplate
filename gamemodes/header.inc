@@ -81,6 +81,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <formatex>
 #include <animation_names>
 #include <td-helper>
+#include <md-sort\md-sort>
 
 #include "lib\macros"
 #include "lib\util"

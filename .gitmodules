@@ -5,3 +5,6 @@
 [submodule "YSI"]
 	path = YSI
 	url = git://github.com/Y-Less/YSI.git
+[submodule "include/md-sort"]
+	path = include/md-sort
+	url = https://github.com/oscar-broman/md-sort
