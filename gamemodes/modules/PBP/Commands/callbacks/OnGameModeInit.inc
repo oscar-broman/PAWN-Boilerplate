@@ -41,7 +41,7 @@
 		
 		strunpack(buf, buf);
 		
-		module = @ptr[GetPubVarAddressByName(buf)];
+		module = @ptr[GetPubVarAddressFromName(buf)];
 		
 		strdel(buf, 0, 4);
 		
