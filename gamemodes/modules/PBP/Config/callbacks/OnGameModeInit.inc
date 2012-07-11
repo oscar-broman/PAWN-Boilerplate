@@ -7,7 +7,7 @@
  */
 
 {
-	this.CB_OnConfigValueChange = GetPublicAddressByName("OnConfigValueChange");
+	this.CB_OnConfigValueChange = GetPublicAddressFromName("OnConfigValueChange");
 	
 	for (new buf[32], idx; (idx = AMX_GetPublicName(idx, buf, !"@Pc_")); ) {
 		if (strfind(buf, !".") != -1)
