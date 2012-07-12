@@ -10,6 +10,7 @@
 	this.PlayerUID[playerid] = INVALID_UID;
 	this.PlayerNameUID[playerid] = this.FindAccountByName(Player.Info[playerid][Name]);
 	this.LogInAttempts[playerid] = 0;
+	this.PlayerIsLoggedIn{playerid} = false;
 	
 	// Clear all user variables
 	for (new i = 0; i < this.NumUserVariables; i++) {
