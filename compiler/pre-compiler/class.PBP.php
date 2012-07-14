@@ -253,11 +253,9 @@ EOD;
 				if (!isset($callback_includes[$callback]))
 					$callback_includes[$callback] = array();
 				
-				$wrap = $this->cfg['wrap_callbacks'] || $info['Wrap'];
+				$wrap = @$this->cfg['wrap_callbacks'] || @$info['Wrap'];
 				
-				if ($wrap) {
-					$wrapfunc = "$module.$callback$suffix";
-				}
+				$wrapfunc = $wrap ? "$module.$callback$suffix" : null;
 				
 				$dirname = str_replace('/', '\\', $modules_folder[$module]) . $module;
 				
@@ -842,7 +840,10 @@ EOD;
 		if ($matches[0]{0} !== '@')
 			return $matches[0];
 		
-		$matches[3] = trim((string) $matches[3]);
+		if (isset($matches[3]))
+			$matches[3] = trim((string) $matches[3]);
+		else
+			$matches[3] = null;
 		
 		foreach ($this->translatable_strings as $idx => $string) {
 			if ($string['string'] == $matches[2] && $string['description'] == $matches[3]) {

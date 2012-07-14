@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+
 echo "PAWN Boilerplate\n\n";
 
 if (file_exists('compiler.lock'))
