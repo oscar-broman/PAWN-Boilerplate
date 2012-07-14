@@ -191,6 +191,50 @@ if (!file_exists('include/amx_assembly/amx_header.inc')) {
 	echo "Done.\n";
 }
 
+if (!file_exists('include/md-sort/md-sort.inc')) {
+	echo "Downloading md-sort, please wait.\n";
+	
+	$tmpfile = tempnam(sys_get_temp_dir(), 'md-sort.zip');
+	
+	file_put_contents($tmpfile, @file_get_contents('https://github.com/oscar-broman/md-sort/zipball/master'));
+	
+	if (filesize($tmpfile) == 0) {
+		echo "PBP Error: Unable to download md-sort from https://github.com/oscar-broman/md-sort/zipball/master\n";
+		
+		exit;
+	}
+	
+	echo "Downloaded.\n";
+	echo "Extracting md-sort.\n";
+	
+	$zip = new ZipArchive;
+	$res = $zip->open($tmpfile);
+	
+	if ($res === true) {
+		$zip->extractTo('include/md-sort');
+		
+		$folder = strstr($zip->getNameIndex(0), '/', true);
+		
+		foreach (glob("include/md-sort/$folder/*") as $file) {
+			$basename = basename($file);
+			$newfile = "include/md-sort/$basename";
+			
+			if (file_exists($newfile))
+				unlink($newfile);
+			
+			rename($file, $newfile);
+		}
+		
+		$zip->close();
+	} else {
+		echo "Unable to open the zip archive.\n";
+		
+		exit;
+	}
+	
+	echo "Done.\n";
+}
+
 if (!file_exists('YSI/pawno/include/YSI.inc')) {
 	echo "Downloading YSI, please wait.\n";
 	
