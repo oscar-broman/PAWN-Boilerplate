@@ -510,7 +510,7 @@ stock this.GameTextForPlayer(playerid, const string[], time, style, va_args<>) {
 	this.CheckStringArgument(1, playerid);
 	
 	if (numargs() > 4) {
-		va_formatex(this.TextBuffer, _, message, va_start<4>);
+		va_formatex(this.TextBuffer, _, string, va_start<4>);
 
 		return GameTextForPlayer(playerid, this.TextBuffer, time, style);
 	} else {
