@@ -25,7 +25,7 @@
 	new client_id[41];
 	
 	GetPlayerClientId(playerid, client_id);
-	print("UP");
+	
 	db_query(
 		this.DB,
 		"UPDATE `users` SET `last_ip` = ?, `last_cid` = x'?' WHERE `uid` = ?",
