@@ -57,7 +57,7 @@ stock this.LoadLanguage(const filename[], lang_code) {
 		
 		for (new i = 0; i < sizeof(this.Strings[]); i++) {
 			if (!this.Strings[lang][i][0]) {
-				printf("WARNING: Missing language entry in \"%S\": \"%S\"%c(%S)", filename, this.Strings[0][i], IsNull(this.Descriptions[i]) ? '\0' : ' ', this.Descriptions[i]);
+				printf("WARNING: Missing language entry in \"%s\": \"%s\"%c(%s)", filename, this.Strings[0][i], IsNull(this.Descriptions[i]) ? '\0' : ' ', this.Descriptions[i]);
 				
 				new len = strlen(this.Strings[this.DefaultLanguage][i]);
 				new Alloc:translation_slot = Malloc_Allocate(len + 2);
