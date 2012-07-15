@@ -1,7 +1,10 @@
 /*
-	SQLite Improved v0.9.2 by Slice
+	SQLite Improved v0.9.3 by Slice
 	
 	Changelog:
+			2012-07-15:
+				* Improvements to persistent databases.
+			
 			2012-06-15:
 				* Fix compiler crash when db_query isn't used.
 			
@@ -567,7 +570,7 @@ stock DB::LazyInitialize() {
 	bIsInitialized = true;
 	
 	#if defined HTTP
-		HTTP(0x7FEDCBA0, HTTP_GET, !"spelsajten.net/sqlitei_version.php?version=092", "", !"DB_VersionCheckReponse");
+		HTTP(0x7FEDCBA0, HTTP_GET, !"spelsajten.net/sqlitei_version.php?version=093", "", !"DB_VersionCheckReponse");
 	#endif
 }
 
@@ -777,6 +780,9 @@ stock DB:db_open_persistent(const szName[]) {
 	gs_PersistentDatabases[iIndex][e_bIsUsed]    = true;
 	gs_PersistentDatabases[iIndex][e_dbDatabase] = db;
 	gs_PersistentDatabases[iIndex][e_szName][0]  = 0;
+	
+	if (gs_iClosePersistentTimer == -1)
+		gs_iClosePersistentTimer = SetTimer("db_close_persistent", 0, false);
 	
 	strpack(gs_PersistentDatabases[iIndex][e_szName], szName, _:e_bIsUsed);
 	
