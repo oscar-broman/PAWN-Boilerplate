@@ -185,8 +185,6 @@ this.LoadEntries(bool:initial_load = false) {
 		}
 		
 		fclose(fp);
-	} else {
-		printf(!"(Config) Error: Unable to open the file \"%S\" for reading.", this.FILE);
 	}
 }
 

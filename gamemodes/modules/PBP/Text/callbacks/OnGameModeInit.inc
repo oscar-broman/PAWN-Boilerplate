@@ -18,11 +18,20 @@
 	this.LanguageNames[i] = this.DefaultLanguageCode;
 	
 	for (i = 0; i < sizeof(this.LanguageCodes); i++) {
-		new filename[32];
+		new filename[32], File:fp, lang;
 		
 		format(filename, _, "languages/%L.lang.inc", this.LanguageCodes[i][0]);
 		
-		new lang = this.LoadLanguage(filename, i);
+		if (fexist(filename) && (fp = fopen(filename, io_read))) {
+			new length = flength(fp);
+			
+			fclose(fp);
+			
+			if (!length)
+				continue;
+		}
+		
+		lang = this.LoadLanguage(filename, i);
 		
 		if (lang != -1) {
 			this.LanguageNames[lang] = i;
