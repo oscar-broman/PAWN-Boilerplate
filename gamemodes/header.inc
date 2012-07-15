@@ -87,6 +87,9 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include "lib\util"
 #include "lib\samp"
 
+// gpci
+native GetPlayerClientId(playerid, output[], maxlen = sizeof(output)) = gpci;
+
 /* ----------------------------------------------------------------------------
     Add tags to the constants below, without changing their values
    --------------------------------------------------------------------------*/

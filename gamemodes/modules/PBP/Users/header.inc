@@ -32,7 +32,9 @@ enum {
 	this.DIALOG_LOG_IN_FAILED,
 	this.DIALOG_LOG_IN,
 	this.DIALOG_REGISTER_QUIT_CONFIRM,
-	this.DIALOG_REGISTER
+	this.DIALOG_REGISTER,
+	
+	this.MAX_DIALOG_ID = this.DIALOG_REGISTER
 };
 
 enum this.e_COLUMN {
@@ -81,6 +83,8 @@ new const
 		{0,      "uid", "integer", "NOT NULL PRIMARY KEY AUTOINCREMENT", ""},
 		{0,     "name",    "text", "UNIQUE NOT NULL COLLATE NOCASE",     ""},
 		{0, "passhash",    "blob", "NOT NULL",                           ""},
+		{0,  "last_ip", "integer", "",                                   ""},
+		{0, "last_cid",    "blob", "",                                   ""},
 		
 		{1,      "idx", "integer", "NOT NULL PRIMARY KEY AUTOINCREMENT", ""},
 		{1,      "uid", "integer", "NOT NULL",                           ""},
@@ -96,6 +100,7 @@ new
 	         DB:this.DB,
 	        UID:this.PlayerUID[MAX_PLAYERS],
 	        UID:this.PlayerNameUID[MAX_PLAYERS],
+	   BitArray:this.InAuthDialog<MAX_PLAYERS>,
 	       bool:this.PlayerIsLoggedIn[MAX_PLAYERS char],
 	            this.LogInAttempts[MAX_PLAYERS],
 	            this.NumUserVariables = 0,
@@ -114,7 +119,7 @@ forward  UID:this.RegisterAccount(const name[], const password[]);
 forward bool:this.RenameAccount({UID, _}:uid, const new_name[]);
 forward bool:this.ChangeAccountPassword({UID, _}:uid, const new_password[]);
 forward      this.SaveAccount({UID, _}:_playerid);
-forward bool:this.LogPlayerIn(playerid, const password[]);
+forward bool:this.LogPlayerIn(playerid, const password[], bool:auto_login = false);
 forward bool:this.TestAccountAuth({UID, _}:uid, const password[]);
 forward  UID:this.FindAccountByName(const name[]);
 forward      this.FindPlayerByAccount(UID:uid);
@@ -123,6 +128,7 @@ forward bool:this.IsRegistered({UID, _}:playerid);
 forward      this.ShowLogInFirst(playerid);
 forward      this.ShowDialogIfNeeded(playerid);
 forward      this.RegisterUserVariable(const _key[], tag, size1, size2, ...);
+forward      this.AutoLogPlayerIn(playerid);
 
 // Hooks
 forward      this.SetPlayerName(playerid, name[]);

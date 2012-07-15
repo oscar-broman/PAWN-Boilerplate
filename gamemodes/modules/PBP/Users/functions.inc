@@ -141,11 +141,11 @@ stock this.SaveAccount({UID, _}:_playerid) {
 	
 }*/
 
-stock bool:this.LogPlayerIn(playerid, const password[]) {
+stock bool:this.LogPlayerIn(playerid, const password[], bool:auto_login = false) {
 	if (!this.IsRegistered(playerid) || this.IsLoggedIn(playerid))
 		return false;
 	
-	if (!this.TestAccountAuth(playerid, password))
+	if (!(auto_login || this.TestAccountAuth(playerid, password)))
 		return false;
 	
 	static DBStatement:stmt =: db_prepare(this.DB, !"SELECT key, value FROM users_info WHERE uid = ?");
@@ -202,7 +202,7 @@ stock bool:this.LogPlayerIn(playerid, const password[]) {
 		}
 	}
 	
-	SetTimerEx(!"OnPlayerLogIn", 0, false, !"ii", playerid, false);
+	SetTimerEx(!"OnPlayerLogIn", 0, false, !"ii", playerid, auto_login);
 	
 	return true;
 }
@@ -273,8 +273,12 @@ stock this.ShowDialogIfNeeded(playerid) {
 		
 	} else if (this.IsRegistered(playerid)) {
 		ShowPlayerDialog(playerid, this.DIALOG_LOG_IN, DIALOG_STYLE_PASSWORD, @"Log in", @"This nickname is registered. Please log in or come back with another nickname.\n\nEnter your password:", @"OK", @"Cancel");
+		
+		Bit_Let(this.InAuthDialog, playerid);
 	} else {
 		ShowPlayerDialog(playerid, this.DIALOG_REGISTER, DIALOG_STYLE_PASSWORD, @"Register", @"You must register this nickname before playing.\n\nEnter a password:", @"OK", @"Cancel");
+		
+		Bit_Let(this.InAuthDialog, playerid);
 	}
 }
 
@@ -310,6 +314,10 @@ stock this.RegisterUserVariable(const _key[], tag, size1, size2, ...) {
 	this.UserVariables[i][Type]    = type;
 	this.UserVariables[i][Size]    = (type == this.TYPE_STRING) ? size2 : size1;
 	this.UserVariables[i][Address] = GetArgumentAddress(4);
+}
+
+public this.AutoLogPlayerIn(playerid) {
+	this.LogPlayerIn(playerid, NULL, true);
 }
 
 // Hook SetPlayerName

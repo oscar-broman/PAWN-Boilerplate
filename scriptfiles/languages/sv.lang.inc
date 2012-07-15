@@ -71,6 +71,8 @@
 
 "You are now logged in!" = "Du är nu inloggad!"
 
+"* You were automatically logged in." = "* Du blev automatiskt inloggad."
+
 "* Set your language." = "* Välj ditt språk."
 
 "Set your language." = "Välj ditt språk."
