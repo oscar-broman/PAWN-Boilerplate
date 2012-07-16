@@ -343,7 +343,7 @@ if ($pawn_xml_dir !== false && $user_define_lang_dir !== false) {
 		'assert', 'break', 'case', 'char', 'const', 'continue', 'default',
 		'defined', 'do', 'else', 'enum', 'exit', 'for', 'forward', 'goto',
 		'if', 'native', 'new', 'operator', 'public', 'return', 'sizeof',
-		'sleep', 'state', 'static', 'stock', 'switch', 'tagof'
+		'sleep', 'state', 'static', 'stock', 'switch', 'tagof', 'foreach'
 	));
 	
 	foreach ($pbp->modules as $module)
