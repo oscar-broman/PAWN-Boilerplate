@@ -25,7 +25,7 @@ class Scanner
 	/** @var \PAWNScanner\FunctionDeclaration[] Found function declarations. */
 	public $functions = array();
 	
-	/** @var string[] Found macros. Key is search and value is replacement. */
+	/** @var \PAWNScanner\Macro[] Found macros. Key is search. */
 	public $macros = array();
 	
 	/** @var \PAWNScanner\Enumeration[] Found enumerations. */
@@ -89,13 +89,9 @@ class Scanner
 			foreach ($matches as $match) {
 				@list(, $search, $replacement) = $match;
 				
-				$this->macros[$search] = (object) array(
-					'search'      => $search,
-					'replacement' => $replacement,
-					'info'        => (object) array(
-						'file' => (string) $file
-					)
-				);
+				$this->macros[$search] = new Macro($search, $replacement, array(
+					'file' => (string) $file
+				));
 			}
 		}
 		
@@ -195,7 +191,7 @@ class FunctionDeclaration
 	 * @param string $name The function's name.
 	 * @param string $arguments The function's list of arguments.
 	 * @param string $type What kind of declaration it is.
-	 * @param string $info Extra information about the function.
+	 * @param string|null $info Extra information about the function.
 	 */
 	public function __construct($name, $tag, $arguments = '', $type = self::TYPE_UNKNOWN, $info = null)
 	{
@@ -414,6 +410,8 @@ class Variable
 	
 	/**
 	 * Construct the class from a string containing a variable declaration.
+	 * @param string $varstr The variable declaration/definition string.
+	 * @param string|null $info Extra information about the variable.
 	 */
 	public function __construct($varstr, $info = null)
 	{
@@ -599,6 +597,7 @@ class Enumeration
 	 * @param string $name The name.
 	 * @param string $increment The increment.
 	 * @param string $body The body.
+	 * @param string|null $info Extra information about the enumeration.
 	 */
 	public function __construct($tag, $name, $increment, $body, $info = null)
 	{
@@ -651,6 +650,87 @@ class EnumerationVariableList extends VariableList
 	public function __toString()
 	{
 		return "\t" . implode(",\n\t", $this->variables);
+	}
+}
+
+/**
+ * Macro (#define directive).
+ *
+ */
+class Macro
+{
+	/** @var string The macro's prefix (the first symbol in the search). */
+	public $prefix;
+	
+	/** @var string The macro's search string. */
+	public $search;
+	
+	/** @var string|null The macro's replacement, if any. */
+	public $replacement;
+	
+	/**
+	 * Extra information about the macro, optionally given when instantiating.
+	 *
+	 * Internally, a property telling which file it came from is added.
+	 *
+	 * @var \stdClass
+	 */
+	public $info;
+	
+	/**
+	 * Construct the class from raw strings.
+	 *
+	 * @param string $search The search string.
+	 * @param string|null $replacement The replacement string.
+	 * @param string|null $info Extra information about the macro.
+	 */
+	public function __construct($search, $replacement = null, $info = null)
+	{
+		$this->info = new \stdClass();
+
+		if ($info !== null) {
+			foreach ($info as $k => $v)
+				$this->info->$k = $v;
+		}
+		
+		$this->search = $search;
+		$this->replacement = empty($replacement) ? null : $replacement;
+		$this->prefix = preg_replace('/^(([a-z]\.)?[a-z@_][a-z0-9@_]*).*$/i', '$1', $search);
+	}
+	
+	/**
+	 * Cast the macro to a string.
+	 *
+	 * @return string A PAWN #define directive for the macro.
+	 */
+	public function __toString()
+	{
+		$retstr = "#define $this->search";
+		
+		if ($this->replacement)
+			$retstr .= " $this->replacement";
+		
+		return $retstr;
+	}
+	
+	/**
+	 * Apply parameters to the macro.
+	 *
+	 * @return string The replacement.
+	 */
+	public function apply()
+	{
+		if (preg_match_all('/%[0-9]/', $this->search, $params, PREG_SET_ORDER)) {
+			$replacement = $this->replacement;
+			
+			foreach ($params as $index => $param) {
+				$replacement = str_replace($param[0], func_get_arg($index), $replacement);
+			}
+			
+			return $replacement;
+		} else {
+			return $this->replacement;
+		}
 	}
 }
 
