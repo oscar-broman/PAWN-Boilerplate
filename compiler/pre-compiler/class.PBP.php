@@ -8,7 +8,7 @@ class PBP {
     
 	private $is_windows;
     private $syntax_intel;
-	private $modules;
+	public $modules;
 	private $cfg = array();
 	
 	public function __construct() {
@@ -295,7 +295,12 @@ EOD;
 		if (!file_exists('scriptfiles/languages'))
 			mkdir('scriptfiles/languages');
 		
-		foreach (glob('scriptfiles/languages/*.lang.inc') as $file) {
+		$langfiles = glob('scriptfiles/languages/*.lang.inc');
+		$langfiles[] = ($template = 'scriptfiles/languages/TEMPLATE.lang.inc');
+		
+		file_put_contents($template, '');
+		
+		foreach ($langfiles as $file) {
 			$existing_data = array();
 			$strings = $this->translatable_strings;
 			

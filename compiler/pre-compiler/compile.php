@@ -308,3 +308,5 @@ $pbp = new PBP();
 $pbp->compile();
 
 echo $pbp->output;
+
+include 'notepad++.php';
