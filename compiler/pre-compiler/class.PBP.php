@@ -287,6 +287,20 @@ EOD;
 EOD;
 			}
 			
+			foreach ($this->text_arrays as $text_array) {
+				foreach ($text_array->strings as $dim1 => $v) {
+					if ($text_array->topdim === 1) {
+						$string = $v;
+						
+						$default_values .= "\tRedirectArraySlot($text_array->name, $dim1, ref(this.Strings[0][$string]));\n";
+					} else {
+						foreach ($v as $dim2 => $string) {
+							$default_values .=  "\tRedirectArraySlot($text_array->name[$dim1], $dim2, ref(this.Strings[0][$string]));\n";
+						}
+					}
+				}
+			}echo $default_values;
+			
 			$text_ogmi = 'gamemodes/.build/modules/PBP/Text/callbacks/OnGameModeInit.inc';
 			
 			file_put_contents($text_ogmi, str_replace('{#LANG_DEFAULT_VALUES#}', $default_values, file_get_contents($text_ogmi)));
@@ -795,6 +809,7 @@ EOD;
 	private $in_module;
 	private $command_descriptions = array();
 	private $translatable_strings = array();
+	private $text_arrays = array();
 	
 	private function process_file($file, $in_module = null) {
 		$newfile = preg_replace('/gamemodes(\/|\\\)/i', 'gamemodes/.build/', $file);
@@ -816,6 +831,109 @@ EOD;
 				
 				$this->command_descriptions[$match[1]] = $match[2];
 			}
+		}
+		
+		$len = strlen($contents);
+		$replacements = array();
+		
+		if (preg_match_all('/TextArray\s*:\s*([a-zA-Z_@][a-zA-Z0-9_@\.]*)\s*()(\[.*?\])(\[.*?\])?(\[.*?\])?\s*(=)\s*(\{)/s', $contents, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
+			foreach ($matches as $match) {
+				$dimensions = !empty($match[3][0]) + !empty($match[4][0]) + !empty($match[5][0]);
+				
+				$pos = $match[7][1];
+				
+				$start = array(
+					1 => $pos
+				);
+				$data = array();
+				
+				$level = 1;
+				
+				while ($pos < $len) {
+					switch ($contents{++$pos}) {
+						case '{':
+							$start[++$level] = $pos;
+							
+							break;
+						
+						case '}':
+							if (!isset($data[$level]))
+								$data[$level] = array();
+							
+							$data[$level][] = substr($contents, $start[$level] + 1, $pos - $start[$level] - 1);
+							
+							
+							$level--;
+							
+							break;
+					}
+					
+					if ($level === 0) {
+						break;
+					}
+				}
+				
+				if ($level !== 0)
+					die("Invalid TextArray: \"{$match[1][0]}\".\n");
+				
+				$topdim = $dimensions - 1;
+				
+				if (!isset($data[$topdim]))
+					die("Invalid TextArray: \"{$match[1][0]}\".\n");
+				
+				$strings = array();
+				
+				foreach ($data[$topdim] as $group => $entries) {
+					$strings[$group] = array();
+					
+					if (preg_match_all('/.(?:\<\s*([a-z_@][a-z0-9_@]*)\s*\>)?"((?:[^"\\\\]|\\\\.)*)"(?:\<\s*"((?:[^"\\\\]|\\\\.)*)"\s*\>)?/si', $entries, $entries_matches, PREG_SET_ORDER)) {
+						foreach ($entries_matches as $entry_match) {
+							$entry_match[0]{0} = '@';
+							
+							$index = $this->i18n_string_callback($entry_match, true);
+							
+							$strings[$group][] = $index;
+						}
+					}
+				}
+				
+				if ($topdim === 1)
+					$strings = $strings[0];
+				
+				$replacement = '[' . count($strings) . ']';
+				
+				if ($topdim > 1)
+					$replacement .= '[' . count($strings[0]) . ']';
+				
+				$replacement .= '[1]';
+				
+				$replacements[] = (object) array(
+					'from' => $match[2][1],
+					'to'   => $pos,
+					'replacement' => $replacement
+				);
+				
+				$name = $match[1][0];
+				$module = $this->modules[$this->in_module];
+				
+				$name = preg_replace_callback('/^this\./', function () use ($module) {
+					return $module . '.';
+				}, $name);
+				
+				$this->text_arrays[] = (object) array(
+					'topdim'      => $topdim,
+					'strings'     => $strings,
+					'name'        => $name
+				);
+			}
+		}
+		
+		unset($len);
+		
+		$replacements = array_reverse($replacements);
+		
+		foreach ($replacements as $replacement) {
+			$contents = substr_replace($contents, $replacement->replacement, $replacement->from, $replacement->to - $replacement->from + 1);
 		}
 		
 		$contents = preg_replace_callback('/^\s*#define\s+(this|' . implode('|', $this->modules) . ')\.([a-zA-Z0-9_@]+)/sm', array($this, 'module_prefix_macro'), $contents);
@@ -841,9 +959,13 @@ EOD;
 		fclose($fp);
 	}
 	
-	public function i18n_string_callback($matches) {
-		if ($matches[0]{0} !== '@')
-			return $matches[0];
+	public function i18n_string_callback($matches, $internal = false) {
+		if ($matches[0]{0} !== '@') {
+			if ($internal)
+				return -1;
+			else
+				return $matches[0];
+		}
 		
 		if (isset($matches[3]))
 			$matches[3] = trim((string) $matches[3]);
@@ -852,6 +974,9 @@ EOD;
 		
 		foreach ($this->translatable_strings as $idx => $string) {
 			if ($string['string'] == $matches[2] && $string['description'] == $matches[3]) {
+				if ($internal)
+					return $idx;
+				
 				if ($matches[1])
 					return "(_@lp($idx,{$matches[1]}),_@ls[_@lc][$idx])";
 				else
@@ -866,6 +991,9 @@ EOD;
 			'player'      => $matches[1],
 			'description' => $matches[3]
 		);
+		
+		if ($internal)
+			return $idx;
 		
 		if ($matches[1])
 			return "(_@lp($idx,{$matches[1]}),_@ls[_@lc][$idx])";

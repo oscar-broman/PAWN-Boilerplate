@@ -12,6 +12,8 @@
 
 #define _@lc _@lC==-1?_@ld:_@lC
 
+#define TextArray:
+
 // Wrap this around any strings to make sure they're in the correct language
 #define this.@(%0) \
 	(@ptr[Text.GetStringAddress(%0)])
