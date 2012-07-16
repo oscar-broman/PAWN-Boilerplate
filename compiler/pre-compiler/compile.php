@@ -309,4 +309,6 @@ $pbp->compile();
 
 echo $pbp->output;
 
-include 'notepad++.php';
+if (strpos(PHP_OS, 'WIN') !== false) {
+	include 'notepad++.php';
+}
