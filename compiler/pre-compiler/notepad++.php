@@ -274,14 +274,13 @@ if ($pawn_xml_dir !== false && $user_define_lang_dir !== false) {
 
 	$keywords = $ul->addChild('KeywordLists');
 
-	$operators = '*= /= %= += -= <<= >>>= >>= &= ^= |= || && == != <= >= << >>> >> '
-	             . '++ -- ... .. \' - ! " % & ( ) , : ; ? [ ] ^ | ~ + < = > ::';
+	$operators = '- ! % &amp; ( ) , . : ; ? [ \ ] | ~ + &lt; = &gt;';
 
 	$keywords->addChild('Keywords', escapexmltext($operators))->addAttribute('name', 'Operators');
 	$keywords->addChild('Keywords', escapexmltext('"\'0"\'0'))->addAttribute('name', 'Delimiters');
 	$keywords->addChild('Keywords', '{')->addAttribute('name', 'Folder+');
 	$keywords->addChild('Keywords', '}')->addAttribute('name', 'Folder-');
-	$keywords->addChild('Keywords', escapexmltext('1/*2*/0//'))->addAttribute('name', 'Comment');
+	$keywords->addChild('Keywords', escapexmltext('1/* 2*/ 0//'))->addAttribute('name', 'Comment');
 
 
 	// Add function names
