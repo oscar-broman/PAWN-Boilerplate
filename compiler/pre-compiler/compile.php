@@ -172,7 +172,7 @@ if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
 }
 
 $submodule_files = array(
-	'include/amx_assembly/amx_header.inc',
+	'include/amx_assembly/amx.inc',
 	'include/md-sort/md-sort.inc',
 	'compiler/pre-compiler/PAWN-Scanner/PAWNScanner.php',
 	'include/YSI/y_ini.inc'

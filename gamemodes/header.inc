@@ -46,12 +46,8 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <sscanf2>
 
 // amx_assembly
-#include <amx_assembly\amx_header>
-#include <amx_assembly\amx_memory>
-#include <amx_assembly\dynamic_call>
+#include <amx_assembly\amx>
 #include <amx_assembly\phys_memory>
-#include <amx_assembly\profiler>
-#include <amx_assembly\stack_dump>
 
 // These macros collide with ones in YSI
 #undef r@
