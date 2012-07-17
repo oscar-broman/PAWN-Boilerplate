@@ -11,3 +11,6 @@
 [submodule "include/YSI"]
 	path = include/YSI
 	url = https://github.com/Y-Less/YSI-Includes.git
+[submodule "include/sqlitei"]
+	path = include/sqlitei
+	url = https://github.com/oscar-broman/sqlitei.git

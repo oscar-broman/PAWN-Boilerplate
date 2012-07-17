@@ -73,7 +73,7 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 // Misc.
 #include <pointers>
 #define DB_USE_WHIRLPOOL true
-#include <sqlitei>
+#include <sqlitei\sqlitei>
 #include <formatex>
 #include <animation_names>
 #include <td-helper>
