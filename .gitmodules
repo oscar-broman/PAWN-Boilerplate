@@ -8,3 +8,6 @@
 [submodule "include/md-sort"]
 	path = include/md-sort
 	url = git://github.com/oscar-broman/PAWN-Boilerplate.git
+[submodule "compiler/pre-compiler/PAWN-Scanner"]
+	path = compiler/pre-compiler/PAWN-Scanner
+	url = git@github.com:oscar-broman/PAWN-Scanner.git

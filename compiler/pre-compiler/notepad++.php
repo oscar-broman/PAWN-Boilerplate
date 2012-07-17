@@ -1,5 +1,5 @@
 <?php
-include 'PAWNScanner.php';
+include 'PAWN-Scanner/PAWNScanner.php';
 
 function resolve_path($path) {
 	$path = preg_replace_callback('/%(.*?)%/', function ($matches) {
