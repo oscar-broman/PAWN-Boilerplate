@@ -1,13 +1,13 @@
 [submodule "include/amx_assembly"]
 	path = include/amx_assembly
-	url = git@github.com:Zeex/amx_assembly.git
+	url = git://github.com/Zeex/amx_assembly.git
 	ignore = dirty
 [submodule "YSI"]
 	path = YSI
-	url = git@github.com:Y-Less/YSI.git
+	url = git://github.com/Y-Less/YSI.git
 [submodule "include/md-sort"]
 	path = include/md-sort
-	url = git@github.com:oscar-broman/PAWN-Boilerplate.git
+	url = git://github.com/oscar-broman/PAWN-Boilerplate.git
 [submodule "compiler/pre-compiler/PAWN-Scanner"]
 	path = compiler/pre-compiler/PAWN-Scanner
-	url = git@github.com:oscar-broman/PAWN-Scanner.git
+	url = git://github.com/oscar-broman/PAWN-Scanner.git
