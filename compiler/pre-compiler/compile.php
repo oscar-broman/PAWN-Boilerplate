@@ -20,10 +20,25 @@ $base_dir = rtrim(getenv('BASE_PATH'), '/\\');
 if (!empty($working_dir) && !empty($base_dir) && $working_dir == $base_dir)
 	chdir("$working_dir\\..");
 
+// I would read the .exe file's version, but it isn't always changed.
+$version_latest = 0x0341;
+$version_checksums = array(
+	'8b9110c0' => 0x0340,
+	'150987cd' => 0x0341
+);
+
+if (file_exists('samp-server.exe')) {
+	$server_crc = hash_file('crc32', 'samp-server.exe');
+	
+	if (isset($version_checksums[$server_crc]) && $version_checksums[$server_crc] < $version_latest) {
+		echo 'There is a new SA-MP server available. Delete samp-server.exe and run the compiler to get it.';
+	}
+}
+
 // Download the server files if needed
 if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
-	define('SERVER_DL_URL',  'http://files.sa-mp.com/samp03e_svr_win32.zip');
-	define('SERVER_DL_SIZE', 1904394);
+	define('SERVER_DL_URL',  'http://files.sa-mp.com/samp03e_svr_R2_win32.zip');
+	define('SERVER_DL_SIZE', 1918479);
 	define('SERVER_DL_FILE', tempnam(sys_get_temp_dir(), 'samp-server.zip'));
 	
 	$fp_out = null;
@@ -50,7 +65,7 @@ if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
 		if (filesize(SERVER_DL_FILE) != SERVER_DL_SIZE)
 			echo "PBP Warning: Unexpected filesize of the server files.\n";
 		
-		echo "Extracting the server files.\n";
+		echo "Extracting the server files.. ";
 		
 		$zip = new ZipArchive;
 		$res = $zip->open(SERVER_DL_FILE);
@@ -99,6 +114,13 @@ if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
 					if (preg_match('/^pawno\/include\/(.*?\.inc)$/', $file, $matches)) {
 						$newfile = "include/{$matches[1]}";
 						
+						// This was included by accident
+						if ($matches[1] == 'a_mysql.inc') {
+							unlink($file);
+							
+							continue;
+						}
+						
 						if (file_exists($newfile))
 							unlink($newfile);
 						
@@ -118,17 +140,17 @@ if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
 				rmdir('pawno');
 				
 				if ($ignore_changed) {
-					echo "Updating .gitignore.\n";
+					echo "\nUpdating .gitignore.\n";
 					
 					file_put_contents('.gitignore', implode("\n", $ignore));
 				}
 			} else {
-				echo "PBP Error: Unable to extract the server.\n";
+				echo "\nPBP Error: Unable to extract the server.\n";
 				
 				exit;
 			}
 		} else {
-		    echo "PBP Error: Unable to extract the archive.";
+		    echo "\nPBP Error: Unable to extract the archive.";
 		
 			@unlink(SERVER_DL_FILE);
 			
@@ -141,19 +163,12 @@ if (!file_exists('samp-server.exe') || !file_exists('include/a_samp.inc')) {
 		if ($fp_in) fclose($fp_in);
 		if ($fp_out) fclose($fp_out);
 		
-		echo "PBP Error: Unable to download the SA-MP server. Download it from http://sa-mp.com/ and put the files in the PBP directory.";
+		echo "\nPBP Error: Unable to download the SA-MP server. Download it from http://sa-mp.com/ and put the files in the PBP directory.";
 		
 		exit;
 	}
 	
-	echo "Done.\n";
-}
-
-		
-		exit;
-	}
-	
-	echo "Done.\n";
+	echo "done.\n";
 }
 
 $submodule_files = array(
@@ -166,7 +181,6 @@ foreach ($submodule_files as $file) {
 	if (!file_exists($file)) {
 		$submodule = basename(dirname($file));
 		
-		exit;
 		die("Submodule \"$submodule\" is missing.\nPlease see the Wiki on how to properly set up PBP: https://github.com/oscar-broman/PAWN-Boilerplate/wiki/Setting-up-PBP");
 	}
 }
