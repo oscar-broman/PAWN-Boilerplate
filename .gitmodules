@@ -2,12 +2,12 @@
 	path = include/amx_assembly
 	url = https://github.com/Zeex/amx_assembly.git
 	ignore = dirty
-[submodule "YSI"]
-	path = YSI
-	url = https://github.com/Y-Less/YSI.git
 [submodule "include/md-sort"]
 	path = include/md-sort
 	url = https://github.com/oscar-broman/md-sort.git
 [submodule "compiler/pre-compiler/PAWN-Scanner"]
 	path = compiler/pre-compiler/PAWN-Scanner
 	url = https://github.com/oscar-broman/PAWN-Scanner.git
+[submodule "include/YSI"]
+	path = include/YSI
+	url = https://github.com/Y-Less/YSI-Includes.git
