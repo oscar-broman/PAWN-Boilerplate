@@ -11,5 +11,7 @@ pushd %BASE_PATH%\..
 
 compiler\bin\php.exe -n -d extension="./php-ext/php_openssl.dll" -d extension="./php-ext/php_mbstring.dll" -f "%BASE_PATH%\pre-compiler\compile.php" -- "%WORKING_PATH%" "%BASE_PATH%" 
 
+echo.
+
 popd
 pause
