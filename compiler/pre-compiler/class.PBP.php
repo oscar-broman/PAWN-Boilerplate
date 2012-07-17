@@ -299,7 +299,7 @@ EOD;
 						}
 					}
 				}
-			}echo $default_values;
+			}
 			
 			$text_ogmi = 'gamemodes/.build/modules/PBP/Text/callbacks/OnGameModeInit.inc';
 			
