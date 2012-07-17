@@ -7,7 +7,7 @@
 	url = https://github.com/Y-Less/YSI.git
 [submodule "include/md-sort"]
 	path = include/md-sort
-	url = https://github.com/oscar-broman/PAWN-Boilerplate.git
+	url = https://github.com/oscar-broman/md-sort.git
 [submodule "compiler/pre-compiler/PAWN-Scanner"]
 	path = compiler/pre-compiler/PAWN-Scanner
 	url = https://github.com/oscar-broman/PAWN-Scanner.git
