@@ -82,7 +82,6 @@ EOD;
 	
 	private function generate_main() {
 		$this->syntax_intel = new SyntaxIntel();
-		$this->syntax_intel->parse_directory('YSI/pawno/include/YSI', array());
 		
 		foreach ($this->syntax_intel->data->publics as $public => $args) {
 			if (isset($this->syntax_intel->data->callbacks[$public]))
@@ -1275,7 +1274,6 @@ EOD;
 							$file->name = preg_replace('#^[a-z]:/' . preg_quote(substr($base, 3)) . '#i', '', $file->name);
 						
 						$file->name = ltrim($file->name, '/');
-						$file->name = str_ireplace('YSI/pawno/include/YSI', 'YSI', $file->name);
 						
 						do
 							$file->name = preg_replace('#(^|/)([^/]*?)/\.\.(/|$)#', '$1', $file->name, -1, $count);

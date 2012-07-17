@@ -49,7 +49,6 @@ if ($pawn_xml_dir !== false && $user_define_lang_dir !== false) {
 	$scanner->scan_dir('include', array('a_npc.inc', 'animation_names.inc'));
 	$scanner->scan_dir('gamemodes/modules');
 	$scanner->scan_dir('gamemodes/lib');
-	$scanner->scan_dir('YSI/pawno/include');
 	
 	$funcs = $scanner->functions;
 	
