@@ -68,7 +68,10 @@ new
 	   Float:this.CameraPos[] = {2322.5078, -1146.3310, 1050.7100},
 	   Float:this.CameraLookAt[] = {2324.0000, -1143.0000, 1050.5000},
 	         this.LastClass[MAX_PLAYERS],
-	         this.LastClassSkin[MAX_PLAYERS]
+	         this.LastClassSkin[MAX_PLAYERS],
+	    bool:this.ShowsSpawn = true,
+	   Float:this.CameraDistance = 3.5,
+	   Float:this.CameraDistanceZ = 0.5
 ;
 
 
@@ -77,6 +80,9 @@ RegisterConfigArray:    this.PlayerPos;
 RegisterConfigVariable: this.PlayerRot;
 RegisterConfigArray:    this.CameraPos;
 RegisterConfigArray:    this.CameraLookAt;
+RegisterConfigVariable: this.ShowsSpawn;
+RegisterConfigVariable: this.CameraDistance;
+RegisterConfigVariable: this.CameraDistanceZ;
 
 
 RegisterUserVariable: "last-class" => this.LastClass;
