@@ -87,7 +87,7 @@
 	else if (this.SpawnLocations[this.Classes[class][SpawnLocation]][WeaponSet] != INVALID_WEAPON_SET)
 		weapon_set = this.SpawnLocations[this.Classes[class][SpawnLocation]][WeaponSet];
 	
-	if (weapon_set != INVALID_WEAPON_SET) {
+	if (weapon_set != INVALID_WEAPON_SET && this.ShowWeapons) {
 		static weapon_text[256];
 		
 		weapon_text = "";

@@ -72,7 +72,8 @@ new
 	         this.LastClassSkin[MAX_PLAYERS],
 	    bool:this.ShowsSpawn = true,
 	   Float:this.CameraDistance = 3.5,
-	   Float:this.CameraDistanceZ = 0.5
+	   Float:this.CameraDistanceZ = 0.5,
+	    bool:this.ShowWeapons = true
 ;
 
 
@@ -84,6 +85,7 @@ RegisterConfigArray:    this.CameraLookAt;
 RegisterConfigVariable: this.ShowsSpawn;
 RegisterConfigVariable: this.CameraDistance;
 RegisterConfigVariable: this.CameraDistanceZ;
+RegisterConfigVariable: this.ShowWeapons;
 
 
 RegisterUserVariable: "last-class" => this.LastClass;
