@@ -257,7 +257,7 @@ this.SaveEntries() {
 	fclose(fp);
 }
 
-stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) {
+stock this.RegisterVariableEntry(const _key[], tag, size, module, GLOBAL_TAG_TYPES:...) {
 	new
 		      address,
 		      key[64 char],
@@ -270,7 +270,7 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 	
 	PBP.ResolveSymbolName(key);
 	
-	#emit LOAD.S.pri  24
+	#emit LOAD.S.pri  28
 	#emit STOR.S.pri  address
 	
 	if (tag == tagof(Float:))
@@ -281,7 +281,7 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 		type = this.TYPE_INT;
 	
 	if (size > 1) {
-		if (numargs() > 4 && getarg(4))
+		if (numargs() > 5 && getarg(5))
 			type = (type << 8) | this.TYPE_ARRAY;
 		else
 			type = this.TYPE_STRING;
@@ -298,9 +298,239 @@ stock this.RegisterVariableEntry(const _key[], tag, size, GLOBAL_TAG_TYPES:...) 
 	this.ConfigEntries[i][Address] = address;
 	this.ConfigEntries[i][Type]    = type;
 	this.ConfigEntries[i][Size]    = size;
+	this.ConfigEntries[i][Module]  = module;
+	
+	if (module != -1)
+		Bit_Let(this.ModulesWithEntries, module);
 	
 	if (type == this.TYPE_STRING)
 		this.ConfigEntries[i][Size] |= (_:ispacked(@ptr[address]) << 31);
 	else if (type == this.TYPE_MALLOC_STRING && @ptr[address])
 		this.ConfigEntries[i][Size] |= (_:ispacked(mstr(Alloc:@ptr[address])) << 31);
+}
+
+this.GetValueAsString(entry) {
+	static buffer[1024];
+	
+	buffer = "";
+	
+	switch (this.ConfigEntries[entry][Type] & 0xFF) {
+		case this.TYPE_INT:
+			strcatf(buffer, _, !"%d", @ptr[this.ConfigEntries[entry][Address]]);
+		
+		case this.TYPE_FLOAT:
+			strcatf(buffer, _, !"%f", @ptr[this.ConfigEntries[entry][Address]]);
+		
+		case this.TYPE_ARRAY: {
+			switch (this.ConfigEntries[entry][Type] >>> 8) {
+				case this.TYPE_FLOAT: {
+					for (new j = 0; j < this.ConfigEntries[entry][Size]; j++) {
+						if (j)
+							strcatf(buffer, _, !", %f", @ptr[this.ConfigEntries[entry][Address]][j]);
+						else
+							strcatf(buffer, _, !"%f", @ptr[this.ConfigEntries[entry][Address]][j]);
+					}
+				}
+				
+				default: {
+					for (new j = 0; j < this.ConfigEntries[entry][Size]; j++) {
+						if (j)
+							strcatf(buffer, _, !", %d", @ptr[this.ConfigEntries[entry][Address]][j]);
+						else
+							strcatf(buffer, _, !"%d", @ptr[this.ConfigEntries[entry][Address]][j]);
+					}
+				}
+			}
+		}
+		
+		case this.TYPE_STRING:
+			strcat(buffer, "\""), strcat(buffer, @ptr[this.ConfigEntries[entry][Address]]), strcat(buffer, "\"");
+		
+		case this.TYPE_MALLOC_STRING: {
+			if (@ptr[this.ConfigEntries[entry][Address]])
+				strcat(buffer, "\""), strcat(buffer, mstr(Alloc:@ptr[this.ConfigEntries[entry][Address]])), strcat(buffer, "\"");
+			else
+				strcat(buffer, "\"\"");
+		}
+	}
+	
+	return buffer;
+}
+
+this.SetValueFromString(entry, input[]) {
+	new pos, key_unpacked[64];
+	
+	switch (this.ConfigEntries[entry][Type] & 0xFF) {
+		case this.TYPE_INT: {
+			new value = strval(input);
+			
+			if (@ptr[this.ConfigEntries[entry][Address]] != value) {
+				@ptr[this.ConfigEntries[entry][Address]] = value;
+				
+				strunpack(key_unpacked, mstr(this.ConfigEntries[entry][Key]));
+			
+				CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[entry][KeyHash]);
+			}
+		}
+
+		case this.TYPE_FLOAT: {
+			new value = _:floatstr(input);
+
+			if (@ptr[this.ConfigEntries[entry][Address]] != value) {
+				@ptr[this.ConfigEntries[entry][Address]] = value;
+				
+				strunpack(key_unpacked, mstr(this.ConfigEntries[entry][Key]));
+			
+				CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[entry][KeyHash]);
+			}
+		}
+
+		case this.TYPE_ARRAY: {
+			new bool:modified = false;
+			new old_val;
+			new bool:zerofill = false;
+			new type = this.ConfigEntries[entry][Type] >>> 8;
+			
+			for (new j = 0; j < this.ConfigEntries[entry][Size]; j++) {
+				if (zerofill) {
+					@ptr[this.ConfigEntries[entry][Address]][j] = 0;
+					
+					continue;
+				}
+				
+				if (-1 != (pos = strfind(input, !",")))
+					input[pos] = 0;
+				
+				if (!modified)
+					old_val = @ptr[this.ConfigEntries[entry][Address]][j];
+				
+				if (type == this.TYPE_FLOAT)
+					@ptr[this.ConfigEntries[entry][Address]][j] = _:floatstr(input);
+				else
+					@ptr[this.ConfigEntries[entry][Address]][j] = strval(input);
+				
+				if (!modified && old_val != @ptr[this.ConfigEntries[entry][Address]][j])
+					modified = true;
+				
+				if (pos == -1) {
+					zerofill = true;
+					
+					continue;
+				} else {
+					input[pos++] = ',';
+				}
+				
+				while (0 < input[pos] <= ' ')
+					pos++;
+				
+				strdel(input, 0, pos);
+			}
+			
+			if (modified) {
+				strunpack(key_unpacked, mstr(this.ConfigEntries[entry][Key]));
+
+				CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[entry][KeyHash]);
+			}
+		}
+		
+		case this.TYPE_STRING: {
+			if (strcmp(@ptr[this.ConfigEntries[entry][Address]], input, false) || isnull(@ptr[this.ConfigEntries[entry][Address]]) != isnull(input)) {
+				if (this.ConfigEntries[entry][Size] & (1 << 31))
+					strpack(@ptr[this.ConfigEntries[entry][Address]], input, this.ConfigEntries[entry][Size] & (-1 >>> 1));
+				else
+					strunpack(@ptr[this.ConfigEntries[entry][Address]], input, this.ConfigEntries[entry][Size]);
+				
+				strunpack(key_unpacked, mstr(this.ConfigEntries[entry][Key]));
+
+				CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[entry][KeyHash]);
+			}
+		}
+		
+		case this.TYPE_MALLOC_STRING: {
+			if (!@ptr[this.ConfigEntries[entry][Address]] || strcmp(mstr(Alloc:@ptr[this.ConfigEntries[entry][Address]]), input, false) || IsNull(mstr(Alloc:@ptr[this.ConfigEntries[entry][Address]])) != IsNull(input)) {
+				if (@ptr[this.ConfigEntries[entry][Address]])
+					free(Alloc:@ptr[this.ConfigEntries[entry][Address]]);
+				
+				@ptr[this.ConfigEntries[entry][Address]] = _:Malloc_NewS(input, !!(this.ConfigEntries[entry][Size] & (1 << 31)));
+				
+				strunpack(key_unpacked, mstr(this.ConfigEntries[entry][Key]));
+
+				CallFunction(this.CB_OnConfigValueChange, ref(key_unpacked), this.ConfigEntries[entry][KeyHash]);
+			}
+		}
+	}
+}
+
+this.ShowEditorDialog(playerid, selected_module = -1, selected_entry = -1) {
+	static buffer[1024];
+	
+	if (selected_module == -1 && selected_entry == -1) {
+		buffer = "";
+		
+		foreach (new module : Bits(this.ModulesWithEntries)) {
+			strcat(buffer, PBP.Modules[module][Name]), strcat(buffer, "\n");
+		}
+		
+		ShowPlayerDialog(playerid, this.DIALOG_CONFIG_MAIN, DIALOG_STYLE_LIST, @"Config editor - Select category", buffer, @"OK", @"Close");
+	} else if (selected_entry == -1) {
+		new module = 0, bool:first = true;
+		
+		buffer = "";
+		
+		if (selected_module & 0x80000000) {
+			module = selected_module & 0x7FFFFFFF;
+		} else {
+			foreach (new i : Bits(this.ModulesWithEntries)) {
+				if (selected_module == module++) {
+					module = i;
+				
+					break;
+				}
+			}
+		}
+		
+		for (new i = 0; i < this.NumConfigEntries; i++) {
+			if (this.ConfigEntries[i][Module] != module)
+				continue;
+			
+			if (first)
+				first = false;
+			else if (this.ShowValuesInEditor)
+				strcat(buffer, " \n");
+			
+			if (this.ShowValuesInEditor) {
+				strcatf(buffer, _, "%S\n\t%s\n", mstr(this.ConfigEntries[i][Key]), this.GetValueAsString(i));
+			} else {
+				strcatf(buffer, _, "%S\n", mstr(this.ConfigEntries[i][Key]));
+			}
+		}
+		
+		SetPVarInt(playerid, #this.InModule, module);
+		
+		ShowPlayerDialog(playerid, this.DIALOG_CONFIG_CATEGORY, DIALOG_STYLE_LIST, @"Config editor - Select entry", buffer, @"OK", @"Back");
+	} else {
+		new module = GetPVarInt(playerid, #this.InModule);
+		
+		new entry = 0;
+		
+		if (this.ShowValuesInEditor)
+			selected_entry /= 3;
+		
+		for (new i = 0; i < this.NumConfigEntries; i++) {
+			if (this.ConfigEntries[i][Module] != module)
+				continue;
+			
+			if (selected_entry == entry++) {
+				entry = i;
+				
+				break;
+			}
+		}
+		
+		SetPVarInt(playerid, #this.InEntry, entry);
+		
+		format(buffer, _, @"You are editing %S.\n\nCurrent value: %s", mstr(this.ConfigEntries[entry][Key]), this.GetValueAsString(entry));
+		
+		ShowPlayerDialog(playerid, this.DIALOG_CONFIG_EDITOR, DIALOG_STYLE_INPUT, @"Config editor - Edit entry", buffer, @"OK", @"Cancel");
+	}
 }

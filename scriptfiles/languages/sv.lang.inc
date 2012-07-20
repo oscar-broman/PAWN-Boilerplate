@@ -112,3 +112,19 @@
 "* Usage: /help [command]" = "* Användning: /help [kommando]"
 
 "* Invalid command." = "* Ogiltigt kommando."
+
+"Config editor - Select category" = "Konfigurerings redigerare - Välj kategori"
+
+"Config editor - Select entry" = "Konfigurerings redigerare - Välj post"
+
+"Back" = "Bakåt"
+
+"You are editing %S.\n\nCurrent value: %s" = "Du redigerar %S.\n\nNuvarande värde: %s"
+
+"Config editor - Edit entry" = "Konfigurerings redigerare - Redigera post"
+
+"Show the config editor." = "Visa konfigurerings redigeraren."
+
+"* Show the config editor." = "* Visa konfigurerings redigeraren."
+
+"Armour" = "Kroppsskydd"
