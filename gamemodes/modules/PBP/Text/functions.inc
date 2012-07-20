@@ -360,7 +360,7 @@ stock this.SendClientMessage(playerid, color, message[], va_args<>) {
 /*
  * CreatePlayerTextDraw
  * ---------------------------------------------- */
-stock PlayerText:this.CreatePlayerTextDraw(playerid, Float:x, Float:y, text[], va_args<>) {
+stock Text:this.CreatePlayerTextDraw(playerid, Float:x, Float:y, text[], va_args<>) {
 	this.CheckStringArgument(3, playerid);
 	
 	if (numargs() > 4) {

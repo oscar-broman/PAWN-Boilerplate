@@ -133,7 +133,7 @@ forward              this.ShowLanguageSelection(playerid);
 // Hooks
 forward              this.SendClientMessageToAll(color, message[], va_args<>);
 forward              this.SendClientMessage(playerid, color, message[], va_args<>);
-forward   PlayerText:this.CreatePlayerTextDraw(playerid, Float:x, Float:y, text[], va_args<>);
+forward         Text:this.CreatePlayerTextDraw(playerid, Float:x, Float:y, text[], va_args<>);
 forward              this.PlayerTextDrawSetString(playerid, PlayerText:text, string[], va_args<>);
 forward              this.SendPlayerMessageToAll(senderid, const message[], va_args<>);
 forward              this.SendPlayerMessageToPlayer(playerid, senderid, const message[], va_args<>);
