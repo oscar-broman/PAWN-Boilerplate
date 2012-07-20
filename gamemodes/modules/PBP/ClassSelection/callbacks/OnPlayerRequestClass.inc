@@ -97,7 +97,7 @@
 		for (new slot = 0; slot < this.MAX_WEAPON_SLOT; slot++) {
 			if (this.WeaponSets[weapon_set][slot][Weapon] == WEAPON_ARMOUR)
 				strcatf(weapon_text, _, "%@~n~", @"Armour");
-			else if (true||this.WeaponSets[weapon_set][slot][Weapon])
+			else if (this.WeaponSets[weapon_set][slot][Weapon])
 				strcatf(weapon_text, _, "%W~n~", this.WeaponSets[weapon_set][slot][Weapon]);
 			else
 				lines--;
