@@ -15,6 +15,8 @@
 	this.LastClass[playerid] = class;
 	this.LastClassSkin[playerid] = this.Classes[class][Skin];
 	
+	TextDrawDestroyVar(this.WeaponsInfo[playerid]);
+	
 	if (this.Classes[class][World] != 0)
 		SetPlayerVirtualWorld(playerid, this.Classes[class][World]);
 	else if (this.SpawnLocations[this.Classes[class][SpawnLocation]][World] != 0)

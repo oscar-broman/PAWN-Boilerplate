@@ -54,9 +54,6 @@
 		SetPlayerVirtualWorld(playerid, WORLD_CLASS_SELECTION);
 		SetPlayerSkin        (playerid, this.Classes[class][Skin]);
 
-		SetSpawnInfo(playerid, NO_TEAM, this.Classes[class][Skin], XYZR(this.SpawnLocations[this.Classes[class][SpawnLocation]]), 0, 0, 0, 0, 0, 0);
-
-		ApplyAnimation(playerid, "ped", "Idle_Gang1", 1.0, true, false, false, true, 1, false);
 		SetSpawnInfo(playerid, NO_TEAM, this.Classes[class][Skin], XYZR(this.SpawnLocations[spawn]), 0, 0, 0, 0, 0, 0);
 		
 		if (this.ShowsSpawn) {
@@ -81,5 +78,42 @@
 		}
 	}
 	
+	TextDrawDestroyVar(this.WeaponsInfo[playerid]);
+	
+	new weapon_set = INVALID_WEAPON_SET;
+	
+	if (this.Classes[class][WeaponSet] != INVALID_WEAPON_SET)
+		weapon_set = this.Classes[class][WeaponSet];
+	else if (this.SpawnLocations[this.Classes[class][SpawnLocation]][WeaponSet] != INVALID_WEAPON_SET)
+		weapon_set = this.SpawnLocations[this.Classes[class][SpawnLocation]][WeaponSet];
+	
+	if (weapon_set != INVALID_WEAPON_SET) {
+		static weapon_text[256];
+		
+		weapon_text = "";
+		
+		new lines = this.MAX_WEAPON_SLOT;
+		
+		for (new slot = 0; slot < this.MAX_WEAPON_SLOT; slot++) {
+			if (this.WeaponSets[weapon_set][slot][Weapon] == WEAPON_ARMOUR)
+				strcatf(weapon_text, _, "%@~n~", @"Armour");
+			else if (true||this.WeaponSets[weapon_set][slot][Weapon])
+				strcatf(weapon_text, _, "%W~n~", this.WeaponSets[weapon_set][slot][Weapon]);
+			else
+				lines--;
+		}
+		
+		if (!isnull(weapon_text)) {
+			this.WeaponsInfo[playerid] = TextDrawCreate(132.0, 206.0, weapon_text);
+		
+			TextDrawSetShadow(this.WeaponsInfo[playerid], 0);
+			TextDrawSetOutline(this.WeaponsInfo[playerid], 1);
+			TextDrawBackgroundColor(this.WeaponsInfo[playerid], 0x00000022);
+			TextDrawUseBox(this.WeaponsInfo[playerid], true);
+			TextDrawBoxColor(this.WeaponsInfo[playerid], 0x00000055);
+			TextDrawTextSize(this.WeaponsInfo[playerid], 270.0, 0.0);
+			
+			TextDrawShowForPlayer(playerid, this.WeaponsInfo[playerid]);
+		}
 	}
 }

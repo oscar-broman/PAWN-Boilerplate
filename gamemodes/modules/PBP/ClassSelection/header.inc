@@ -62,6 +62,7 @@ new
 	         this.RequestedClass[MAX_PLAYERS],
 	         this.PlayerClass[MAX_PLAYERS],
 	   Group:this.GroupSetOnSpawn[MAX_PLAYERS],
+	    Text:this.WeaponsInfo[MAX_PLAYERS] = {INVALID_TEXT_DRAW, ...},
 	         this.Interior = 12,
 	   Float:this.PlayerPos[] = {2324.0000, -1143.0000, 1050.4922},
 	   Float:this.PlayerRot = 148.7130,
