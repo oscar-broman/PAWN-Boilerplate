@@ -483,7 +483,11 @@ EOD;
 #if defined _inc_$incfile
 	#undef _inc_$incfile
 #endif
+#undef PBP_CURRENT_MODULE
+#define PBP_CURRENT_MODULE $include->module
 #include "{$include->include_path}"
+#undef PBP_CURRENT_MODULE
+#define PBP_CURRENT_MODULE -1
 #undef _inc_$incfile
 #undef this
 
@@ -532,7 +536,11 @@ public $v->wrapfunc({$callbacks[$callback]}) {
 	#if defined $incdef
 		#undef $incdef
 	#endif
+	#undef PBP_CURRENT_MODULE
+	#define PBP_CURRENT_MODULE $v->module
 	#include "{$v->include_path}"
+	#undef PBP_CURRENT_MODULE
+	#define PBP_CURRENT_MODULE -1
 	#undef $incdef
 	#undef this
 	
@@ -609,7 +617,11 @@ EOD;
 	#if defined $incdef
 		#undef $incdef
 	#endif
+	#undef PBP_CURRENT_MODULE
+	#define PBP_CURRENT_MODULE $v->module
 	#include "{$v->include_path}"
+	#undef PBP_CURRENT_MODULE
+	#define PBP_CURRENT_MODULE -1
 	#undef $incdef
 	#undef this
 
@@ -648,6 +660,7 @@ EOD;
 
 #define PBP.  PBP_
 #define PBP_DEFAULT_RETURN<%1>  DR@%1
+#define PBP_CURRENT_MODULE      -1
 
 const PBP.COMPILATION_TIMESTAMP = $timestamp;
 
