@@ -463,3 +463,11 @@ stock Numbers@YSII_Ag(const numbers[], start, size = sizeof(numbers)) {
 	
 	return -1;
 }
+
+stock TextDrawDestroyVar(&Text:text) {
+	if (_:text != _:INVALID_TEXT_DRAW) {
+		TextDrawDestroy(text);
+		
+		text = INVALID_TEXT_DRAW;
+	}
+}
