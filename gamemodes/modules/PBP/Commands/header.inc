@@ -29,6 +29,13 @@ static stock const YCMD_DEF_TEST[] = #YCMD:;
 		return ref(%3); \
 	}
 
+
+enum {
+	this.DIALOG_MODULE_SELECTION = this.OFFSET,
+	this.DIALOG_COMMAND_LIST
+};
+
+
 new
 	         this.Description[MAX_COMMANDS],
 	         this.Module[MAX_COMMANDS] = {-1, ...},

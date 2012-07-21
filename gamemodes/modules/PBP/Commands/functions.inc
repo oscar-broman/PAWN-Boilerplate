@@ -60,44 +60,6 @@ stock this.ShowCommandsDialog(playerid, module = -1, page = 0) {
 		info[4096]
 	;
 	
-	inline ModuleSelectionResponse(_playerid, dialogid, response, listitem, string:inputtext[]) {
-		#pragma unused _playerid, dialogid, inputtext
-		
-		Text.SetActivePlayer(playerid);
-		
-		if (response == 1) {
-			new selected_module = -1;
-			
-			for (new i = 0; i < sizeof(PBP.Modules); i++) {
-				if (Bit_Get(this.VisibleModules[playerid], i)) {
-					if (listitem == ++selected_module) {
-						this.ShowCommandsDialog(playerid, i);
-						
-						return;
-					}
-				}
-			}
-		}
-	}
-	
-	inline CommandListResponse(_playerid, dialogid, response, listitem, string:inputtext[]) {
-		#pragma unused _playerid, dialogid, listitem, inputtext
-		
-		Text.SetActivePlayer(playerid);
-		
-		new current_page = GetPVarInt(playerid, #this.Page);
-		new current_module = GetPVarInt(playerid, #this.Module);
-		
-		if (response == 1 && GetPVarInt(playerid, #this.MorePages)) {
-			this.ShowCommandsDialog(playerid, current_module, current_page + 1);
-		} else {
-			if (current_page > 0)
-				this.ShowCommandsDialog(playerid, current_module, current_page - 1);
-			else
-				this.ShowCommandsDialog(playerid);
-		}
-	}
-	
 	if (module == -1) {
 		new
 			     buf[32],
@@ -126,7 +88,7 @@ stock this.ShowCommandsDialog(playerid, module = -1, page = 0) {
 			strcatf(info, _, "- %s\n", PBP.Modules[i][Name]);
 		}
 		
-		Dialog_ShowCallback(playerid, using inline ModuleSelectionResponse, DIALOG_STYLE_LIST, @"Commands", info, @"OK", @"Close");
+		ShowPlayerDialog(playerid, this.DIALOG_MODULE_SELECTION, DIALOG_STYLE_LIST, @"Commands", info, @"OK", @"Close");
 	} else {
 		new
 			     buf[32],
@@ -177,6 +139,6 @@ stock this.ShowCommandsDialog(playerid, module = -1, page = 0) {
 		SetPVarInt(playerid, #this.Page, page);
 		SetPVarInt(playerid, #this.MorePages, more_pages);
 		
-		Dialog_ShowCallback(playerid, using inline CommandListResponse, DIALOG_STYLE_MSGBOX, @"Commands", info, more_pages ? @"Next >" : @"< Back", more_pages ? @"< Back" : "");
+		ShowPlayerDialog(playerid, this.DIALOG_COMMAND_LIST, DIALOG_STYLE_MSGBOX, @"Commands", info, more_pages ? @"Next >" : @"< Back", more_pages ? @"< Back" : "");
 	}
 }
