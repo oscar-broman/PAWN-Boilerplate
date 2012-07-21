@@ -17,16 +17,12 @@ stock this.SetupPermissions(command[], Group:...) {
 		return;
 	}
 
-	P:5("(Groups) Setting permissions for command \"%s\":", command);
-
 	Group_SetGlobalCommand(cmd, false);
 
 	for (new i = numargs() - 1; i >= 1; i--) {
 		new Group:group = Group:getarg(i);
 
 		Group_SetCommand(group, cmd, true);
-
-		P:5("\t- %s", Group_GetName(group));
 	}
 }
 
