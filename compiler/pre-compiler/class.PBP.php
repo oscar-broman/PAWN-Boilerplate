@@ -95,13 +95,35 @@ EOD;
 		$modules = array();
 		$modules_folder = array();
 		
-		foreach (array_merge(glob('gamemodes/modules/*'), glob('gamemodes/modules/PBP/*')) as $dir) {
+		foreach (array_merge(glob('gamemodes/modules/*'), glob('gamemodes/modules/*/*')) as $dir) {
 			if (!is_dir($dir))
 				continue;
 			
 			$basename = basename($dir);
 			
-			if ($basename == 'PBP')
+			if ($basename == 'callbacks')
+				continue;
+			
+			$d = dir($dir);
+			$is_subdir = false;
+			
+			while (false !== ($entry = $d->read())) {
+				if (preg_match('/^\./', $entry))
+					continue;
+				
+				if ($entry == 'callbacks')
+					break;
+				
+				if (is_dir("$dir/$entry")) {
+					$is_subdir = true;
+					
+					break;
+				}
+			}
+			
+			$d->close();
+			
+			if ($is_subdir)
 				continue;
 			
 			$dirname = preg_replace('/^gamemodes\/modules\/(.+?\/)?[^\/]+$/', '$1', $dir);
