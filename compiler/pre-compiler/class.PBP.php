@@ -830,6 +830,9 @@ EOD;
 		if (!file_exists('gamemodes/.build'))
 			return;
 		
+		if (file_exists('gamemodes/main.pwn'))
+			unlink('gamemodes/main.pwn');
+		
 		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('gamemodes/.build'), RecursiveIteratorIterator::CHILD_FIRST);
 		
 		foreach ($iterator as $path) {
