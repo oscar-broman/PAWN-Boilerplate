@@ -51,7 +51,7 @@
 				}
 			}
 		
-			case this.DIALOG_REGISTER_QUIT_CONFIRM: {
+			case this.DIALOG_REGISTER_QUITCONFIRM: {
 				if (response)
 					Kick(playerid);
 				else
@@ -60,7 +60,7 @@
 		
 			case this.DIALOG_REGISTER: {
 				if (!response) {
-					ShowPlayerDialog(playerid, this.DIALOG_REGISTER_QUIT_CONFIRM, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
+					ShowPlayerDialog(playerid, this.DIALOG_REGISTER_QUITCONFIRM, DIALOG_STYLE_MSGBOX, @"Quit", @"Are you sure you want to quit the server?", @"Quit", @"Cancel");
 					
 					Bit_Let(this.InAuthDialog, playerid);
 				} else {
