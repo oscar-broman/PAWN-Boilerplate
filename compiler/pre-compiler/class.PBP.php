@@ -838,6 +838,8 @@ EOD;
 			else
 				unlink("$path");
 		}
+		
+		rmdir('gamemodes/.build');
 	}
 	
 	private $in_module;
