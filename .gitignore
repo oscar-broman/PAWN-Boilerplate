@@ -32,3 +32,7 @@ server.cfg
 /include/float.inc
 /include/string.inc
 /include/time.inc
+compiler.lock
+/gamemodes/.build
+/gamemodes/modules/*
+!/gamemodes/modules/PBP
