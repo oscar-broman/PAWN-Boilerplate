@@ -443,8 +443,6 @@ EOD;
 		$timestamp = time();
 		
 		$buildinfo = <<<EOD
-Modules: $module_list
-
 Custom callbacks: $custom_callback_list
 EOD;
 		
