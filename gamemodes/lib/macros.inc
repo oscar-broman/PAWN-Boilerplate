@@ -33,3 +33,10 @@
  */
 #define XYZ(%1)  %1[X],%1[Y],%1[Z]
 #define XYZR(%1)  %1[X],%1[Y],%1[Z],%1[Rot]
+
+/*
+ * PUBLIC_ADDRESS("name")
+ *
+ * Get the address of a public function, using cache.
+ */
+#define PUBLIC_FUNC(%1)  GetFunctionAddressWithCache(!"\0\0\0\0" %1)
