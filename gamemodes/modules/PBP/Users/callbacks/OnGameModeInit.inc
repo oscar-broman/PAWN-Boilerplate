@@ -63,7 +63,7 @@
 						if (this.Columns[j][Table] != i)
 							continue;
 						
-						if (strequals(column_name, this.Columns[j][Name])) {
+						if (isequal(column_name, this.Columns[j][Name])) {
 							column_exists[j] = true;
 							
 							break;

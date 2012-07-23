@@ -24,7 +24,7 @@ stock this.LoadLanguage(const filename[], lang_code) {
 			if (++line <= 2)
 				continue;
 			
-			trim(buf, .edges = trim_right);
+			strtrim(buf, .edges = trim_right);
 			
 			if ((buf[0] & 0xFFFFFF00) == 0x2f2f2000) // if buf[0,1,2] == "// "
 				strmid(description, buf, 3, cellmax);
@@ -35,7 +35,7 @@ stock this.LoadLanguage(const filename[], lang_code) {
 				this.ParseStringLiteral(translation, buf, start);
 				
 				for (new i = 0; i < sizeof(this.Strings[]); i++) {
-					if (strequals(this.Strings[0][i], string) && strequals(this.Descriptions[i], description)) {
+					if (isequal(this.Strings[0][i], string) && isequal(this.Descriptions[i], description)) {
 						new len = strlen(translation);
 						new Alloc:translation_slot = Malloc_Allocate(len + 2);
 						

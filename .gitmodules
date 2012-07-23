@@ -14,3 +14,6 @@
 [submodule "include/sqlitei"]
 	path = include/sqlitei
 	url = https://github.com/oscar-broman/sqlitei.git
+[submodule "include/strlib"]
+	path = include/strlib
+	url = https://github.com/oscar-broman/strlib.git
