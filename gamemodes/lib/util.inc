@@ -62,6 +62,13 @@ stock Numbers@YSII_Ag(const numbers[], start, size = sizeof(numbers));
  */
 stock TextDrawDestroyVar(&Text:text);
 
+/*
+ * Get the address of a function, using the first 4 bytes of the input string as cache.
+ *
+ * The input string must be "\x00000000;CallbackName".
+ */
+stock GetFunctionAddressWithCache(const funcname[]);
+
 // Buffer used within this file
 static stock
 	gs_Buffer[256]
@@ -343,6 +350,36 @@ stock TextDrawDestroyVar(&Text:text) {
 		
 		text = INVALID_TEXT_DRAW;
 	}
+}
+
+stock GetFunctionAddressWithCache(const funcname[]) {
+	new address;
+	
+	address = funcname[0];
+	
+	if (address == 0) {
+		new idx;
+		
+		if (-1 != (idx = funcidx(funcname[1]))) {
+			#emit LCTRL        1
+			#emit NEG
+			#emit MOVE.alt
+			#emit ADD.C        32
+			#emit STOR.S.pri   address
+			#emit LREF.S.pri   address
+			#emit ADD
+			#emit LOAD.S.alt   idx
+			#emit SHL.C.alt    3
+			#emit ADD
+			#emit STOR.S.pri   address
+			#emit LREF.S.pri   address
+			#emit STOR.S.pri   address
+			#emit LOAD.S.alt   funcname
+			#emit STOR.I
+		}
+	}
+	
+	return address;
 }
 
 // Packed (or unpacked) strings.
