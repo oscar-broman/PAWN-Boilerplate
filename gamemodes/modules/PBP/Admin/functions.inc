@@ -20,3 +20,26 @@ stock SetPlayerAdminLevel(playerid, AdminLevel:level, by_player = INVALID_PLAYER
 	
 	CallLocalFunctionEx(!"OnPlayerAdminLevelChanged", !"iiii", playerid, _:old_level, _:level, by_player);
 }
+
+stock bool:IsPlayerMod(playerid) {
+	return (this.PlayerLevel[playerid] >= this.LEVEL_MOD);
+}
+
+stock bool:Hook_IsPlayerAdmin(playerid) {
+	return (this.PlayerLevel[playerid] >= this.LEVEL_ADMIN);
+}
+
+stock bool:IsPlayerManagement(playerid) {
+	return (this.PlayerLevel[playerid] >= this.LEVEL_MANAGEMENT);
+}
+
+stock bool:IsPlayerRconAdmin(playerid) {
+	return IsPlayerAdmin(playerid) || Group_GetPlayer(GROUP_RCON, playerid);
+}
+
+#if defined _ALS_IsPlayerAdmin
+	#undef IsPlayerAdmin
+#else
+	#define _ALS_IsPlayerAdmin
+#endif
+#define IsPlayerAdmin Hook_IsPlayerAdmin

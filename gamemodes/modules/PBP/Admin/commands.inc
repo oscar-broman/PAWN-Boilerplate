@@ -44,7 +44,7 @@ usage:
 		
 		if (otherid == INVALID_PLAYER_ID) {
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* Invalid player.");
-		} else if (!IsPlayerAdmin(playerid) && GetPlayerAdminLevel(otherid) >= GetPlayerAdminLevel(playerid)) {
+		} else if (!IsPlayerRconAdmin(playerid) && GetPlayerAdminLevel(otherid) >= GetPlayerAdminLevel(playerid)) {
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* You may only change the level of players with a level lower than yours.");
 		} else if (level == this.INVALID_LEVEL) {
 			SendClientMessage(playerid, COLOR_COMMAND_ERROR, @"* Invalid level.");

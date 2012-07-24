@@ -33,3 +33,7 @@ RegisterUserVariable: "admin-level" => this.PlayerLevel;
 
 forward AdminLevel:GetPlayerAdminLevel(playerid);
 forward            SetPlayerAdminLevel(playerid, AdminLevel:level, by_player = INVALID_PLAYER_ID);
+forward       bool:Hook_IsPlayerAdmin(playerid);
+forward       bool:IsPlayerManagement(playerid);
+forward       bool:IsPlayerMod(playerid);
+forward       bool:IsPlayerRconAdmin(playerid);

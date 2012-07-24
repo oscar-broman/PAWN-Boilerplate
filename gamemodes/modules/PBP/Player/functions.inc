@@ -17,7 +17,7 @@ stock bool:this.IsInAnyOfGroups(playerid, Group:...) {
 // Used internally from a timer
 public this.CheckForNewAdmins() {
 	foreach (new playerid : Player) {
-		if (!this.Info[playerid][IsAdmin] && IsPlayerAdmin(playerid)) {
+		if (!this.Info[playerid][IsAdmin] && IsPlayerRconAdmin(playerid)) {
 			this.Info[playerid][IsAdmin] = true;
 			
 			CallRemoteFunction(#OnPlayerRconLogin, !"i", playerid);
