@@ -101,6 +101,9 @@ EOD;
 			
 			$basename = basename($dir);
 			
+			if ($basename{0} == '-')
+				continue;
+			
 			if ($basename == 'callbacks')
 				continue;
 			
