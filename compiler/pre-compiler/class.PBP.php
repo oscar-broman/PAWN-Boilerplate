@@ -52,6 +52,7 @@ EOD;
 		
 		$this->cfg['debug_level'] = 2;
 		$this->cfg['wrap_callbacks'] = 0;
+		$this->cfg['disabled_modules'] = array();
 		
 		foreach (file('server.cfg') as $row) {
 			$row = trim($row);
@@ -75,6 +76,9 @@ EOD;
 			
 			if (in_array($key, array('stream_distance')))
 				$value = (float) $value;
+			
+			if (in_array($key, array('disabled_modules')))
+				$value = preg_split('/\s+/', $value);
 			
 			$this->cfg[$key] = $value;
 		}
@@ -101,7 +105,7 @@ EOD;
 			
 			$basename = basename($dir);
 			
-			if ($basename{0} == '-')
+			if ($basename{0} == '-' || in_array($basename, $this->cfg['disabled_modules']))
 				continue;
 			
 			if ($basename == 'callbacks')
