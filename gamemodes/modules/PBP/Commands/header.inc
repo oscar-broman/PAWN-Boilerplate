@@ -1,7 +1,7 @@
 /*!
  * PBP/Commands/header.inc
  *
- > Priority: 0
+ > Priority: -5
  > Requires: StaticGroups
  */
 
