@@ -4,34 +4,29 @@
  > Priority: 0
  */
 
-const AdminLevel:this.INVALID_LEVEL = AdminLevel:-1;
-
-#if !defined CUSTOM_ADMIN_LEVELS
-	enum AdminLevel:{
-		this.LEVEL_NONE,
-		this.LEVEL_MOD,
-		this.LEVEL_ADMIN,
-		this.LEVEL_MANAGEMENT,
+enum AdminLevel:{
+	this.INVALID_LEVEL = -1,
 	
-		this.NUM_LEVELS
-	};
-#endif
+	this.LEVEL_NONE,
+	this.LEVEL_MOD,
+	this.LEVEL_ADMIN,
+	this.LEVEL_MANAGEMENT,
+	
+	this.NUM_LEVELS
+};
 
 
 new
 	AdminLevel:this.PlayerLevel[MAX_PLAYERS],
-	           this.LevelNames[this.NUM_LEVELS][1]
-;
-
-#if !defined CUSTOM_ADMIN_LEVELS
-new
+	           this.LevelNames[this.NUM_LEVELS][1],
+	
 	StaticGroup<GROUP_MOD>        = @"Moderator",
 	StaticGroup<GROUP_ADMIN>      = @"Administrator",
 	StaticGroup<GROUP_MANAGEMENT> = @"Management",
 	
 	StaticGroup<GROUP_RCON>       = @"RCON Administrator"
 ;
-#endif
+
 
 RegisterUserVariable: "admin-level" => this.PlayerLevel;
 
