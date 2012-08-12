@@ -24,7 +24,7 @@ stock this.LoadLanguage(const filename[], lang_code) {
 			if (++line <= 2)
 				continue;
 			
-			strtrim(buf, .edges = trim_right);
+			strtrim(buf, .edge = edge_right);
 			
 			if ((buf[0] & 0xFFFFFF00) == 0x2f2f2000) // if buf[0,1,2] == "// "
 				strmid(description, buf, 3, cellmax);
