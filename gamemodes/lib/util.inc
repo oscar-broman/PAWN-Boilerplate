@@ -665,3 +665,8 @@ FormatSpecifier<'L'>(output[], string[]) {
 	for (new i = 0, l = strlen(output); i < l; i++)
 		output[i] = tolower(output[i]);
 }
+
+// Duration
+FormatSpecifier<'D'>(output[], duration) {
+	strunpack(output, GetStringFromDuration(duration));
+}
