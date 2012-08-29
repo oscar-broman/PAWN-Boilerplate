@@ -287,6 +287,28 @@ stock this.ShowLanguageSelection(playerid) {
 	ShowPlayerDialog(playerid, this.DIALOG_LANGUAGE_SELECTION, DIALOG_STYLE_LIST, "Select language", langs[1], "OK", "Cancel");
 }
 
+stock SendClientMessageToAllExcept(playerid, color, message[], va_args<>) {
+	this.CheckStringArgument(2, playerid);
+	
+	if (numargs() > 3) {
+		va_formatex(this.TextBuffer, _, message, va_start<3>);
+		
+		foreach(new p : Player) {
+			if (p != playerid) {
+				SendClientMessage(p, color, this.TextBuffer);
+			}
+		}
+	} else {
+		foreach(new p : Player) {
+			if (p != playerid) {
+				SendClientMessage(p, color, message);
+			}
+		}
+	}
+	
+	return 1;
+}
+
 // formatex specifier for translatable strings
 FormatSpecifier<'@'>(output[], string[]) {
 	strunpack(output, this.@(string));

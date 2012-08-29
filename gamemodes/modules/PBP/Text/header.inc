@@ -129,6 +129,7 @@ forward              this.ResetActiveLanguage();
 forward              this.GetLanguageFromLanguageCode(this.LANGUAGE_CODE:code);
 forward              this.ShowsLanguageSelection();
 forward              this.ShowLanguageSelection(playerid);
+forward                   SendClientMessageToAllExcept(playerid, color, message[], va_args<>);
 
 // Hooks
 forward              this.SendClientMessageToAll(color, message[], va_args<>);
