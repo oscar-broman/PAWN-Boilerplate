@@ -44,7 +44,8 @@ enum this.E_CLASS {
 	      WeaponSet,
 	      World,
 	      Team,
-	Group:Group
+	Group:Group,
+	 bool:Available
 };
 
 

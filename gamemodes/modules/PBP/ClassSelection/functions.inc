@@ -106,13 +106,18 @@ stock CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world =
 	this.Classes[id][World]         = world;
 	this.Classes[id][Group]         = group;
 	this.Classes[id][Team]          = team;
+	this.Classes[id][Available] 	= true;
 	
 	return id;
 }
 
+stock setClassAvailable(class, bool:available) {
+	this.Classes[class][Available] = available;
+}
+
 stock bool:PlayerCanSelectClass(playerid, class) {
 	#pragma unused playerid
-	
+	if(this.Classes[class][Available] == false) return this.Classes[class][Available];
 	return (0 <= class < this.NumClasses);
 }
 
