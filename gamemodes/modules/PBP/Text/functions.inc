@@ -26,9 +26,11 @@ stock this.LoadLanguage(const filename[], lang_code) {
 			
 			strtrim(buf, .edge = edge_right);
 			
-			if ((buf[0] & 0xFFFFFF00) == 0x2f2f2000) // if buf[0,1,2] == "// "
-				strmid(description, buf, 3, cellmax);
-			else if (buf{0} == '"') {
+			// if buf[0,1,2] == "// "
+			if ((buf[0] & 0xFFFFFF00) == 0x2f2f2000) {
+				strpack(description, buf);
+				strdel(description, 0, 3);
+			} else if (buf{0} == '"') {
 				new end = this.ParseStringLiteral(string, buf);
 				new start = strfind(buf, "\"", _, end + 1);
 				
@@ -49,7 +51,7 @@ stock this.LoadLanguage(const filename[], lang_code) {
 					}
 				}
 				
-				description{0} = '\0';
+				description = "";
 			}
 		}
 		
