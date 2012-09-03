@@ -107,13 +107,20 @@ stock CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world =
 	this.Classes[id][Group]         = group;
 	this.Classes[id][Team]          = team;
 	
+	Bit_Let(this.ClassAvailableForAll, id);
+	
 	return id;
 }
 
 stock bool:PlayerCanSelectClass(playerid, class) {
-	#pragma unused playerid
+	if (0 <= class < this.NumClasses) {
+		if (Bit_Get(this.ClassAvailableForAll, class))
+			return true;
+		else if (Bit_Get(this.ClassAvailableForPlayer[playerid], class))
+			return true;
+	}
 	
-	return (0 <= class < this.NumClasses);
+	return false;
 }
 
 stock bool:SetFirstAvailableClass(playerid) {
@@ -133,4 +140,12 @@ stock bool:SetFirstAvailableClass(playerid) {
 
 stock GetPlayerClass(playerid) {
 	return this.PlayerClass[playerid];
+}
+
+stock SetClassAvailableForAll(class, bool:set) {
+	Bit_Set(this.ClassAvailableForAll, class, set);
+}
+
+stock SetClassAvailableForPlayer(class, playerid, bool:set) {
+	Bit_Set(this.ClassAvailableForPlayer[playerid], class, set);
 }

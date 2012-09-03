@@ -16,4 +16,8 @@
 	SetFirstAvailableClass(playerid);
 	
 	this.LastClass[playerid] = -1;
+	
+	for (new id = 0; id < MAX_CLASSES; id++) {
+		Bit_Vet(this.ClassAvailableForPlayer[playerid], id);
+	}
 }

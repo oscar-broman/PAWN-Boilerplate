@@ -58,6 +58,8 @@ new
 	         this.NumClasses = 0,
 	
 	BitArray:this.PlayerHasRequestedClass<MAX_PLAYERS>,
+	BitArray:this.ClassAvailableForAll<MAX_CLASSES>,
+	BitArray:this.ClassAvailableForPlayer[MAX_PLAYERS]<MAX_CLASSES>,
 	         this.PreviousClassid[MAX_PLAYERS char],
 	         this.RequestedClass[MAX_PLAYERS],
 	         this.PlayerClass[MAX_PLAYERS],
@@ -101,3 +103,5 @@ forward bool:IsValidClass(class);
 forward bool:PlayerCanSelectClass(playerid, class);
 forward bool:SetFirstAvailableClass(playerid);
 forward      GetPlayerClass(playerid);
+forward      SetClassAvailableForAll(class, bool:set);
+forward      SetClassAvailableForPlayer(class, playerid, bool:set);
