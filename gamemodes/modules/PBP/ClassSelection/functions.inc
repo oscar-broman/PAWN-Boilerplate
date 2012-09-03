@@ -17,8 +17,8 @@ stock bool:IsValidClass(class) {
 }
 
 stock CreateWeaponSet(...) {
-	if (this.NumWeaponSets >= this.MAX_WEAPON_SETS) {
-		printf("(ClassSelection.CreateWeaponSet) ERROR: Exceeded this.MAX_WEAPON_SETS.");
+	if (this.NumWeaponSets >= MAX_WEAPON_SETS) {
+		printf("(ClassSelection.CreateWeaponSet) ERROR: Exceeded MAX_WEAPON_SETS.");
 		
 		return INVALID_WEAPON_SET;
 	}
@@ -52,8 +52,8 @@ stock CreateWeaponSet(...) {
 }
 
 stock CreateSpawnLocation(interior = 0, world = 0, Float:x, Float:y, Float:z, Float:rot, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, weapon_set = INVALID_WEAPON_SET) {
-	if (this.NumSpawnLocations >= this.MAX_SPAWN_LOCATIONS) {
-		printf("(ClassSelection.CreateSpawnLocation) ERROR: Exceeded this.MAX_SPAWN_LOCATIONS.");
+	if (this.NumSpawnLocations >= MAX_SPAWN_LOCATIONS) {
+		printf("(ClassSelection.CreateSpawnLocation) ERROR: Exceeded MAX_SPAWN_LOCATIONS.");
 		
 		return INVALID_SPAWN_LOCATION;
 	}
@@ -80,8 +80,8 @@ stock CreateSpawnLocation(interior = 0, world = 0, Float:x, Float:y, Float:z, Fl
 }
 
 stock CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world = 0, Group:group = GROUP_GLOBAL, team = INVALID_TEAM) {
-	if (this.NumClasses >= this.MAX_CLASSES) {
-		printf("(ClassSelection.CreateClass) ERROR: Exceeded this.MAX_CLASSES.");
+	if (this.NumClasses >= MAX_CLASSES) {
+		printf("(ClassSelection.CreateClass) ERROR: Exceeded MAX_CLASSES.");
 		
 		return INVALID_CLASS;
 	}

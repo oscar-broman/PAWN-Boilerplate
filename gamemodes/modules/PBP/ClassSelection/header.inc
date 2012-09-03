@@ -6,9 +6,9 @@
 
 const WORLD_CLASS_SELECTION = this.OFFSET;
 
-const this.MAX_WEAPON_SETS = 40;
-const this.MAX_SPAWN_LOCATIONS = 100;
-const this.MAX_CLASSES = 500;
+const MAX_WEAPON_SETS = 40;
+const MAX_SPAWN_LOCATIONS = 100;
+const MAX_CLASSES = 500;
 const this.MAX_WEAPON_SLOT = MAX_WEAPON_SLOT + 1;
 
 const INVALID_TEAM = -1;
@@ -49,9 +49,9 @@ enum this.E_CLASS {
 
 
 new
-	         this.WeaponSets[this.MAX_WEAPON_SETS][this.MAX_WEAPON_SLOT][this.E_WEAPON_SET],
-	         this.SpawnLocations[this.MAX_SPAWN_LOCATIONS][this.E_SPAWN_LOCATION],
-	         this.Classes[this.MAX_CLASSES][this.E_CLASS],
+	         this.WeaponSets[MAX_WEAPON_SETS][this.MAX_WEAPON_SLOT][this.E_WEAPON_SET],
+	         this.SpawnLocations[MAX_SPAWN_LOCATIONS][this.E_SPAWN_LOCATION],
+	         this.Classes[MAX_CLASSES][this.E_CLASS],
 	
 	         this.NumWeaponSets = 0,
 	         this.NumSpawnLocations = 0,
