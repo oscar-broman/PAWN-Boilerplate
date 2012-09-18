@@ -7,15 +7,14 @@
  */
 
 {
-	SetPlayerInterior(playerid, 0);
-	
 	new class = this.RequestedClass[playerid];
 	
-	this.PlayerClass[playerid] = class;
 	this.LastClass[playerid] = class;
 	this.LastClassSkin[playerid] = this.Classes[class][Skin];
 	
 	TextDrawDestroyVar(this.WeaponsInfo[playerid]);
+	
+	SetPlayerInterior(playerid, this.SpawnLocations[this.Classes[class][SpawnLocation]][Interior]);
 	
 	if (this.Classes[class][World] != 0)
 		SetPlayerVirtualWorld(playerid, this.Classes[class][World]);
