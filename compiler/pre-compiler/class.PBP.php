@@ -841,6 +841,9 @@ EOD;
 		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('gamemodes/.build'), RecursiveIteratorIterator::CHILD_FIRST);
 		
 		foreach ($iterator as $path) {
+			if (in_array($path->getBasename(), array('.', '..')))
+				continue;
+			
 			if ($path->isDir())
 				rmdir("$path");
 			else
