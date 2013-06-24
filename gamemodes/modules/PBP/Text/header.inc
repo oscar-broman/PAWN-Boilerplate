@@ -106,7 +106,7 @@ stock
 	         this.TextBuffer[2048],
 	         this.ResetActiveLanguageTimer = -1,
 	    bool:this.EnableLanguageSelection = true,
-	         this.GroupName[Group:MAX_GROUPS]
+	         this.GroupName[Group:_MAX_GROUPS]
 ;
 
 

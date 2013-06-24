@@ -435,7 +435,7 @@ stock PlayerTextDrawSetString@(playerid, PlayerText:text, string[])
 public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid) {
 	playertextid |= PlayerText:(playerid << 16 | 0x80000000);
 	
-	return CallRemoteFunction(!"OnPlayerClickTextDraw", !"ii", playerid, _:playertextid);
+	return CallRemoteFunction(!"OnPlayerClickTextDraw@", !"ii", playerid, _:playertextid);
 }
 
 #if defined _ALS_OnPlayerClickPlayerTextDra
@@ -444,6 +444,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid) {
     #define _ALS_OnPlayerClickPlayerTextDra
 #endif
 
+#undef OnPlayerClickPlayerTextDraw
 #define OnPlayerClickPlayerTextDraw OnPlayerClickPlayerTextDraw@
 
 forward OnPlayerClickPlayerTextDraw@(playerid, PlayerText:playertextid);
