@@ -49,10 +49,6 @@ const PBP.DEFAULT_RETURN<OnPlayerCommandText> = 0;
 #include <amx_assembly\amx>
 #include <amx_assembly\phys_memory>
 
-// These macros collide with ones in YSI
-#undef r@
-#undef w@
-
 // fixes.inc
 #include <fixes>
 
