@@ -35,7 +35,7 @@
 
 "* You were kicked from the server because of too many failed log in attempts." = "* Je bent van de server getrapt omdat je té veel incorrecte aanmeld pogingen hebt gedaan."
 
-"Invalid password. You have %d more %s, then you'll get kicked." = "Ongeldig wachtwoord. Je hebt nog %d meer %s, anders wordt je getrapt.Ogiltigt lösenord. Du har %d %s kvar innan du blir kickad."
+"Invalid password. You have %d more %s, then you'll get kicked." = "Ongeldig wachtwoord. Je hebt nog %d meer %s, anders wordt je getrapt."
 
 "attempt" = "probeer"
 
