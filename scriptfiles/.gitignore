@@ -2,3 +2,5 @@
 *
 # Except this file
 !.gitignore
+# Except the languages folder
+!/languages
