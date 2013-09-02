@@ -1,6 +1,5 @@
 // Please be very careful with the layout of this file. Only change strings on the right side.
 // Do not change comments or strings on the left side.
-// Translations assisted by 'Assassins Creed Fan'
 
 "Hello world!" = "Hallo werelds!"
 
@@ -120,7 +119,6 @@
 
 "Back" = "Terug"
 
-// I'm unsure about the one below, not too sure about the usage.
 "You are editing %S.\n\nCurrent value: %s" = "U bewerkt %S.\n\nHuidige waarde: %s"
 
 "Config editor - Edit entry" = "Configuratie bijwerker - Bewerk entree"
