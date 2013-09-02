@@ -44,7 +44,8 @@ enum this.E_CLASS {
 	      WeaponSet,
 	      World,
 	      Team,
-	Group:Group
+	Group:Group,
+	Group:RestrictedGroup
 };
 
 
@@ -96,7 +97,7 @@ RegisterUserVariable: "last-class-skin" => this.LastClassSkin;
 
 forward      CreateWeaponSet(...);
 forward      CreateSpawnLocation(interior = 0, world = 0, Float:x, Float:y, Float:z, Float:rot, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, weapon_set = INVALID_WEAPON_SET);
-forward      CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world = 0, Group:group = GROUP_GLOBAL, team = INVALID_TEAM);
+forward      CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world = 0, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, Group:restrictedGroup = GROUP_GLOBAL);
 forward bool:IsValidWeaponSet(ws);
 forward bool:IsValidSpawnLocation(spawn);
 forward bool:IsValidClass(class);

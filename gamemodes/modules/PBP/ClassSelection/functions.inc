@@ -79,7 +79,7 @@ stock CreateSpawnLocation(interior = 0, world = 0, Float:x, Float:y, Float:z, Fl
 	return id;
 }
 
-stock CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world = 0, Group:group = GROUP_GLOBAL, team = INVALID_TEAM) {
+stock CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world = 0, Group:group = GROUP_GLOBAL, team = INVALID_TEAM, Group:restrictedGroup = GROUP_GLOBAL) {
 	if (this.NumClasses >= MAX_CLASSES) {
 		printf("(ClassSelection.CreateClass) ERROR: Exceeded MAX_CLASSES.");
 		
@@ -100,12 +100,13 @@ stock CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world =
 	
 	new id = this.NumClasses++;
 	
-	this.Classes[id][Skin]          = skin;
-	this.Classes[id][SpawnLocation] = spawn_location;
-	this.Classes[id][WeaponSet]     = weapon_set;
-	this.Classes[id][World]         = world;
-	this.Classes[id][Group]         = group;
-	this.Classes[id][Team]          = team;
+	this.Classes[id][Skin]          	= skin;
+	this.Classes[id][SpawnLocation] 	= spawn_location;
+	this.Classes[id][WeaponSet]     	= weapon_set;
+	this.Classes[id][World]         	= world;
+	this.Classes[id][Group]         	= group;
+	this.Classes[id][Team]          	= team;
+	this.Classes[id][RestrictedGroup] 	= restrictedGroup;
 	
 	Bit_Let(this.ClassAvailableForAll, id);
 	
@@ -114,6 +115,8 @@ stock CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world =
 
 stock bool:PlayerCanSelectClass(playerid, class) {
 	if (0 <= class < this.NumClasses) {
+		if (!Group_GetPlayer(this.Classes[class][RestrictedGroup], playerid))
+			return false;
 		if (Bit_Get(this.ClassAvailableForAll, class))
 			return true;
 		else if (Bit_Get(this.ClassAvailableForPlayer[playerid], class))
