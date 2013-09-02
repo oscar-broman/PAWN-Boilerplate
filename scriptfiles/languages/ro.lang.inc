@@ -113,9 +113,9 @@
 
 "* Invalid command." = "* Comanda invalida."
 
-"Config editor - Select category" = "Editor Configurare - Selecta?i categoria"
+"Config editor - Select category" = "Editor Configurare - Selectati categoria"
 
-"Config editor - Select entry" = "Editor Configurare - Selecta?i intrarea"
+"Config editor - Select entry" = "Editor Configurare - Selectati intrarea"
 
 "Back" = "Inapoi"
 
