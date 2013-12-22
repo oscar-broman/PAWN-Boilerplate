@@ -115,12 +115,12 @@ stock CreateClass(skin, spawn_location, weapon_set = INVALID_WEAPON_SET, world =
 
 stock bool:PlayerCanSelectClass(playerid, class) {
 	if (0 <= class < this.NumClasses) {
-		if (!Group_GetPlayer(this.Classes[class][RestrictedGroup], playerid) && !Bit_Get(this.ClassAvailableForPlayer[playerid], class))
-			return false;
 		if (Bit_Get(this.ClassAvailableForAll, class))
 			return true;
-		else if (Bit_Get(this.ClassAvailableForPlayer[playerid], class))
+		if (Bit_Get(this.ClassAvailableForPlayer[playerid], class))
 			return true;
+		if (!Group_GetPlayer(this.Classes[class][RestrictedGroup], playerid))
+			return false;
 	}
 	
 	return false;
