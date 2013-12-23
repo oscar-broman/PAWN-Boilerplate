@@ -36,3 +36,4 @@ compiler.lock
 /gamemodes/.build
 /gamemodes/modules/*
 !/gamemodes/modules/PBP
+/include/streamer.inc
