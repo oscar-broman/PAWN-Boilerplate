@@ -156,6 +156,13 @@
  * AUTHOR:   RyDeR`/Y_Less
  * POST:     http://forum.sa-mp.com/showpost.php?p=1410296
  * 
+ * FIX:      OnPlayerEnterVehicle_2
+ * PROBLEM:  Crashes the server when hacks enter an invalid vehicle.
+ * SOLUTION: Desync the people with invalid vehicles.
+ * SEE:      "OnPlayerEnterVehicle".
+ * AUTHOR:   im/Y_Less
+ * POST:     http://forum.sa-mp.com/showpost.php?p=2340900
+ * 
  * FIX:      AllowTeleport
  * PROBLEM:  0.3dRC9 removed "AllowPlayerTeleport" and "AllowAdminTeleport" in
  *           favour of "OnPlayerClickMap".  Some scripts used the old code and.
@@ -181,10 +188,11 @@
  * FIXED IN: 0.3e RC6
  * 
  * FIX:      GetPlayerDialog
- * PROBLEM:  This function doesn't exist.
+ * PROBLEM:  This function doesn't exist.  Fixed for hidden dialogs.
  * SOLUTION: Add it.  DEFAULTS TO FALSE!
  * SEE:      "FIXES_GetPlayerDialog".
- * AUTHOR:   Y_Less
+ * AUTHOR:   Y_Less/xX_Simon_Xx
+ * POST:     http://forum.sa-mp.com/showpost.php?p=2141254
  * 
  * FIX:      SetSpawnInfo
  * PROBLEM:  Kicks the player if "SpawnPlayer" is called before "SetSpawnInfo".
@@ -278,7 +286,7 @@
  * 
  * FIX:      file_inc
  * PROBLEM:  All file.inc fixes are included separately for major overhead.
- * SOLUTION: Optionally group them all under one define.
+ * SOLUTION: Optionally group them all under one define.  DEFAULTS TO FALSE!
  * SEE:      "FIX_file_inc".
  * AUTHOR:   Y_Less
  * 
@@ -342,6 +350,90 @@
  * SEE:      "OnPlayerConnect", "FIXES_Kick".
  * AUTHOR:   Y_Less
  * POST:     http://forum.sa-mp.com/showpost.php?p=1989453
+ * FIXED IN: 0.3x
+ * 
+ * FIX:      OnVehicleMod
+ * PROBLEM:  Crashes other players when invalid mods are applied.
+ * SOLUTION: Desync the player.
+ * SEE:      "OnVehicleMod".
+ * AUTHOR:   JernejL/Y_Less
+ * POST:     http://forum.sa-mp.com/showpost.php?p=1671500
+ * 
+ * FIX:      random
+ * PROBLEM:  Doesn't work with negative numbers.
+ * SOLUTION: Invert then reinvert.  DEFAULTS TO FALSE!
+ * SEE:      "FIXES_random".
+ * AUTHOR:   xX_Simon_Xx
+ * POST:     http://forum.sa-mp.com/showpost.php?p=2141254
+ * 
+ * FIX:      sleep
+ * PROBLEM:  Leaks bytes from the stack.
+ * SOLUTION: Invoke "SYSREQ.C" and "RETN" first to store the correct values.
+ * SEE:      "FIXES_sleep".
+ * AUTHOR:   Y_Less
+ * 
+ * FIX:      AddMenuItem
+ * PROBLEM:  Crashes when passed an invalid menu ID.
+ * SOLUTION: Don't hide it when passed an invalid menu.
+ * SEE:      "FIXES_AddMenuItem".
+ * AUTHOR:   Y_Less
+ * 
+ * FIX:      SetMenuColumnHeader
+ * PROBLEM:  Crashes when passed an invalid menu ID.
+ * SOLUTION: Don't hide it when passed an invalid menu.
+ * SEE:      "FIXES_SetMenuColumnHeader".
+ * AUTHOR:   Y_Less
+ * 
+ * FIX:      ShowMenuForPlayer
+ * PROBLEM:  Crashes when passed an invalid menu ID.
+ * SOLUTION: Don't hide it when passed an invalid menu.
+ * SEE:      "FIXES_ShowMenuForPlayer".
+ * AUTHOR:   Y_Less
+ * 
+ * FIX:      HideMenuForPlayer
+ * PROBLEM:  Crashes when passed an invalid menu ID.
+ * SOLUTION: Don't hide it when passed an invalid menu.
+ * SEE:      "FIXES_HideMenuForPlayer".
+ * AUTHOR:   Y_Less
+ * POST:     http://forum.sa-mp.com/showpost.php?p=1787297
+ * 
+ * FIX:      HideMenuForPlayer_2
+ * PROBLEM:  Ignores the "menuid" parameter.
+ * SOLUTION: Only hide the correct menu.  DEFAULTS TO FALSE!
+ * SEE:      "FIXES_HideMenuForPlayer".
+ * AUTHOR:   Y_Less
+ * 
+ * FIX:      DisableMenu
+ * PROBLEM:  Crashes when passed an invalid menu ID.
+ * SOLUTION: Don't hide it when passed an invalid menu.
+ * SEE:      "FIXES_DisableMenu".
+ * AUTHOR:   Y_Less
+ * 
+ * FIX:      DisableMenuRow
+ * PROBLEM:  Crashes when passed an invalid menu ID.
+ * SOLUTION: Don't hide it when passed an invalid menu.
+ * SEE:      "FIXES_DisableMenuRow".
+ * AUTHOR:   Y_Less
+ * 
+ * FIX:      Menus
+ * PROBLEM:  All menu function fixes are included separately for major overhead.
+ * SOLUTION: Optionally group them all under one define.
+ * SEE:      "FIX_Menus", "_FIX_Menus"
+ * AUTHOR:   Y_Less
+ * 
+ * FIX:      GetPlayerMenu
+ * PROBLEM:  Returns previous menu when none is displayed.
+ * SOLUTION: Return the correct value.
+ * SEE:      "FIXES_GetPlayerMenu", "OnPlayerSelectedMenuRow".
+ * AUTHOR:   Y_Less
+ * POST:     http://forum.sa-mp.com/showpost.php?p=2295867
+ * 
+ * FIX:      GetPlayerInterior
+ * PROBLEM:  Always returns 0 for NPCs.
+ * SOLUTION: Return the correct value.
+ * SEE:      "FIXES_GetPlayerInterior", "FIXES_SetPlayerInterior".
+ * AUTHOR:   Y_Less
+ * POST:     http://forum.sa-mp.com/showpost.php?p=2309246
  * 
  * ==============
  *  STYLE RULES: 
@@ -421,6 +513,15 @@
  *     
  *     This only includes this fix if that native doesn't exist.
  * 
+ * To reduce general memory consumption, strings in this include are stored
+ *     globally in constant arrays and referenced.  This is EXACTLY as fast as
+ *     using the string constants directly, but means that strings are not
+ *     stored in the assembly multiple times (unless the string is only used
+ *     once, in which case it's more work for no gain).  See this post for more
+ *     details:
+ *     
+ *     http://forum.sa-mp.com/showpost.php?p=1795601
+ * 
  * Documentation explanation:
  * 
  *     FIX:      <Short name>
@@ -432,6 +533,8 @@
  *     FIXED IN: <Server version of official fix where applicable>
  */
 
+#define _FIXES_IS_UNSET(%0) ((2*%0-1+1)==-1)
+
 // We can add server version compiler code here to only compile fixes that apply
 // to the version of the includes for which the user is compiling.
 #if !defined FIX_GetPlayerColor
@@ -441,185 +544,476 @@
 		#define FIX_GetPlayerColor       (1)
 	#endif
 #endif
+#if _FIXES_IS_UNSET(FIX_GetPlayerColor)
+	#undef FIX_GetPlayerColor
+	#define FIX_GetPlayerColor           (0)
+#endif
 
 #if !defined FIX_FILTERSCRIPT
 	#define FIX_FILTERSCRIPT             (1)
+#elseif _FIXES_IS_UNSET(FIX_FILTERSCRIPT)
+	#undef FIX_FILTERSCRIPT
+	#define FIX_FILTERSCRIPT             (0)
 #endif
 
 #if !defined FIX_SpawnPlayer
 	#define FIX_SpawnPlayer              (1)
+#elseif _FIXES_IS_UNSET(FIX_SpawnPlayer)
+	#undef FIX_SpawnPlayer
+	#define FIX_SpawnPlayer              (0)
 #endif
 
 #if !defined FIX_SetPlayerName
 	#define FIX_SetPlayerName            (1)
+#elseif _FIXES_IS_UNSET(FIX_SetPlayerName)
+	#undef FIX_SetPlayerName
+	#define FIX_SetPlayerName            (0)
 #endif
 
 #if !defined FIX_GetPlayerSkin
 	#define FIX_GetPlayerSkin            (1)
+#elseif _FIXES_IS_UNSET(FIX_GetPlayerSkin)
+	#undef FIX_GetPlayerSkin
+	#define FIX_GetPlayerSkin            (0)
 #endif
 
 #if !defined FIX_GetWeaponName
 	#define FIX_GetWeaponName            (1)
+#elseif _FIXES_IS_UNSET(FIX_GetWeaponName)
+	#undef FIX_GetWeaponName
+	#define FIX_GetWeaponName            (0)
 #endif
 
 #if !defined FIX_SetPlayerWorldBounds
 	#define FIX_SetPlayerWorldBounds     (1)
+#elseif _FIXES_IS_UNSET(FIX_SetPlayerWorldBounds)
+	#undef FIX_SetPlayerWorldBounds
+	#define FIX_SetPlayerWorldBounds     (0)
 #endif
 
 #if !defined FIX_TogglePlayerControllable
-	#define FIX_TogglePlayerControllable (!defined SetObjectMaterial)
+	#if defined SetObjectMaterial
+		#define FIX_TogglePlayerControllable (0)
+	#else
+		#define FIX_TogglePlayerControllable (1)
+	#endif
+#elseif _FIXES_IS_UNSET(FIX_TogglePlayerControllable)
+	#undef FIX_TogglePlayerControllable
+	#define FIX_TogglePlayerControllable (0)
 #endif
 
 #if !defined FIX_HydraSniper
 	#define FIX_HydraSniper              (1)
+#elseif _FIXES_IS_UNSET(FIX_HydraSniper)
+	#undef FIX_HydraSniper
+	#define FIX_HydraSniper              (0)
 #endif
 
 #if !defined FIX_IsPlayerInCheckpoint
 	#define FIX_IsPlayerInCheckpoint     (1)
+#elseif _FIXES_IS_UNSET(FIX_IsPlayerInCheckpoint)
+	#undef FIX_IsPlayerInCheckpoint
+	#define FIX_IsPlayerInCheckpoint     (0)
 #endif
 
 #if !defined FIX_IsPlayerInRaceCheckpoint
 	#define FIX_IsPlayerInRaceCheckpoint (1)
+#elseif _FIXES_IS_UNSET(FIX_IsPlayerInRaceCheckpoint)
+	#undef FIX_IsPlayerInRaceCheckpoint
+	#define FIX_IsPlayerInRaceCheckpoint (0)
 #endif
 
 #if !defined FIX_GetPlayerWeapon
 	#define FIX_GetPlayerWeapon          (1)
+#elseif _FIXES_IS_UNSET(FIX_GetPlayerWeapon)
+	#undef FIX_GetPlayerWeapon
+	#define FIX_GetPlayerWeapon          (0)
 #endif
 
 #if !defined FIX_PutPlayerInVehicle
 	#define FIX_PutPlayerInVehicle       (1)
+#elseif _FIXES_IS_UNSET(FIX_PutPlayerInVehicle)
+	#undef FIX_PutPlayerInVehicle
+	#define FIX_PutPlayerInVehicle       (0)
 #endif
 
 #if !defined FIX_KEY_AIM
-	#define FIX_KEY_AIM                  (!defined KEY_AIM)
+	#if defined KEY_AIM
+		#define FIX_KEY_AIM              (0)
+	#else
+		#define FIX_KEY_AIM              (1)
+	#endif
+#elseif _FIXES_IS_UNSET(FIX_KEY_AIM)
+	#undef FIX_KEY_AIM
+	#define FIX_KEY_AIM                  (0)
 #endif
 
 #if !defined FIX_SetPlayerCheckpoint
 	#define FIX_SetPlayerCheckpoint      (1)
+#elseif _FIXES_IS_UNSET(FIX_SetPlayerCheckpoint)
+	#undef FIX_SetPlayerCheckpoint
+	#define FIX_SetPlayerCheckpoint      (0)
 #endif
 
 #if !defined FIX_SetPlayerRaceCheckpoint
 	#define FIX_SetPlayerRaceCheckpoint  (1)
+#elseif _FIXES_IS_UNSET(FIX_SetPlayerRaceCheckpoint)
+	#undef FIX_SetPlayerRaceCheckpoint
+	#define FIX_SetPlayerRaceCheckpoint  (0)
 #endif
 
 #if !defined FIX_TextDrawCreate
 	#define FIX_TextDrawCreate           (1)
+#elseif _FIXES_IS_UNSET(FIX_TextDrawCreate)
+	#undef FIX_TextDrawCreate
+	#define FIX_TextDrawCreate           (0)
 #endif
 
 #if !defined FIX_TextDrawSetString
 	#define FIX_TextDrawSetString        (1)
+#elseif _FIXES_IS_UNSET(FIX_TextDrawSetString)
+	#undef FIX_TextDrawSetString
+	#define FIX_TextDrawSetString        (0)
 #endif
 
 #if !defined FIX_AllowInteriorWeapons
 	#define FIX_AllowInteriorWeapons     (1)
+#elseif _FIXES_IS_UNSET(FIX_AllowInteriorWeapons)
+	#undef FIX_AllowInteriorWeapons
+	#define FIX_AllowInteriorWeapons     (0)
 #endif
 
 #if !defined FIX_OnPlayerEnterVehicle
-	#define FIX_OnPlayerEnterVehicle     (!defined OnPlayerClickMap)
+	#if defined OnPlayerClickMap
+		#define FIX_OnPlayerEnterVehicle (0)
+	#else
+		#define FIX_OnPlayerEnterVehicle (1)
+	#endif
+#elseif _FIXES_IS_UNSET(FIX_OnPlayerEnterVehicle)
+	#undef FIX_OnPlayerEnterVehicle
+	#define FIX_OnPlayerEnterVehicle     (0)
+#endif
+
+#if !defined FIX_OnPlayerEnterVehicle_2
+	#define FIX_OnPlayerEnterVehicle_2   (1)
+#elseif _FIXES_IS_UNSET(FIX_OnPlayerEnterVehicle)
+	#undef FIX_OnPlayerEnterVehicle_2
+	#define FIX_OnPlayerEnterVehicle_2   (0)
 #endif
 
 #if !defined FIX_AllowTeleport
-	#define FIX_AllowTeleport            (defined OnPlayerClickMap)
+	#if defined OnPlayerClickMap
+		#define FIX_AllowTeleport        (1)
+	#else
+		#define FIX_AllowTeleport        (0)
+	#endif
+#elseif _FIXES_IS_UNSET(FIX_AllowTeleport)
+	#undef FIX_AllowTeleport
+	#define FIX_AllowTeleport            (0)
 #endif
 
 #if !defined FIX_SetPlayerSpecialAction
 	#define FIX_SetPlayerSpecialAction   (1)
+#elseif _FIXES_IS_UNSET(FIX_SetPlayerSpecialAction)
+	#undef FIX_SetPlayerSpecialAction
+	#define FIX_SetPlayerSpecialAction   (0)
 #endif
 
 #if !defined FIX_OnDialogResponse
-	#define FIX_OnDialogResponse         (1)
+	#if defined GetVehicleModelInfo
+		#define FIX_OnDialogResponse     (0)
+	#else
+		#define FIX_OnDialogResponse     (1)
+	#endif
+#elseif _FIXES_IS_UNSET(FIX_OnDialogResponse)
+	#undef FIX_OnDialogResponse
+	#define FIX_OnDialogResponse         (0)
 #endif
 
 #if !defined FIX_GetPlayerDialog
 	#define FIX_GetPlayerDialog          (0)
+#elseif _FIXES_IS_UNSET(FIX_GetPlayerDialog)
+	#undef FIX_GetPlayerDialog
+	#define FIX_GetPlayerDialog          (0)
 #endif
 
 #if !defined FIX_SetSpawnInfo
-	#define FIX_SetSpawnInfo             (!defined GetPlayerVersion)
+	#if defined GetPlayerVersion
+		#define FIX_SetSpawnInfo         (0)
+	#else
+		#define FIX_SetSpawnInfo         (1)
+	#endif
+#elseif _FIXES_IS_UNSET(FIX_SetSpawnInfo)
+	#undef FIX_SetSpawnInfo
+	#define FIX_SetSpawnInfo             (0)
 #endif
 
 #if !defined FIX_SetPlayerSkin
 	#define FIX_SetPlayerSkin            (1)
+#elseif _FIXES_IS_UNSET(FIX_SetPlayerSkin)
+	#undef FIX_SetPlayerSkin
+	#define FIX_SetPlayerSkin            (0)
 #endif
 
 #if !defined FIX_HideMenuForPlayer
 	#define FIX_HideMenuForPlayer        (1)
+#elseif _FIXES_IS_UNSET(FIX_HideMenuForPlayer)
+	#undef FIX_HideMenuForPlayer
+	#define FIX_HideMenuForPlayer        (0)
 #endif
 
 #if !defined FIX_valstr
 	#define FIX_valstr                   (1)
+#elseif _FIXES_IS_UNSET(FIX_valstr)
+	#undef FIX_valstr
+	#define FIX_valstr                   (0)
 #endif
 
 #if !defined FIX_file_inc
-	#define FIX_file_inc                 (1)
+	#define FIX_file_inc                 (0)
+#elseif _FIXES_IS_UNSET(FIX_file_inc)
+	#undef FIX_file_inc
+	#define FIX_file_inc                 (0)
 #endif
 
 #if !defined FIX_fclose
 	#define FIX_fclose                   (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_fclose)
+	#undef FIX_fclose
+	#define FIX_fclose                   (0)
 #endif
 
 #if !defined FIX_fwrite
 	#define FIX_fwrite                   (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_fwrite)
+	#undef FIX_fwrite
+	#define FIX_fwrite                   (0)
 #endif
 
 #if !defined FIX_fread
 	#define FIX_fread                    (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_fread)
+	#undef FIX_fread
+	#define FIX_fread                    (0)
 #endif
 
 #if !defined FIX_fputchar
 	#define FIX_fputchar                 (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_fputchar)
+	#undef FIX_fputchar
+	#define FIX_fputchar                 (0)
 #endif
 
 #if !defined FIX_fgetchar
 	#define FIX_fgetchar                 (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_fgetchar)
+	#undef FIX_fgetchar
+	#define FIX_fgetchar                 (0)
 #endif
 
 #if !defined FIX_fblockwrite
 	#define FIX_fblockwrite              (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_fblockwrite)
+	#undef FIX_fblockwrite
+	#define FIX_fblockwrite              (0)
 #endif
 
 #if !defined FIX_fblockread
 	#define FIX_fblockread               (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_fblockread)
+	#undef FIX_fblockread
+	#define FIX_fblockread               (0)
 #endif
 
 #if !defined FIX_fseek
 	#define FIX_fseek                    (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_fseek)
+	#undef FIX_fseek
+	#define FIX_fseek                    (0)
 #endif
 
 #if !defined FIX_flength
 	#define FIX_flength                  (FIX_file_inc)
+#elseif _FIXES_IS_UNSET(FIX_flength)
+	#undef FIX_flength
+	#define FIX_flength                  (0)
 #endif
 
 #if !defined FIX_IsPlayerAttachedObjSlotUsed
 	#define FIX_IsPlayerAttachedObjSlotUsed (1)
+#elseif _FIXES_IS_UNSET(FIX_IsPlayerAttachedObjSlotUsed)
+	#undef FIX_IsPlayerAttachedObjSlotUsed
+	#define FIX_IsPlayerAttachedObjSlotUsed (0)
 #endif
 
 #if !defined FIX_SetPlayerAttachedObject
 	#define FIX_SetPlayerAttachedObject  (1)
+#elseif _FIXES_IS_UNSET(FIX_SetPlayerAttachedObject)
+	#undef FIX_SetPlayerAttachedObject
+	#define FIX_SetPlayerAttachedObject  (0)
 #endif
 
 #if !defined FIX_OnPlayerDeath
 	#define FIX_OnPlayerDeath            (1)
+#elseif _FIXES_IS_UNSET(FIX_OnPlayerDeath)
+	#undef FIX_OnPlayerDeath
+	#define FIX_OnPlayerDeath            (0)
 #endif
 
 #if !defined FIX_strins
 	#define FIX_strins                   (1)
+#elseif _FIXES_IS_UNSET(FIX_strins)
+	#undef FIX_strins
+	#define FIX_strins                   (0)
 #endif
 
 #if !defined FIX_IsPlayerConnected
 	#define FIX_IsPlayerConnected        (1)
+#elseif _FIXES_IS_UNSET(FIX_IsPlayerConnected)
+	#undef FIX_IsPlayerConnected
+	#define FIX_IsPlayerConnected        (0)
 #endif
 
 #if !defined FIX_OnPlayerCommandText
-	#define FIX_OnPlayerCommandText      (!defined _ALS_OnPlayerCommandText)
+	#if defined _ALS_OnPlayerCommandText
+		#define FIX_OnPlayerCommandText  (0)
+	#else
+		#define FIX_OnPlayerCommandText  (1)
+	#endif
+#elseif _FIXES_IS_UNSET(FIX_OnPlayerCommandText)
+	#undef FIX_OnPlayerCommandText
+	#define FIX_OnPlayerCommandText      (0)
 #endif
 
 #if !defined FIX_TrainExit
 	#define FIX_TrainExit                (1)
+#elseif _FIXES_IS_UNSET(FIX_TrainExit)
+	#undef FIX_TrainExit
+	#define FIX_TrainExit                (0)
 #endif
 
 #if !defined FIX_Kick
-	#define FIX_Kick                     (1)
+	#if defined EnableVehicleFriendlyFire
+		#define FIX_Kick                 (0)
+	#else
+		#define FIX_Kick                 (1)
+	#endif
+#elseif _FIXES_IS_UNSET(FIX_Kick)
+	#undef FIX_Kick
+	#define FIX_Kick                     (0)
+#endif
+
+#if !defined FIX_OnVehicleMod
+	#define FIX_OnVehicleMod             (1)
+#elseif _FIXES_IS_UNSET(FIX_OnVehicleMod)
+	#undef FIX_OnVehicleMod
+	#define FIX_OnVehicleMod             (0)
+#endif
+
+#if !defined FIX_random
+	#define FIX_random                   (0)
+#elseif _FIXES_IS_UNSET(FIX_random)
+	#undef FIX_random
+	#define FIX_random                   (0)
+#endif
+
+#if !defined FIX_sleep
+	#define FIX_sleep                    (1)
+#elseif _FIXES_IS_UNSET(FIX_sleep)
+	#undef FIX_sleep
+	#define FIX_sleep                    (0)
+#endif
+
+#if !defined FIX_Menus
+	#define FIX_Menus                    (1)
+#elseif _FIXES_IS_UNSET(FIX_Menus)
+	#undef FIX_Menus
+	#define FIX_Menus                    (0)
+#endif
+
+#if !defined FIX_AddMenuItem
+	#define FIX_AddMenuItem              (FIX_Menus)
+#elseif _FIXES_IS_UNSET(FIX_AddMenuItem)
+	#undef FIX_AddMenuItem
+	#define FIX_AddMenuItem              (0)
+#endif
+
+#if !defined FIX_SetMenuColumnHeader
+	#define FIX_SetMenuColumnHeader      (FIX_Menus)
+#elseif _FIXES_IS_UNSET(FIX_SetMenuColumnHeader)
+	#undef FIX_SetMenuColumnHeader
+	#define FIX_SetMenuColumnHeader      (0)
+#endif
+
+#if !defined FIX_ShowMenuForPlayer
+	#define FIX_ShowMenuForPlayer        (FIX_Menus)
+#elseif _FIXES_IS_UNSET(FIX_ShowMenuForPlayer)
+	#undef FIX_ShowMenuForPlayer
+	#define FIX_ShowMenuForPlayer        (0)
+#endif
+
+#if !defined FIX_HideMenuForPlayer
+	#define FIX_HideMenuForPlayer        (FIX_Menus)
+#elseif _FIXES_IS_UNSET(FIX_HideMenuForPlayer)
+	#undef FIX_HideMenuForPlayer
+	#define FIX_HideMenuForPlayer        (0)
+#endif
+
+#if !defined FIX_GetPlayerMenu
+	#define FIX_GetPlayerMenu            (1)
+#elseif _FIXES_IS_UNSET(FIX_GetPlayerMenu)
+	#undef FIX_GetPlayerMenu
+	#define FIX_GetPlayerMenu            (0)
+#endif
+
+#if !defined FIX_HideMenuForPlayer_2
+	#define FIX_HideMenuForPlayer_2      (0)
+#elseif _FIXES_IS_UNSET(FIX_HideMenuForPlayer_2)
+	#undef FIX_HideMenuForPlayer_2
+	#define FIX_HideMenuForPlayer_2      (0)
+#elseif FIX_HideMenuForPlayer_2 && !FIX_GetPlayerMenu
+	#error FIX_HideMenuForPlayer_2 requires FIX_GetPlayerMenu
+#endif
+
+#if !defined FIX_DisableMenu
+	#define FIX_DisableMenu              (FIX_Menus)
+#elseif _FIXES_IS_UNSET(FIX_DisableMenu)
+	#undef FIX_DisableMenu
+	#define FIX_DisableMenu              (0)
+#endif
+
+#if !defined FIX_DisableMenuRow
+	#define FIX_DisableMenuRow           (FIX_Menus)
+#elseif _FIXES_IS_UNSET(FIX_DisableMenuRow)
+	#undef FIX_DisableMenuRow
+	#define FIX_DisableMenuRow           (0)
+#endif
+
+#if FIX_Menus || FIX_AddMenuItem || FIX_SetMenuColumnHeader || FIX_ShowMenuForPlayer || FIX_HideMenuForPlayer || FIX_DisableMenu || FIX_DisableMenuRow
+	#define _FIX_Menus                (1)
+#else
+	#define _FIX_Menus                (0)
+#endif
+
+#if !defined FIX_GetPlayerInterior
+	#define FIX_GetPlayerInterior        (1)
+#elseif _FIXES_IS_UNSET(FIX_GetPlayerInterior)
+	#undef FIX_GetPlayerInterior
+	#define FIX_GetPlayerInterior        (0)
+#endif
+
+/* 
+ * FIXES_SilentKick
+ * 
+ * If this define is set to 1, then players will not be given a message when
+ * they are kicked for cheats, instead they will just loose connection to the
+ * server.
+ */
+#if !defined FIXES_SilentKick
+	#define FIXES_SilentKick 0
+#elseif _FIXES_IS_UNSET(FIXES_SilentKick)
+	#undef FIXES_SilentKick
+	#define FIXES_SilentKick 0
 #endif
 
 /* 
@@ -630,7 +1024,9 @@
  * code to print anything, leaving 0 run-time overhead.
  */
 #if defined FIXES_Debug
-	#if FIXES_Debug == 1
+	#if _FIXES_IS_UNSET(FIXES_Debug)
+		#undef FIXES_Debug
+	#elseif FIXES_Debug == 1
 		#define FIXES_PRINTF(%0); print(_FIXES_gIsFilterscript ? ("* FIXES_PRINTF (FS):") : ("* FIXES_PRINTF (GM):")),printf("*** " %0);
 	#else
 		#undef FIXES_Debug
@@ -642,6 +1038,15 @@
 #endif
 
 /* 
+ * INVALID_DIALOG_ID
+ * 
+ * Set when a player can't see a dialog.
+ */
+#if !defined INVALID_DIALOG_ID
+	#define INVALID_DIALOG_ID (-1)
+#endif
+
+/* 
  * FIXES_Single
  * 
  * If this define is set to 1, then the old style include is used, with no
@@ -649,80 +1054,12 @@
  * gamemodes and filter scripts at the same time).  You can only have one or the
  * other or bugs.
  */
-#if defined FIXES_Single
+#if !defined FIXES_Single
+	#define FIXES_Single (0)
+#elseif _FIXES_IS_UNSET(FIXES_Single)
 	#undef FIXES_Single
 	#define FIXES_Single (1)
-#else
-	#define FIXES_Single (0)
 #endif
-
-/* 
- * E_FIXES_CALLBACK_HOOKS_1
- * E_FIXES_CALLBACK_HOOKS_2
- * 
- * Two enums to define the bits used to efficiently store wether of not the next
- * callback in the ALS chain exists.  Breaks naming convention for elements from
- * "E_FIXES_ON_GAME_MODE_INIT" to "E_FIXES_OnGameModeInit" for compatibility
- * with existing names.  Note that "Checkpoint" and "Update" have been shortened
- * to "CP" and "Upd" in certain symbols to stay below the 31 character limit.
- */
-enum E_FIXES_CALLBACK_HOOKS_1 (<<= 1)
-{
-	E_FIXES_OnGameModeInit = 1,
-	E_FIXES_OnGameModeExit,
-	E_FIXES_OnFilterScriptInit,
-	E_FIXES_OnFilterScriptExit,
-	E_FIXES_OnPlayerConnect,
-	E_FIXES_OnPlayerDisconnect,
-	E_FIXES_OnPlayerSpawn,
-	E_FIXES_OnPlayerDeath,
-	E_FIXES_OnVehicleSpawn,
-	E_FIXES_OnVehicleDeath,
-	E_FIXES_OnPlayerText,
-	E_FIXES_OnPlayerCommandText,
-	E_FIXES_OnPlayerRequestClass,
-	E_FIXES_OnPlayerEnterVehicle,
-	E_FIXES_OnPlayerExitVehicle,
-	E_FIXES_OnPlayerStateChange,
-	E_FIXES_OnPlayerEnterCheckpoint,
-	E_FIXES_OnPlayerLeaveCheckpoint,
-	E_FIXES_OnPlayerEnterRaceCP,
-	E_FIXES_OnPlayerLeaveRaceCP,
-	E_FIXES_OnRconCommand,
-	E_FIXES_OnPlayerRequestSpawn,
-	E_FIXES_OnObjectMoved,
-	E_FIXES_OnPlayerObjectMoved,
-	E_FIXES_OnPlayerPickUpPickup,
-	E_FIXES_OnVehicleMod,
-	E_FIXES_OnEnterExitModShop,
-	E_FIXES_OnVehiclePaintjob,
-	E_FIXES_OnVehicleRespray,
-	E_FIXES_OnVehicleDamageStatusUp,
-	E_FIXES_OnPlayerSelectedMenuRow,
-	E_FIXES_OnPlayerExitedMenu
-}
-
-enum E_FIXES_CALLBACK_HOOKS_2 (<<= 1)
-{
-	E_FIXES_OnPlayerInteriorChange = 1,
-	E_FIXES_OnPlayerKeyStateChange,
-	E_FIXES_OnRconLoginAttempt,
-	E_FIXES_OnPlayerUpdate,
-	E_FIXES_OnPlayerStreamIn,
-	E_FIXES_OnPlayerStreamOut,
-	E_FIXES_OnVehicleStreamIn,
-	E_FIXES_OnVehicleStreamOut,
-	E_FIXES_OnDialogResponse,
-	E_FIXES_OnPlayerClickPlayer,
-	E_FIXES_OnPlayerClickMap,
-	E_FIXES_OnPlayerClickTextDraw,
-	E_FIXES_OnPlayerClickPlayerTD,
-	E_FIXES_OnPlayerEditObject,
-	E_FIXES_OnPlayerEditAttachedObj,
-	E_FIXES_OnPlayerSelectObject,
-	E_FIXES_OnPlayerTakeDamage,
-	E_FIXES_OnPlayerGiveDamage
-}
 
 /* 
  * E_FIXES_WORLDBOUND_DATA
@@ -780,6 +1117,7 @@ enum e_FIXES_SETTINGS (<<= 1)
 	e_FIXES_SETTINGS_ADMIN_TELEPORT,
 	e_FIXES_SETTINGS_IN_CHARGE,
 	e_FIXES_SETTINGS_DROP_ALL_DATA,
+	e_FIXES_SETTINGS_MENU_SET,
 	e_FIXES_SETTINGS_ENDING
 }
 
@@ -827,16 +1165,17 @@ stock
 
 static stock
 	/* 
-	 * E_FIXES_CALLBACK_HOOKS_1:FIXES_gsCallbackHooks1
-	 * E_FIXES_CALLBACK_HOOKS_1:FIXES_gsCallbackHooks2
+	 * FIXES_gsValidMenus[_FIXES_CEILDIV(MAX_MENUS, cellbits)]
 	 * 
-	 * Bit arrays of callbacks.  You can only have 32 callbacks per variable,
-	 * and there are more than that many, so we need more than one variable.
-	 * Add new callback detection to "FIXES_ScriptInit" - only actually used
-	 * callbacks are currently hooked.
+	 * A record of which menus have and haven't been shown yet.
 	 */
-	E_FIXES_CALLBACK_HOOKS_1:FIXES_gsCallbackHooks1,
-	E_FIXES_CALLBACK_HOOKS_2:FIXES_gsCallbackHooks2,
+	FIXES_gsValidMenus[_FIXES_CEILDIV(MAX_MENUS, cellbits)],
+	/* 
+	 * FIXES_gsPlayerIP[MAX_PLAYERS]
+	 * 
+	 * A player's IP as a 32-bit integer.
+	 */
+	FIXES_gsPlayerIP[MAX_PLAYERS] = {-1, ...},
 	/* 
 	 * FIXES_gsPlayerSkin[MAX_PLAYERS]
 	 * 
@@ -900,7 +1239,19 @@ static stock
 	 * 
 	 * The last animation a player used.
 	 */
-	FIXES_gsLastAnimation[MAX_PLAYERS];
+	FIXES_gsLastAnimation[MAX_PLAYERS],
+	/* 
+	 * FIXES_gsCurrentMenu[MAX_PLAYERS]
+	 * 
+	 * The menu the player can currently see.
+	 */
+	Menu:FIXES_gsCurrentMenu[MAX_PLAYERS] = {Menu:INVALID_MENU, ...},
+	/*
+	 * FIXES_gscNULL[]
+	 * 
+	 * NULL.  This is stored as a global string to reduce memory usage.
+	 */
+	FIXES_gscNULL[] = "\1\0";
 
 static stock const
 	/* 
@@ -946,11 +1297,235 @@ static stock const
 			0x33113311, 0x11111101, 0x33101133, 0x101001F0, 0x03133111, 0xFF11113F, 0x13330111, 0xFF131111, 0x0000FF3F
 		},
 	/*
-	 * FIXES_gscNULL[]
+	 * FIXES_gscVehicleMods[][]
 	 * 
-	 * NULL.  This is stored as a global string to reduce memory usage.
+	 * This is a bit array of all the valid mods (-1000) for all vehicles (-400)
+	 * EXCEPT for vehicle 576 (Tornado), which has just TWO extra mods on it,
+	 * that should spill over in to an extra cell of data (requiring an extra
+	 * 848 bytes of data total to make the array work).  Instead this (hopefully
+	 * rare) case is handled explicitly in "OnVehicleMod".
 	 */
-	FIXES_gscNULL[] = "\1\0",
+	FIXES_gscVehicleMods[][] =
+		{
+			{0b00000011001111000010011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000110100010011111111010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001110110010011110000101, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010101111000100011100000011, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000011101110100010011110001010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100011100000011110001010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001100010000011101000100, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001010000000011100111010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010101111010100011100000001, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001110100010011110000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001010000000011101111010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010011110100010011111001010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100000100010011110001010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001111100000011111000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000011011100000011011100110000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000011000111010010011101110101, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010101111100100011110001000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000010000011101110001, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100110100000111111001110, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000001100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000011001110000010011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001111111000011110010101, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100111110000011110001100, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100101100010011111101010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001101101100011110000010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100111100001111111001010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b11111100000000000000010000110111, 0b00000000000000000000000000000000, 0b00000010000111000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000011111111100110000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000001101110000111, 0b00000000000000000000000000000001, 0b00000001111000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000011100111100000011111010010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001111001100011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000110000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000011100011100000011111010110, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010001111010000011100001001, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000001100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100111100001111110001010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100111000000011101111010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010101111010000011101101100, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b11111111111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000111111000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111111111110, 0b00000000000000000000000000000111, 0b11000000000000000000000000000000, 0b00000000000000000010000000000111},
+			{0b11111110000000000000011100000000, 0b00000000000000000000000000000011, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000011110000000000, 0b00000000000000000000011000000000},
+			{0b11001110000000000000011100000000, 0b11111111100000000000000000000000, 0b00000000111111111111111000000001, 0b00000000000000000000000000000111, 0b00111100000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000001111111100, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000001111000000000000000000, 0b00000000000000000001100000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000011111111110000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000011110000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000001000111, 0b00000000000000000000000000111110, 0b00111100000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000001110000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000001111, 0b00000000000000000000000000000000, 0b00000000000000111100000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000001111000000, 0b11000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010100101100000011111000010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000011000101110010011111110001, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000110000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010010101100010011111110000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000011100111100000011111000010, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000111100000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000},
+			{0b00000010000000000000011100000000, 0b00000000000000000000000000000000, 0b00000000111111111111111000000000, 0b00000000000000000000000000000111, 0b00000000000000000000000000000000, 0b00000000000000000000000000000000}
+		},
+	/*
+	 * FIXES_gscDot[]
+	 * 
+	 * ".".
+	 */
+	FIXES_gscDot[] = ".",
 	/*
 	 * FIXES_gscSpec@[]
 	 * 
@@ -1030,6 +1605,18 @@ static stock const
 	 */
 	FIXES_gscDetermineOrder[] = "_FIXES_DetermineOrder",
 	/*
+	 * FIXES_gscSetPlayerMenu[]
+	 * 
+	 * Name of the remote set player menu function.
+	 */
+	FIXES_gscSetPlayerMenu[] = "_FIXES_SetPlayerMenu",
+	/*
+	 * FIXES_gscClearPlayerMenu[]
+	 * 
+	 * Name of the remote function to clear a player's menu set.
+	 */
+	FIXES_gscClearPlayerMenu[] = "_FIXES_ClearPlayerMenu",
+	/*
 	 * FIXES_gscAllowTeleport[]
 	 * 
 	 * Name of the remote allow teleport function.
@@ -1070,7 +1657,13 @@ static stock const
 	 * 
 	 * The property for accurate returns.
 	 */
-	FIXES_gscReturnProperty[] = "FIXES_gscReturnProperty";
+	FIXES_gscReturnProperty[] = "FIXES_gscReturnProperty",
+	/*
+	 * FIXES_gscMenuProperty[]
+	 * 
+	 * The property for a player's current menu.
+	 */
+	FIXES_gscMenuProperty[] = "FIXES_gscMenuProperty";
 
 static stock
 	/*
@@ -1111,71 +1704,14 @@ static stock
 	 * 
 	 * Name of the pvar in which to store the player's current dialogid.
 	 */
-	FIXES_pvarPlayerDialog[] = "FIXES_pvarPlayerDialog";
-
-/* 
- * FIXES_DEFINE_STRING(callback)
- * 
- * Define strings for every callback name.  This macro creates "static stock
- * const" strings for every next callback name (i.e. the ones called to continue
- * the chain after "fixes.inc" is done.  This is done this way to only need to
- * include every callback name ONCE in the compiled ".amx" file, the old method
- * had multiple copies of the same string literal in the final code.
- */
-#define FIXES_DEFINE_STRING(%0On%1) static stock const FIXES_gsc%1[] = "FIXES_On"#%1
-
-FIXES_DEFINE_STRING(OnGameModeInit);
-FIXES_DEFINE_STRING(OnGameModeExit);
-FIXES_DEFINE_STRING(OnFilterScriptInit);
-FIXES_DEFINE_STRING(OnFilterScriptExit);
-FIXES_DEFINE_STRING(OnPlayerConnect);
-FIXES_DEFINE_STRING(OnPlayerDisconnect);
-FIXES_DEFINE_STRING(OnPlayerSpawn);
-FIXES_DEFINE_STRING(OnPlayerDeath);
-FIXES_DEFINE_STRING(OnVehicleSpawn);
-FIXES_DEFINE_STRING(OnVehicleDeath);
-FIXES_DEFINE_STRING(OnPlayerText);
-FIXES_DEFINE_STRING(OnPlayerCommandText);
-FIXES_DEFINE_STRING(OnPlayerRequestClass);
-FIXES_DEFINE_STRING(OnPlayerEnterVehicle);
-FIXES_DEFINE_STRING(OnPlayerExitVehicle);
-FIXES_DEFINE_STRING(OnPlayerStateChange);
-FIXES_DEFINE_STRING(OnPlayerEnterCheckpoint);
-FIXES_DEFINE_STRING(OnPlayerLeaveCheckpoint);
-FIXES_DEFINE_STRING(OnPlayerEnterRaceCP);
-FIXES_DEFINE_STRING(OnPlayerLeaveRaceCP);
-FIXES_DEFINE_STRING(OnRconCommand);
-FIXES_DEFINE_STRING(OnPlayerRequestSpawn);
-FIXES_DEFINE_STRING(OnObjectMoved);
-FIXES_DEFINE_STRING(OnPlayerObjectMoved);
-FIXES_DEFINE_STRING(OnPlayerPickUpPickup);
-FIXES_DEFINE_STRING(OnVehicleMod);
-FIXES_DEFINE_STRING(OnEnterExitModShop);
-FIXES_DEFINE_STRING(OnVehiclePaintjob);
-FIXES_DEFINE_STRING(OnVehicleRespray);
-FIXES_DEFINE_STRING(OnVehicleDamageStatusUp);
-FIXES_DEFINE_STRING(OnPlayerSelectedMenuRow);
-FIXES_DEFINE_STRING(OnPlayerExitedMenu);
-FIXES_DEFINE_STRING(OnPlayerInteriorChange);
-FIXES_DEFINE_STRING(OnPlayerKeyStateChange);
-FIXES_DEFINE_STRING(OnRconLoginAttempt);
-FIXES_DEFINE_STRING(OnPlayerUpdate);
-FIXES_DEFINE_STRING(OnPlayerStreamIn);
-FIXES_DEFINE_STRING(OnPlayerStreamOut);
-FIXES_DEFINE_STRING(OnVehicleStreamIn);
-FIXES_DEFINE_STRING(OnVehicleStreamOut);
-FIXES_DEFINE_STRING(OnDialogResponse);
-FIXES_DEFINE_STRING(OnPlayerClickPlayer);
-FIXES_DEFINE_STRING(OnPlayerClickMap);
-FIXES_DEFINE_STRING(OnPlayerClickTextDraw);
-FIXES_DEFINE_STRING(OnPlayerClickPlayerTD);
-FIXES_DEFINE_STRING(OnPlayerEditObject);
-FIXES_DEFINE_STRING(OnPlayerEditAttachedObj);
-FIXES_DEFINE_STRING(OnPlayerSelectObject);
-FIXES_DEFINE_STRING(OnPlayerTakeDamage);
-FIXES_DEFINE_STRING(OnPlayerGiveDamage);
-
-#undef FIXES_DEFINE_STRING
+	FIXES_pvarPlayerDialog[] = "FIXES_pvarPlayerDialog",
+	/*
+	 * FIXES_pvarCurrentDialog[]
+	 * 
+	 * Used in OnDialogResponse to be able to get the correct ID in multiple
+	 * scripts while still correctly resetting the ID for future use.
+	 */
+	FIXES_pvarCurrentDialog[] = "FIXES_pvarCurrentDialog";
 
 /* 
  * _FIXES_KEY_AIM
@@ -1199,32 +1735,6 @@ FIXES_DEFINE_STRING(OnPlayerGiveDamage);
 #endif
 
 /* 
- * FIXES_DETECT_CALLBACK_1(callback)
- * FIXES_DETECT_CALLBACK_2(callback)
- * 
- * Macro to make detecting callbacks simpler.  The number relates to which
- * variable the callback is found it.  This explicity detects the "On" part of
- * the callback because some scripts redefine the callback names and we need to
- * always correctly detect them, and always have "FIXES_On"#%0 work without
- * using the redefined name (e.g. if a prior script uses ALS).
- */
-#define FIXES_DETECT_CALLBACK_1(%0On%1) (FIXES_gsCallbackHooks1|=E_FIXES_On%1*E_FIXES_CALLBACK_HOOKS_1:(funcidx(FIXES_gsc%1)!=-1))
-#define FIXES_DETECT_CALLBACK_2(%0On%1) (FIXES_gsCallbackHooks2|=E_FIXES_On%1*E_FIXES_CALLBACK_HOOKS_2:(funcidx(FIXES_gsc%1)!=-1))
-
-/* 
- * FIXES_CALL_CALLBACK_1(callback, default, format[], ...)
- * FIXES_CALL_CALLBACK_2(callback, default, format[], ...)
- * 
- * Macro to make calling callbacks simpler.  This takes the name of a callback
- * to chain - if it exists then it is called, if it doesn't exist the default
- * is returned.  Note that this DOES NOT end the current function, use in
- * conjunction with "return", or store the value to call the next element in the
- * chain before some bits of processing.
- */
-#define FIXES_CALL_CALLBACK_1(%0On%1,%2,%3) ((FIXES_gsCallbackHooks1&E_FIXES_On%1)?(CallLocalFunction(FIXES_gsc%1,%3)):(%2))
-#define FIXES_CALL_CALLBACK_2(%0On%1,%2,%3) ((FIXES_gsCallbackHooks2&E_FIXES_On%1)?(CallLocalFunction(FIXES_gsc%1,%3)):(%2))
-
-/* 
  * FIXES_DetermineOrder()
  * 
  * Figure out which script is called first by callbacks.
@@ -1234,15 +1744,29 @@ FIXES_DEFINE_STRING(OnPlayerGiveDamage);
 	
 	static FIXES_DetermineOrder()
 	{
-		deleteproperty(5, FIXES_gscOrderProperty);
+		deleteproperty(5, FIXES_gscOrderProperty),
 		// Called in the Game Mode first (thus needs correcting).
-		setproperty(5, FIXES_gscNoGMProperty, 1);
+		setproperty(5, FIXES_gscNoGMProperty, 1),
+		CallRemoteFunction(FIXES_gscDetermineOrder, FIXES_gscSpec@),
+		deleteproperty(5, FIXES_gscNoGMProperty),
 		CallRemoteFunction(FIXES_gscDetermineOrder, FIXES_gscSpec@);
-		deleteproperty(5, FIXES_gscNoGMProperty);
-		//if (!existproperty(5, FIXES_gscOrderProperty))
-		//{
-		CallRemoteFunction(FIXES_gscDetermineOrder, FIXES_gscSpec@);
-		//}
+	}
+#endif
+
+/* 
+ * _FIXES_IncludeFuncs()
+ * 
+ * Include functions used by "SYSREQ.C".
+ */
+
+#if FIX_sleep
+	forward _FIXES_IncludeFuncs();
+	
+	public _FIXES_IncludeFuncs()
+	{
+		#if FIX_sleep
+			heapspace();
+		#endif
 	}
 #endif
 
@@ -1274,65 +1798,6 @@ FIXES_DEFINE_STRING(OnPlayerGiveDamage);
 #endif
 
 /* 
- * FIXES_OnScriptInit()
- * 
- * Do all initialisation code in here.  Is called once when the script starts,
- * regardless of HOW the script is started (FilterScript or GameMode).  Add
- * detection of new callbacks here.
- * 
- * FIXES:
- */
-static FIXES_OnScriptInit()
-{
-	#if !FIXES_Single
-		FIXES_DetermineOrder();
-	#endif
-	// Called in the Game Mode first.
-	FIXES_DETECT_CALLBACK_1(OnGameModeInit);
-	#if !FIXES_Single
-		FIXES_DETECT_CALLBACK_1(OnGameModeExit);
-	#endif
-	FIXES_DETECT_CALLBACK_1(OnFilterScriptInit);
-	#if !FIXES_Single
-		FIXES_DETECT_CALLBACK_1(OnFilterScriptExit);
-	#endif
-	#if FIX_SetPlayerWorldBounds || FIX_TogglePlayerControllable || FIX_SetPlayerName || FIX_GetPlayerColor || FIX_GetPlayerSkin || FIX_IsPlayerInCheckpoint || FIX_IsPlayerInRaceCheckpoint || FIX_GetPlayerWeapon || FIX_PutPlayerInVehicle || FIX_OnPlayerEnterVehicle || FIX_AllowTeleport || FIX_OnDialogResponse || FIX_SetSpawnInfo || FIX_AllowInteriorWeapons || FIX_TrainExit || FIX_Kick
-		// Not called after "loadfs" or "reloadfs" (useful for us).
-		FIXES_DETECT_CALLBACK_1(OnPlayerConnect);
-	#endif
-	#if FIX_SetPlayerAttachedObject || FIX_IsPlayerAttachedObjSlotUsed || FIX_Kick
-		// Called in the Game Mode first when the mode changes, in Filter
-		// Scripts when the player leaves.
-		FIXES_DETECT_CALLBACK_1(OnPlayerDisconnect);
-	#endif
-	#if FIX_GetPlayerSkin || FIX_TogglePlayerControllable
-		FIXES_DETECT_CALLBACK_1(OnPlayerSpawn);
-	#endif
-	#if FIX_SetPlayerWorldBounds || FIX_TogglePlayerControllable || FIX_AllowInteriorWeapons || FIX_OnPlayerEnterVehicle || FIX_OnPlayerDeath
-		FIXES_DETECT_CALLBACK_2(OnPlayerUpdate);
-	#endif
-	#if FIX_HydraSniper || FIX_GetPlayerWeapon || FIX_PutPlayerInVehicle || FIX_OnPlayerEnterVehicle || FIX_TrainExit
-		FIXES_DETECT_CALLBACK_1(OnPlayerStateChange);
-	#endif
-	#if FIX_AllowTeleport && !defined FILTERSCRIPT
-		// Called in the Game Mode first.
-		FIXES_DETECT_CALLBACK_2(OnPlayerClickMap);
-	#endif
-	#if FIX_OnDialogResponse
-		FIXES_DETECT_CALLBACK_2(OnDialogResponse);
-	#endif
-	#if FIX_OnPlayerDeath
-		FIXES_DETECT_CALLBACK_1(OnPlayerDeath);
-	#endif
-	#if FIX_AllowInteriorWeapons
-		FIXES_DETECT_CALLBACK_2(OnPlayerInteriorChange);
-	#endif
-	#if FIX_OnPlayerCommandText
-		FIXES_DETECT_CALLBACK_1(OnPlayerCommandText);
-	#endif
-}
-
-/* 
  * OnFilterScriptInit()
  * 
  * Set "IS_FILTERSCRIPT" to true as this callback is ONLY called if this script
@@ -1344,11 +1809,15 @@ static FIXES_OnScriptInit()
 public OnFilterScriptInit()
 {
 	_FIXES_gIsFilterscript = true;
-	FIXES_OnScriptInit();
 	#if !FIXES_Single
+		FIXES_DetermineOrder(),
 		FIXES_gsSettings &= ~e_FIXES_SETTINGS_DROP_ALL_DATA;
 	#endif
-	return FIXES_CALL_CALLBACK_1(OnFilterScriptInit, 1, FIXES_gscSpec@);
+	#if defined FIXES_OnFilterScriptInit
+		return FIXES_OnFilterScriptInit();
+	#else
+		return 1;
+	#endif
 }
 
 #if defined _ALS_OnFilterScriptInit
@@ -1358,7 +1827,9 @@ public OnFilterScriptInit()
 #endif
 #define OnFilterScriptInit FIXES_OnFilterScriptInit
 
-forward OnFilterScriptInit();
+#if defined FIXES_OnFilterScriptInit
+	forward FIXES_OnFilterScriptInit();
+#endif
 
 /* 
  * OnGameModeInit()
@@ -1373,7 +1844,7 @@ forward OnFilterScriptInit();
 public OnGameModeInit()
 {
 	// =============================
-	//  START: AllowInteriorWeapons 
+	//  BEGIN: AllowInteriorWeapons 
 	// =============================
 	#if FIX_AllowInteriorWeapons
 		FIXES_gsSettings &= ~e_FIXES_SETTINGS_INTERIOR;
@@ -1383,7 +1854,7 @@ public OnGameModeInit()
 	// ===========================
 	
 	// ======================
-	//  START: AllowTeleport 
+	//  BEGIN: AllowTeleport 
 	// ======================
 	#if FIX_AllowTeleport && !defined FILTERSCRIPT
 		FIXES_gsSettings &= ~e_FIXES_SETTINGS_ADMIN_TELEPORT;
@@ -1391,16 +1862,20 @@ public OnGameModeInit()
 	// ======================
 	//  END:   AllowTeleport 
 	// ======================
-	if (!_FIXES_gIsFilterscript)
-	{
-		FIXES_OnScriptInit();
-	}
 	
 	#if !FIXES_Single
+		if (!_FIXES_gIsFilterscript)
+		{
+			FIXES_DetermineOrder();
+		}
 		FIXES_gsSettings &= ~e_FIXES_SETTINGS_DROP_ALL_DATA;
 	#endif
 	
-	return FIXES_CALL_CALLBACK_1(OnGameModeInit, 1, FIXES_gscSpec@);
+	#if defined FIXES_OnGameModeInit
+		return FIXES_OnGameModeInit();
+	#else
+		return 1;
+	#endif
 }
 
 #if defined _ALS_OnGameModeInit
@@ -1410,7 +1885,9 @@ public OnGameModeInit()
 #endif
 #define OnGameModeInit FIXES_OnGameModeInit
 
-forward OnGameModeInit();
+#if defined FIXES_OnGameModeInit
+	forward FIXES_OnGameModeInit();
+#endif
 
 /* 
  * OnGameModeExit()
@@ -1423,10 +1900,14 @@ forward OnGameModeInit();
 		FIXES_gsSettings |= e_FIXES_SETTINGS_DROP_ALL_DATA;
 		if (!_FIXES_gIsFilterscript && FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE)
 		{
-			FIXES_gsSettings |= e_FIXES_SETTINGS_ENDING;
+			FIXES_gsSettings |= e_FIXES_SETTINGS_ENDING,
 			FIXES_DetermineOrder();
 		}
-		return FIXES_CALL_CALLBACK_1(OnGameModeExit, 1, FIXES_gscSpec@);
+		#if defined FIXES_OnGameModeExit
+			return FIXES_OnGameModeExit();
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnGameModeExit
@@ -1436,7 +1917,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnGameModeExit FIXES_OnGameModeExit
 	
-	forward OnGameModeExit();
+	#if defined FIXES_OnGameModeExit
+		forward FIXES_OnGameModeExit();
+	#endif
 #endif
 
 /* 
@@ -1449,10 +1932,14 @@ forward OnGameModeInit();
 	{
 		if (_FIXES_gIsFilterscript && FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE)
 		{
-			FIXES_gsSettings |= e_FIXES_SETTINGS_ENDING;
+			FIXES_gsSettings |= e_FIXES_SETTINGS_ENDING,
 			FIXES_DetermineOrder();
 		}
-		return FIXES_CALL_CALLBACK_1(OnFilterScriptExit, 1, FIXES_gscSpec@);
+		#if defined FIXES_OnFilterScriptExit
+			return FIXES_OnFilterScriptExit();
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnFilterScriptExit
@@ -1462,7 +1949,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnFilterScriptExit FIXES_OnFilterScriptExit
 	
-	forward OnFilterScriptExit();
+	#if defined FIXES_OnFilterScriptExit
+		forward FIXES_OnFilterScriptExit();
+	#endif
 #endif
 
 /* 
@@ -1475,20 +1964,26 @@ forward OnGameModeInit();
 	public OnPlayerCommandText(playerid, cmdtext[])
 	{
 		// ============================
-		//  START: OnPlayerCommandText 
+		//  BEGIN: OnPlayerCommandText 
 		// ============================
 		#if FIX_OnPlayerCommandText
-			if (cmdtext[0] == '\0' || (cmdtext[0] == '\1' && cmdtext[1] == '\0'))
-			{
-				return FIXES_CALL_CALLBACK_1(OnPlayerCommandText, 1, FIXES_gscSpec@is, playerid, FIXES_gscNULL);
-			}
-			else
-			{
-				return FIXES_CALL_CALLBACK_1(OnPlayerCommandText, 1, FIXES_gscSpec@is, playerid, cmdtext);
-			}
+			// If this "#if" is around the whole function, it doesn't always
+			// compile properly.
+			#if defined FIXES_OnPlayerCommandText
+				if (cmdtext[0] <= '\1')
+				{
+					return FIXES_OnPlayerCommandText(playerid, FIXES_gscNULL);
+				}
+				else
+				{
+					return FIXES_OnPlayerCommandText(playerid, cmdtext);
+				}
+			#else
+				return 0;
+			#endif
 		#endif
 		// ============================
-		//  START: OnPlayerCommandText 
+		//  END: OnPlayerCommandText 
 		// ============================
 	}
 	
@@ -1499,7 +1994,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerCommandText FIXES_OnPlayerCommandText
 	
-	forward OnPlayerCommandText(playerid, cmdtext[]);
+	#if defined FIXES_OnPlayerCommandText
+		forward FIXES_OnPlayerCommandText(playerid, cmdtext[]);
+	#endif
 #endif
 
 /* 
@@ -1526,11 +2023,11 @@ forward OnGameModeInit();
  *     TrainExit
  *     Kick
  */
-#if FIX_SetPlayerWorldBounds || FIX_TogglePlayerControllable || FIX_SetPlayerName || FIX_GetPlayerColor || FIX_GetPlayerSkin || FIX_IsPlayerInCheckpoint || FIX_IsPlayerInRaceCheckpoint || FIX_GetPlayerWeapon || FIX_PutPlayerInVehicle || FIX_OnPlayerEnterVehicle || FIX_AllowTeleport || FIX_OnDialogResponse || FIX_SetSpawnInfo || FIX_AllowInteriorWeapons || FIX_TrainExit || FIX_Kick
+#if FIX_SetPlayerWorldBounds || FIX_TogglePlayerControllable || FIX_SetPlayerName || FIX_GetPlayerColor || FIX_GetPlayerSkin || FIX_IsPlayerInCheckpoint || FIX_IsPlayerInRaceCheckpoint || FIX_GetPlayerWeapon || FIX_PutPlayerInVehicle || FIX_OnPlayerEnterVehicle || FIX_AllowTeleport || FIX_OnDialogResponse || FIX_GetPlayerDialog || FIX_SetSpawnInfo || FIX_AllowInteriorWeapons || FIX_TrainExit || FIX_Kick || FIX_OnPlayerEnterVehicle_2
 	public OnPlayerConnect(playerid)
 	{
 		FIXES_PRINTF("FIXES_OnPlayerConnect: %d", playerid);
-		#if FIX_SetPlayerWorldBounds || FIX_TogglePlayerControllable || FIX_PutPlayerInVehicle || FIX_OnPlayerEnterVehicle || FIX_AllowTeleport || FIX_AllowInteriorWeapons || FIX_TrainExit
+		#if FIX_SetPlayerWorldBounds || FIX_TogglePlayerControllable || FIX_PutPlayerInVehicle || FIX_OnPlayerEnterVehicle || FIX_AllowTeleport || FIX_AllowInteriorWeapons || FIX_TrainExit || FIX_OnPlayerEnterVehicle_2
 			// This is only reset when the Game Mode changes or when a new
 			// player connects, which is what we want.  The other items are the
 			// same, but must be done only once.  This variable will tend to
@@ -1549,7 +2046,7 @@ forward OnGameModeInit();
 			{
 				FIXES_PRINTF("FIXES_OnPlayerConnect: First (%d)", FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE);
 				// ======================
-				//  START: SetPlayerName 
+				//  BEGIN: SetPlayerName 
 				// ======================
 				#if FIX_SetPlayerName
 					new
@@ -1565,7 +2062,7 @@ forward OnGameModeInit();
 				// ======================
 				
 				// =============================
-				//  START: SetPlayerWorldBounds 
+				//  BEGIN: SetPlayerWorldBounds 
 				// =============================
 				#if FIX_SetPlayerWorldBounds && !FIXES_Single
 					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LX] =
@@ -1579,7 +2076,7 @@ forward OnGameModeInit();
 				// =============================
 				
 				// =======================
-				//  START: SetPlayerColor 
+				//  BEGIN: SetPlayerColor 
 				// =======================
 				#if FIX_GetPlayerColor
 					SetPlayerColor(playerid, FIXES_gscPlayerColours[playerid % 100]);
@@ -1589,7 +2086,7 @@ forward OnGameModeInit();
 				// =======================
 				
 				// ======================
-				//  START: GetPlayerSkin 
+				//  BEGIN: GetPlayerSkin 
 				// ======================
 				#if FIX_GetPlayerSkin
 					#if FIXES_Single
@@ -1603,7 +2100,7 @@ forward OnGameModeInit();
 				// ======================
 				
 				// =============================
-				//  START: IsPlayerInCheckpoint 
+				//  BEGIN: IsPlayerInCheckpoint 
 				// =============================
 				#if FIX_IsPlayerInCheckpoint
 					DisablePlayerCheckpoint(playerid);
@@ -1613,7 +2110,7 @@ forward OnGameModeInit();
 				// =============================
 				
 				// =================================
-				//  START: IsPlayerInRaceCheckpoint 
+				//  BEGIN: IsPlayerInRaceCheckpoint 
 				// =================================
 				#if FIX_IsPlayerInRaceCheckpoint
 					DisablePlayerRaceCheckpoint(playerid);
@@ -1623,7 +2120,7 @@ forward OnGameModeInit();
 				// =================================
 				
 				// ========================
-				//  START: GetPlayerWeapon 
+				//  BEGIN: GetPlayerWeapon 
 				// ========================
 				#if FIX_GetPlayerWeapon
 					#if FIXES_Single
@@ -1637,13 +2134,13 @@ forward OnGameModeInit();
 				// ========================
 				
 				// =========================
-				//  START: OnDialogResponse 
+				//  BEGIN: OnDialogResponse 
 				// =========================
-				#if FIX_OnDialogResponse
+				#if FIX_OnDialogResponse || FIX_GetPlayerDialog
 					#if FIXES_Single
-						FIXES_gsDialogID[playerid] = -1;
+						FIXES_gsDialogID[playerid] = INVALID_DIALOG_ID;
 					#else
-						SetPVarInt(playerid, FIXES_pvarPlayerDialog, -1);
+						SetPVarInt(playerid, FIXES_pvarPlayerDialog, INVALID_DIALOG_ID);
 					#endif
 				#endif
 				// =========================
@@ -1651,7 +2148,7 @@ forward OnGameModeInit();
 				// =========================
 				
 				// =====================
-				//  START: SetSpawnInfo 
+				//  BEGIN: SetSpawnInfo 
 				// =====================
 				#if FIX_SetSpawnInfo
 					SetSpawnInfo(playerid, NO_TEAM, 0, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
@@ -1666,15 +2163,25 @@ forward OnGameModeInit();
 				#endif
 			}
 		// =============
-		//  START: Kick 
+		//  BEGIN: Kick 
 		// =============
 		#if FIX_Kick
-			new
-				ret = FIXES_CALL_CALLBACK_1(OnPlayerConnect, 1, FIXES_gscSpec@i, playerid);
+			#if defined FIXES_OnPlayerConnect
+				new
+					ret = FIXES_OnPlayerConnect(playerid);
+			#endif
 			FIXES_gsPlayerBools[playerid] &= ~e_FIXES_BOOLS_ON_PLAYER_CONNECT;
-			return ret;
+			#if defined FIXES_OnPlayerConnect
+				return ret;
+			#else
+				return 1;
+			#endif
 		#else
-			return FIXES_CALL_CALLBACK_1(OnPlayerConnect, 1, FIXES_gscSpec@i, playerid);
+			#if defined FIXES_OnPlayerConnect
+				return FIXES_OnPlayerConnect(playerid);
+			#else
+				return 1;
+			#endif
 		#endif
 		// =============
 		//  END:   Kick 
@@ -1688,7 +2195,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerConnect FIXES_OnPlayerConnect
 	
-	forward OnPlayerConnect(playerid);
+	#if defined FIXES_OnPlayerConnect
+		forward FIXES_OnPlayerConnect(playerid);
+	#endif
 #endif
 
 /* 
@@ -1698,30 +2207,69 @@ forward OnGameModeInit();
  *     SetPlayerAttachedObject
  *     IsPlayerAttachedObjectSlotUsed
  *     Kick
+ *     GetPlayerMenu
  */
-#if FIX_SetPlayerAttachedObject || FIX_IsPlayerAttachedObjSlotUsed || FIX_Kick
+#if FIX_SetPlayerAttachedObject || FIX_IsPlayerAttachedObjSlotUsed || FIX_Kick || (FIXES_SilentKick && (FIX_OnVehicleMod || FIX_OnPlayerEnterVehicle || FIX_OnPlayerEnterVehicle_2)) || FIX_GetPlayerMenu
 	public OnPlayerDisconnect(playerid, reason)
 	{
-		new
-			ret = FIXES_CALL_CALLBACK_1(OnPlayerDisconnect, 1, FIXES_gscSpec@ii, playerid, reason);
+		#if defined FIXES_OnPlayerDisconnect
+			new
+				ret = FIXES_OnPlayerDisconnect(playerid, reason);
+		#endif
+		
+		// ======================
+		//  BEGIN: GetPlayerMenu 
+		// ======================
+		#if FIX_GetPlayerMenu
+			FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+		#endif
+		// ======================
+		//  END:   GetPlayerMenu 
+		// ======================
+		
+		// ==========================
+		//  BEGIN: FIXES_SilentKick 
+		// ==========================
+		#if FIXES_SilentKick && (FIX_OnVehicleMod || FIX_OnPlayerEnterVehicle || FIX_OnPlayerEnterVehicle_2)
+			new
+				shift = FIXES_gsPlayerIP[playerid];
+			if (shift != -1)
+			{
+				// Unban the IP (timed out).
+				new
+					ip[16];
+				format(ip, sizeof (ip), "unbanip %d.%d.%d.%d", shift >>> 24, (shift >>> 16) & 0xFF, (shift >>> 8) & 0xFF, shift & 0xFF),
+				FIXES_gsPlayerIP[playerid] = -1;
+			}
+		#endif
+		// ==========================
+		//  END:   FIXES_SilentKick 
+		// ==========================
 		
 		// ================================
-		//  START: SetPlayerAttachedObject 
+		//  BEGIN: SetPlayerAttachedObject 
 		// ================================
 		#if FIX_SetPlayerAttachedObject
+			#if !(FIXES_SilentKick && (FIX_OnVehicleMod || FIX_OnPlayerEnterVehicle || FIX_OnPlayerEnterVehicle_2))
+				new
+			#endif
+					shift = playerid % _FIXES_ATTACHMENTS * MAX_PLAYER_ATTACHED_OBJECTS;
+			#pragma tabsize 4
 			new
-				slot = playerid / _FIXES_ATTACHMENTS,
-				shift = playerid % _FIXES_ATTACHMENTS * MAX_PLAYER_ATTACHED_OBJECTS;
-			if (!_FIXES_gIsFilterscript)
-			{
-				for (new i = 0; i != MAX_PLAYER_ATTACHED_OBJECTS; ++i)
+				slot = playerid / _FIXES_ATTACHMENTS;
+			#if !FIXES_Single
+				if (!_FIXES_gIsFilterscript)
+			#endif
 				{
-					if (FIXES_gsObjectSlots[slot] & 1 << shift + i)
+					for (new i = 0; i != MAX_PLAYER_ATTACHED_OBJECTS; ++i)
 					{
-						RemovePlayerAttachedObject(playerid, i);
+						if (FIXES_gsObjectSlots[slot] & 1 << shift + i)
+						{
+							RemovePlayerAttachedObject(playerid, i);
+						}
 					}
 				}
-			}
+			#pragma tabsize 4
 			FIXES_gsObjectSlots[slot] &= ~((1 << MAX_PLAYER_ATTACHED_OBJECTS) - 1 << shift);
 		#endif
 		// ================================
@@ -1729,7 +2277,7 @@ forward OnGameModeInit();
 		// ================================
 		
 		// =======================================
-		//  START: IsPlayerAttachedObjectSlotUsed 
+		//  BEGIN: IsPlayerAttachedObjectSlotUsed 
 		// =======================================
 		#if FIX_IsPlayerAttachedObjSlotUsed && !FIX_SetPlayerAttachedObject
 			FIXES_gsObjectSlots[playerid / _FIXES_ATTACHMENTS] &= ~((1 << MAX_PLAYER_ATTACHED_OBJECTS) - 1 << playerid % _FIXES_ATTACHMENTS * MAX_PLAYER_ATTACHED_OBJECTS);
@@ -1739,7 +2287,7 @@ forward OnGameModeInit();
 		// =======================================
 		
 		// =============
-		//  START: Kick 
+		//  BEGIN: Kick 
 		// =============
 		#if FIX_Kick
 			if (FIXES_gsPlayerBools[playerid] & e_FIXES_BOOLS_KICKED)
@@ -1752,7 +2300,11 @@ forward OnGameModeInit();
 		//  END:   Kick 
 		// =============
 		
-		return ret;
+		#if defined FIXES_OnPlayerDisconnect
+			return ret;
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnPlayerDisconnect
@@ -1762,7 +2314,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerDisconnect FIXES_OnPlayerDisconnect
 	
-	forward OnPlayerDisconnect(playerid, reason);
+	#if defined FIXES_OnPlayerDisconnect
+		forward FIXES_OnPlayerDisconnect(playerid, reason);
+	#endif
 #endif
 
 /* 
@@ -1779,14 +2333,14 @@ forward OnGameModeInit();
 		#endif
 			{
 				// ======================
-				//  START: OnPlayerDeath 
+				//  BEGIN: OnPlayerDeath 
 				// ======================
 				#if FIX_OnPlayerDeath
 					static
 						sAnimlib[32],
 						sAnimname[32];
 					GetAnimationName(FIXES_gsLastAnimation[playerid], sAnimlib, sizeof (sAnimlib), sAnimname, sizeof (sAnimname));
-					if (!strcmp(sAnimlib, "PED", true))
+					if (strcmp(sAnimlib, "PED", true))
 					{
 						ClearAnimations(playerid);
 					}
@@ -1795,7 +2349,11 @@ forward OnGameModeInit();
 				//  END:   OnPlayerDeath 
 				// ======================
 			}
-		return FIXES_CALL_CALLBACK_1(OnPlayerDeath, 1, FIXES_gscSpec@iii, playerid, killerid, reason);
+		#if defined FIXES_OnPlayerDeath
+			return FIXES_OnPlayerDeath(playerid, killerid, reason);
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnPlayerDeath
@@ -1805,7 +2363,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerDeath FIXES_OnPlayerDeath
 	
-	forward OnPlayerDeath(playerid, killerid, reason);
+	#if defined FIXES_OnPlayerDeath
+		forward FIXES_OnPlayerDeath(playerid, killerid, reason);
+	#endif
 #endif
 
 /* 
@@ -1827,7 +2387,7 @@ forward OnGameModeInit();
 				Float:y,
 				Float:z;
 			// Remove them without the animation.
-			GetVehiclePos(vid, x, y, z);
+			GetVehiclePos(vid, x, y, z),
 			SetPlayerPos(playerid, x, y, z);
 		}
 		return SpawnPlayer(playerid);
@@ -1853,16 +2413,16 @@ forward OnGameModeInit();
 #if FIX_SetPlayerName
 	stock FIXES_SetPlayerName(playerid, name[])
 	{
-		if (strcmp(name, FIXES_gscTempName) == 0)
+		if (!strcmp(name, FIXES_gscTempName, true))
 		{
 			return 0;
 		}
 		static
 			sOldName[MAX_PLAYER_NAME];
 		GetPlayerName(playerid, sOldName, sizeof (sOldName));
-		if (strcmp(name, sOldName, true) == 0)
+		if (strcmp(name, sOldName, true))
 		{
-			return 0;
+			return SetPlayerName(playerid, name);
 		}
 		SetPlayerName(playerid, FIXES_gscTempName);
 		new
@@ -1895,7 +2455,7 @@ forward OnGameModeInit();
 	public OnPlayerSpawn(playerid)
 	{
 		// ======================
-		//  START: GetPlayerSkin 
+		//  BEGIN: GetPlayerSkin 
 		// ======================
 		#if FIX_GetPlayerSkin
 			#if FIXES_Single
@@ -1909,7 +2469,7 @@ forward OnGameModeInit();
 		// ======================
 		
 		// =================================
-		//  START: TogglePlayerControllable 
+		//  BEGIN: TogglePlayerControllable 
 		// =================================
 		#if FIX_TogglePlayerControllable
 			FIXES_gsPlayerBools[playerid] &= ~e_FIXES_BOOLS_UNCONTROLLABLE;
@@ -1918,7 +2478,11 @@ forward OnGameModeInit();
 		//  END:   TogglePlayerControllable 
 		// =================================
 		
-		return FIXES_CALL_CALLBACK_1(OnPlayerSpawn, 1, FIXES_gscSpec@i, playerid);
+		#if defined FIXES_OnPlayerSpawn
+			return FIXES_OnPlayerSpawn(playerid);
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnPlayerSpawn
@@ -1928,7 +2492,86 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerSpawn FIXES_OnPlayerSpawn
 	
-	forward OnPlayerSpawn(playerid);
+	#if defined FIXES_OnPlayerSpawn
+		forward FIXES_OnPlayerSpawn(playerid);
+	#endif
+#endif
+
+/* 
+ * OnVehicleMod(playerid, vehicleid, componentid)
+ * 
+ * FIXES:
+ *     OnVehicleMod
+ */
+#if FIX_OnVehicleMod
+	public OnVehicleMod(playerid, vehicleid, componentid)
+	{
+		#if !FIXES_Single
+			if (!(FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE))
+			{
+				#if defined FIXES_OnVehicleMod
+					return FIXES_OnVehicleMod(playerid, vehicleid, componentid);
+				#else
+					return 1;
+				#endif
+			}
+		#endif
+		
+		// =====================
+		//  BEGIN: OnVehicleMod 
+		// =====================
+		new
+			modelid = GetVehicleModel(vehicleid);
+		if (400 <= modelid <= 611)
+		{
+			switch (componentid)
+			{
+				case 1000 .. 1191:
+				{
+					if (FIXES_gscVehicleMods[modelid - 400][(componentid - 1000) >>> 5] & (1 << ((componentid - 1000) & 0b00011111)))
+					{
+						#if defined FIXES_OnVehicleMod
+							return FIXES_OnVehicleMod(playerid, vehicleid, componentid);
+						#else
+							return 1;
+						#endif
+					}
+				}
+				case 1192, 1193:
+				{
+					if (modelid == 576)
+					{
+						// This save a whole cell off EVERY other vehicle!  This
+						// is the ONLY vehicle with any mods over "6 * 32 + 999"
+						// (1191), the highest value you can fit in 6 cells of a
+						// bit array (minus 1000).
+						#if defined FIXES_OnVehicleMod
+							return FIXES_OnVehicleMod(playerid, vehicleid, componentid);
+						#else
+							return 1;
+						#endif
+					}
+				}
+			}
+		}
+		// Desync the player entirely.
+		FIXES_BlockUpdate(playerid, true);
+		return 0;
+		// =====================
+		//  END:   OnVehicleMod 
+		// =====================
+	}
+	
+	#if defined _ALS_OnVehicleMod
+		#undef OnVehicleMod
+	#else
+		#define _ALS_OnVehicleMod
+	#endif
+	#define OnVehicleMod FIXES_OnVehicleMod
+	
+	#if defined FIXES_OnVehicleMod
+		forward FIXES_OnVehicleMod(playerid, vehicleid, componentid);
+	#endif
 #endif
 
 /* 
@@ -1942,7 +2585,7 @@ forward OnGameModeInit();
 	stock FIXES_SetPlayerSkin(playerid, skinid)
 	{
 		// ======================
-		//  START: SetPlayerSkin 
+		//  BEGIN: SetPlayerSkin 
 		// ======================
 		#if FIX_SetPlayerSkin
 			new
@@ -1957,7 +2600,7 @@ forward OnGameModeInit();
 				PutPlayerInVehicle(playerid, vehicleid, seat);
 				
 				// ======================
-				//  START: GetPlayerSkin 
+				//  BEGIN: GetPlayerSkin 
 				// ======================
 				#if FIX_GetPlayerSkin
 					#if FIXES_Single
@@ -1974,7 +2617,7 @@ forward OnGameModeInit();
 			}
 			
 			// ======================
-			//  START: GetPlayerSkin 
+			//  BEGIN: GetPlayerSkin 
 			// ======================
 			#if FIX_GetPlayerSkin
 				else
@@ -1988,9 +2631,10 @@ forward OnGameModeInit();
 		// ======================
 		
 		// ======================
-		//  START: GetPlayerSkin 
+		//  BEGIN: GetPlayerSkin 
 		// ======================
 		#if FIX_GetPlayerSkin
+			// Watch fot the "else" above if this code ever changes.
 			#if FIXES_Single
 				FIXES_gsPlayerSkin[playerid] = skinid;
 			#else
@@ -2055,21 +2699,24 @@ forward OnGameModeInit();
 		{
 			case 18:
 			{
-				weapon[0] = 0;
-				strcat(weapon, "Molotov Cocktail", len);
-				return 1;
+				return
+					weapon[0] = 0,
+					strcat(weapon, "Molotov Cocktail", len),
+					1;
 			}
 			case 44:
 			{
-				weapon[0] = 0;
-				strcat(weapon, "Thermal Goggles", len);
-				return 1;
+				return
+					weapon[0] = 0,
+					strcat(weapon, "Thermal Goggles", len),
+					1;
 			}
 			case 45:
 			{
-				weapon[0] = 0;
-				strcat(weapon, "Night Vision Goggles", len);
-				return 1;
+				return
+					weapon[0] = 0,
+					strcat(weapon, "Night Vision Goggles", len),
+					1;
 			}
 			default:
 			{
@@ -2099,14 +2746,34 @@ forward OnGameModeInit();
  *     AllowInteriorWeapons
  *     OnPlayerDeath
  *     Kick
+ *     OnVehicleMod
+ *     OnPlayerEnterVehicle
+ *     OnPlayerEnterVehicle_2
  */
-#if FIX_SetPlayerWorldBounds || FIX_TogglePlayerControllable || FIX_AllowInteriorWeapons || FIX_OnPlayerEnterVehicle || FIX_OnPlayerDeath || FIX_Kick
+#if FIX_SetPlayerWorldBounds || FIX_TogglePlayerControllable || FIX_AllowInteriorWeapons || FIX_OnPlayerEnterVehicle || FIX_OnPlayerEnterVehicle_2 || FIX_OnPlayerDeath || FIX_Kick || FIX_OnVehicleMod
 	public OnPlayerUpdate(playerid)
 	{
+		// =============================
+		//  BEGIN: OnPlayerEnterVehicle 
+		// =============================
+		#if FIX_OnPlayerEnterVehicle || FIX_Kick || FIX_OnVehicleMod || FIX_OnPlayerEnterVehicle_2
+			if (FIXES_gsPlayerBools[playerid] & e_FIXES_BOOLS_BLOCK)
+			{
+				return 0;
+			}
+		#endif
+		// =============================
+		//  END:   OnPlayerEnterVehicle 
+		// =============================
+		
 		#if !FIXES_Single
 			if (!(FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE))
 			{
-				return FIXES_CALL_CALLBACK_2(OnPlayerUpdate, 1, FIXES_gscSpec@i, playerid);
+				#if defined FIXES_OnPlayerUpdate
+					return FIXES_OnPlayerUpdate(playerid);
+				#else
+					return 1;
+				#endif
 			}
 		#endif
 		
@@ -2116,20 +2783,7 @@ forward OnGameModeInit();
 		#endif
 		
 		// =============================
-		//  BEGIN: OnPlayerEnterVehicle 
-		// =============================
-		#if FIX_OnPlayerEnterVehicle || FIX_Kick
-			if (pbools & e_FIXES_BOOLS_BLOCK)
-			{
-				return 0;
-			}
-		#endif
-		// =============================
-		//  END:   OnPlayerEnterVehicle 
-		// =============================
-		
-		// =============================
-		//  START: AllowInteriorWeapons 
+		//  BEGIN: AllowInteriorWeapons 
 		// =============================
 		#if FIX_AllowInteriorWeapons
 			//if (FIXES_gsSettings & e_FIXES_SETTINGS_INTERIOR && GetPlayerInterior(playerid) && GetPlayerWeapon(playerid))
@@ -2156,7 +2810,7 @@ forward OnGameModeInit();
 		#endif
 		
 		// =============================
-		//  START: SetPlayerWorldBounds 
+		//  BEGIN: SetPlayerWorldBounds 
 		// =============================
 		#if FIX_SetPlayerWorldBounds
 			if (pbools & e_FIXES_BOOLS_WORLDBOUNDS && keys & _FIXES_KEY_AIM)
@@ -2168,8 +2822,8 @@ forward OnGameModeInit();
 				GetPlayerPos(playerid, x, y, z);
 				if (FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LX] < x < FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UX] && FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LY] < y < FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UY])
 				{
-					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PX] = x;
-					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PY] = y;
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PX] = x,
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PY] = y,
 					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PZ] = z;
 				}
 				else
@@ -2183,7 +2837,7 @@ forward OnGameModeInit();
 		// =============================
 		
 		// ======================
-		//  START: OnPlayerDeath 
+		//  BEGIN: OnPlayerDeath 
 		// ======================
 		#if FIX_OnPlayerDeath
 			FIXES_gsLastAnimation[playerid] = GetPlayerAnimationIndex(playerid);
@@ -2193,7 +2847,7 @@ forward OnGameModeInit();
 		// ======================
 		
 		// =================================
-		//  START: TogglePlayerControllable 
+		//  BEGIN: TogglePlayerControllable 
 		// =================================
 		#if FIX_TogglePlayerControllable
 			// MUST come last.
@@ -2207,14 +2861,20 @@ forward OnGameModeInit();
 				// This is just to avoid "statement has no effect" warnings.
 				// ALWAYS return 0 in this case, regardless of what other
 				// callbacks return.
-				playerid = FIXES_CALL_CALLBACK_2(OnPlayerUpdate, 1, FIXES_gscSpec@i, playerid);
+				#if defined FIXES_OnPlayerUpdate
+					playerid = FIXES_OnPlayerUpdate(playerid);
+				#endif
 				if (keys || ud || lr)
 				{
 					return 0;
 				}
 				else
 				{
-					return playerid;
+					#if defined FIXES_OnPlayerUpdate
+						return playerid;
+					#else
+						return 1;
+					#endif
 				}
 			}
 		#endif
@@ -2222,7 +2882,11 @@ forward OnGameModeInit();
 		//  END:   TogglePlayerControllable 
 		// =================================
 		
-		return FIXES_CALL_CALLBACK_2(OnPlayerUpdate, 1, FIXES_gscSpec@i, playerid);
+		#if defined FIXES_OnPlayerUpdate
+			return FIXES_OnPlayerUpdate(playerid);
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnPlayerUpdate
@@ -2232,7 +2896,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerUpdate FIXES_OnPlayerUpdate
 	
-	forward OnPlayerUpdate(playerid);
+	#if defined FIXES_OnPlayerUpdate
+		forward FIXES_OnPlayerUpdate(playerid);
+	#endif
 #endif
 
 /* 
@@ -2253,8 +2919,9 @@ forward OnGameModeInit();
 				if (x_max == x_min || y_max == y_min)
 				{
 					// Impossibly small area, disable checks entirely.
-					FIXES_gsPlayerBools[playerid] &= ~e_FIXES_BOOLS_WORLDBOUNDS;
-					return SetPlayerWorldBounds(playerid, _FIXES_INFINITY, _FIXES_N_INFINITY, _FIXES_INFINITY, _FIXES_N_INFINITY);
+					return
+						FIXES_gsPlayerBools[playerid] &= ~e_FIXES_BOOLS_WORLDBOUNDS,
+						SetPlayerWorldBounds(playerid, _FIXES_INFINITY, _FIXES_N_INFINITY, _FIXES_INFINITY, _FIXES_N_INFINITY);
 				}
 				// This code could do with a way to mostly remove the checks.  Maybe
 				// when setting everything to FIXES_INFINITY (with default
@@ -2264,31 +2931,32 @@ forward OnGameModeInit();
 					Float:tmp;
 				if (x_max < x_min)
 				{
-					tmp = x_min;
-					x_min = x_max;
+					tmp = x_min,
+					x_min = x_max,
 					x_max = tmp;
 				}
 				if (y_max < y_min)
 				{
-					tmp = y_min;
-					y_min = y_max;
+					tmp = y_min,
+					y_min = y_max,
 					y_max = tmp;
 				}
 				// Give a little leway so this fix isn't noticed if you're not
 				// trying to break through the world bounds.  Leway removed in
 				// favour of keys.
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LX] = x_min;
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UX] = x_max;
-				
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LY] = y_min;
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UY] = y_max;
-				
-				GetPlayerPos(playerid, tmp, tmp, tmp);
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PX] = (x_max - x_min) / 2 + x_min;
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PY] = (y_max - y_min) / 2 + y_min;
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PZ] = tmp;
-				
-				return SetPlayerWorldBounds(playerid, x_max, x_min, y_max, y_min);
+				return
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LX] = x_min,
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UX] = x_max,
+					
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LY] = y_min,
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UY] = y_max,
+					
+					GetPlayerPos(playerid, tmp, tmp, tmp),
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PX] = (x_max - x_min) / 2 + x_min,
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PY] = (y_max - y_min) / 2 + y_min,
+					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PZ] = tmp,
+					
+					SetPlayerWorldBounds(playerid, x_max, x_min, y_max, y_min);
 			}
 			return 0;
 		}
@@ -2300,8 +2968,9 @@ forward OnGameModeInit();
 			if (0 <= playerid < MAX_PLAYERS)
 			{
 				FIXES_PRINTF("Call SetPlayerWorldBounds");
-				CallRemoteFunction(FIXES_gscSetPlayerWorldBounds, FIXES_gscSpec@iffff, playerid, x_max, x_min, y_max, y_min);
-				return getproperty(5, FIXES_gscReturnProperty);
+				return
+					CallRemoteFunction(FIXES_gscSetPlayerWorldBounds, FIXES_gscSpec@iffff, playerid, x_max, x_min, y_max, y_min),
+					getproperty(5, FIXES_gscReturnProperty);
 			}
 			return 0;
 		}
@@ -2316,14 +2985,15 @@ forward OnGameModeInit();
 				if (x_max == x_min || y_max == y_min)
 				{
 					// Impossibly small area, disable checks entirely.
-					FIXES_gsPlayerBools[playerid] &= ~e_FIXES_BOOLS_WORLDBOUNDS;
-					FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LX] =
-						FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UX] =
-							FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LY] =
-								FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UY] =
-									0.0;
-					setproperty(5, FIXES_gscReturnProperty, SetPlayerWorldBounds(playerid, _FIXES_INFINITY, _FIXES_N_INFINITY, _FIXES_INFINITY, _FIXES_N_INFINITY));
-					return -1;
+					return
+						FIXES_gsPlayerBools[playerid] &= ~e_FIXES_BOOLS_WORLDBOUNDS,
+						FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LX] =
+							FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UX] =
+								FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LY] =
+									FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UY] =
+										0.0,
+						setproperty(5, FIXES_gscReturnProperty, SetPlayerWorldBounds(playerid, _FIXES_INFINITY, _FIXES_N_INFINITY, _FIXES_INFINITY, _FIXES_N_INFINITY)),
+						-1;
 				}
 				// This code could do with a way to mostly remove the checks.  Maybe
 				// when setting everything to FIXES_INFINITY (with default
@@ -2333,29 +3003,29 @@ forward OnGameModeInit();
 					Float:tmp;
 				if (x_max < x_min)
 				{
-					tmp = x_min;
-					x_min = x_max;
+					tmp = x_min,
+					x_min = x_max,
 					x_max = tmp;
 				}
 				if (y_max < y_min)
 				{
-					tmp = y_min;
-					y_min = y_max;
+					tmp = y_min,
+					y_min = y_max,
 					y_max = tmp;
 				}
 				// Give a little leway so this fix isn't noticed if you're not
 				// trying to break through the world bounds.  Leway removed in
 				// favour of keys.
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LX] = x_min;
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UX] = x_max;
+				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LX] = x_min,
+				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UX] = x_max,
 				
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LY] = y_min;
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UY] = y_max;
+				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_LY] = y_min,
+				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_UY] = y_max,
 				
-				GetPlayerPos(playerid, tmp, tmp, tmp);
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PX] = (x_max - x_min) / 2 + x_min;
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PY] = (y_max - y_min) / 2 + y_min;
-				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PZ] = tmp;
+				GetPlayerPos(playerid, tmp, tmp, tmp),
+				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PX] = (x_max - x_min) / 2 + x_min,
+				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PY] = (y_max - y_min) / 2 + y_min,
+				FIXES_gsWorldbounds[playerid][E_FIXES_WORLDBOUND_DATA_PZ] = tmp,
 				
 				setproperty(5, FIXES_gscReturnProperty, SetPlayerWorldBounds(playerid, x_max, x_min, y_max, y_min));
 			}
@@ -2405,8 +3075,9 @@ forward OnGameModeInit();
 		{
 			if (0 <= playerid < MAX_PLAYERS)
 			{
-				CallRemoteFunction(FIXES_gscTogglePlayerControl, FIXES_gscSpec@ii, playerid, toggle);
-				return getproperty(5, FIXES_gscReturnProperty);
+				return
+					CallRemoteFunction(FIXES_gscTogglePlayerControl, FIXES_gscSpec@ii, playerid, toggle),
+					getproperty(5, FIXES_gscReturnProperty);
 			}
 			return 0;
 		}
@@ -2438,6 +3109,13 @@ forward OnGameModeInit();
 	#endif
 	#define TogglePlayerControllable FIXES_TogglePlayerControllable
 #endif
+
+/* 
+ * OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
+ * 
+ * FIXES:
+ *     AllowInteriorWeapons
+ */
 
 #if FIX_AllowInteriorWeapons
 	public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
@@ -2485,7 +3163,11 @@ forward OnGameModeInit();
 		// ===========================
 		//  END: AllowInteriorWeapons 
 		// ===========================
-		return FIXES_CALL_CALLBACK_2(OnPlayerInteriorChange, 1, FIXES_gscSpec@iii, playerid, newinteriorid, oldinteriorid);
+		#if defined FIXES_OnPlayerInteriorChange
+			return FIXES_OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid);
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnPlayerInteriorChange
@@ -2495,7 +3177,91 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerInteriorChange FIXES_OnPlayerInteriorChange
 	
-	forward OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid);
+	#if defined FIXES_OnPlayerInteriorChange
+		forward FIXES_OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid);
+	#endif
+#endif
+
+/* 
+ * OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
+ * 
+ * FIXES:
+ *     OnPlayerEnterVehicle_2
+ */
+#if FIX_OnPlayerEnterVehicle_2
+	public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
+	{
+		// ===============================
+		//  BEGIN: OnPlayerEnterVehicle_2 
+		// ===============================
+		#if FIX_OnPlayerEnterVehicle_2
+			if (0 < vehicleid < MAX_VEHICLES)
+			{
+				#if defined FIXES_OnPlayerEnterVehicle
+					return FIXES_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger);
+				#else
+					return 1;
+				#endif
+			}
+			FIXES_BlockUpdate(playerid, true);
+			return 0;
+		#endif
+		// =============================
+		//  END: OnPlayerEnterVehicle_2 
+		// =============================
+	}
+	
+	#if defined _ALS_OnPlayerEnterVehicle
+		#undef OnPlayerEnterVehicle
+	#else
+		#define _ALS_OnPlayerEnterVehicle
+	#endif
+	#define OnPlayerEnterVehicle FIXES_OnPlayerEnterVehicle
+	
+	#if defined FIXES_OnPlayerEnterVehicle
+		forward FIXES_OnPlayerEnterVehicle(playerid, vehicleid, ispassenger);
+	#endif
+#endif
+
+/* 
+ * OnPlayerExitVehicle(playerid, vehicleid)
+ * 
+ * FIXES:
+ *     OnPlayerEnterVehicle_2
+ */
+#if FIX_OnPlayerEnterVehicle_2
+	public OnPlayerExitVehicle(playerid, vehicleid)
+	{
+		// ===============================
+		//  BEGIN: OnPlayerEnterVehicle_2 
+		// ===============================
+		#if FIX_OnPlayerEnterVehicle_2
+			if (0 < vehicleid < MAX_VEHICLES)
+			{
+				#if defined FIXES_OnPlayerExitVehicle
+					return FIXES_OnPlayerExitVehicle(playerid, vehicleid);
+				#else
+					return 1;
+				#endif
+			}
+			FIXES_BlockUpdate(playerid, true);
+			return 0;
+		#endif
+		// =============================
+		//  END: OnPlayerEnterVehicle_2 
+		// =============================
+	}
+	
+	#if defined _ALS_OnPlayerExitVehicle
+		#undef OnPlayerExitVehicle
+	#else
+		#define _ALS_OnPlayerExitVehicle
+	#endif
+	#define OnPlayerExitVehicle FIXES_OnPlayerExitVehicle
+	
+	#if defined FIXES_OnPlayerExitVehicle
+		forward FIXES_OnPlayerExitVehicle(playerid, vehicleid);
+	#endif
 #endif
 
 /*
@@ -2503,9 +3269,28 @@ forward OnGameModeInit();
  *
  * Block a player from using OnPlayerUpdate at all.
  */
-#if FIX_OnPlayerEnterVehicle || FIX_Kick
-	static stock FIXES_BlockUpdate(playerid, bool:block)
+#if FIX_OnPlayerEnterVehicle || FIX_OnPlayerEnterVehicle_2 || FIX_Kick || FIX_OnVehicleMod
+	static stock FIXES_BlockUpdate(playerid, bool:block, kick = 6)
 	{
+		if (kick)
+		{
+			#if FIXES_SilentKick
+				new
+					ip[22];
+				GetPlayerIp(playerid, ip, sizeof (ip)),
+				format(ip, sizeof (ip), "banip %s", ip),
+				SendRconCommand(ip),
+				FIXES_gsPlayerIP[playerid] = strval(ip[kick]) << 24,
+				kick = strfind(ip, FIXES_gscDot, false, kick) + 1,
+				FIXES_gsPlayerIP[playerid] |= strval(ip[kick]) << 16,
+				kick = strfind(ip, FIXES_gscDot, false, kick) + 1,
+				FIXES_gsPlayerIP[playerid] |= strval(ip[kick]) << 8,
+				kick = strfind(ip, FIXES_gscDot, false, kick) + 1,
+				FIXES_gsPlayerIP[playerid] |= strval(ip[kick]);
+			#else
+				Kick(playerid);
+			#endif
+		}
 		if (block)
 		{
 			FIXES_gsPlayerBools[playerid] |= e_FIXES_BOOLS_BLOCK;
@@ -2517,6 +3302,561 @@ forward OnGameModeInit();
 			return 1;
 		}
 	}
+#endif
+
+/* 
+ * OnPlayerSelectedMenuRow(playerid, row)
+ * 
+ * FIXES:
+ *     GetPlayerMenu
+ */
+#if FIX_GetPlayerMenu
+	public OnPlayerSelectedMenuRow(playerid, row)
+	{
+		// ======================
+		//  BEGIN: GetPlayerMenu 
+		// ======================
+		#if FIXES_Single
+			FIXES_gsSettings &= ~e_FIXES_SETTINGS_MENU_SET;
+			#if defined FIXES_OnPlayerSelectedMenuRow
+				new
+					ret = FIXES_OnPlayerSelectedMenuRow(playerid, row);
+			#endif
+			if (!(FIXES_gsSettings & e_FIXES_SETTINGS_MENU_SET))
+			{
+				FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+			}
+			#if defined FIXES_OnPlayerSelectedMenuRow
+				return ret;
+			#else
+				return 1;
+			#endif
+		#else
+			if (FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE)
+			{
+				CallRemoteFunction(FIXES_gscClearPlayerMenu, FIXES_gscSpec@i, playerid);
+				setproperty(5, FIXES_gscMenuProperty, _:FIXES_gsCurrentMenu[playerid]);
+				#if defined FIXES_OnPlayerSelectedMenuRow
+					new
+						ret = FIXES_OnPlayerSelectedMenuRow(playerid, row);
+				#endif
+				if (!(FIXES_gsSettings & e_FIXES_SETTINGS_MENU_SET))
+				{
+					FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+				}
+				#if defined FIXES_OnPlayerSelectedMenuRow
+					return ret;
+				#else
+					return 1;
+				#endif
+			}
+			else
+			{
+				new
+					setyet = _:(FIXES_gsSettings & e_FIXES_SETTINGS_MENU_SET),
+					Menu:cur = FIXES_gsCurrentMenu[playerid];
+				FIXES_gsCurrentMenu[playerid] = Menu:getproperty(5, FIXES_gscMenuProperty);
+				FIXES_gsSettings &= ~e_FIXES_SETTINGS_MENU_SET;
+				#if defined FIXES_OnPlayerSelectedMenuRow
+					new
+						ret = FIXES_OnPlayerSelectedMenuRow(playerid, row);
+				#endif
+				if (!(FIXES_gsSettings & e_FIXES_SETTINGS_MENU_SET))
+				{
+					if (setyet)
+					{
+						FIXES_gsCurrentMenu[playerid] = cur;
+					}
+					else
+					{
+						FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+					}
+				}
+				#if defined FIXES_OnPlayerSelectedMenuRow
+					return ret;
+				#else
+					return 1;
+				#endif
+			}
+		#endif
+		// ======================
+		//  END:   GetPlayerMenu 
+		// ======================
+	}
+	
+	#if defined _ALS_OnPlayerSelectedMenuRow
+		#undef OnPlayerSelectedMenuRow
+	#else
+		#define _ALS_OnPlayerSelectedMenuRow
+	#endif
+	#define OnPlayerSelectedMenuRow FIXES_OnPlayerSelectedMenuRow
+	
+	#if defined FIXES_OnPlayerSelectedMenuRow
+		forward FIXES_OnPlayerSelectedMenuRow(playerid, row);
+	#endif
+#endif
+
+/* 
+ * OnPlayerExitedMenu(playerid)
+ * 
+ * FIXES:
+ *     GetPlayerMenu
+ */
+#if FIX_GetPlayerMenu
+	public OnPlayerExitedMenu(playerid)
+	{
+		// ======================
+		//  BEGIN: GetPlayerMenu 
+		// ======================
+		#if FIXES_Single
+			#if defined FIXES_OnPlayerExitedMenu
+				FIXES_gsSettings &= ~e_FIXES_SETTINGS_MENU_SET;
+				new
+					ret = FIXES_OnPlayerExitedMenu(playerid);
+				if (!(FIXES_gsSettings & e_FIXES_SETTINGS_MENU_SET))
+				{
+			#endif
+					FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+			#if defined FIXES_OnPlayerExitedMenu
+				}
+				return ret;
+			#else
+				return 1;
+			#endif
+		#else
+			#if defined FIXES_OnPlayerExitedMenu
+				if (FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE)
+				{
+					CallRemoteFunction(FIXES_gscClearPlayerMenu, FIXES_gscSpec@i, playerid);
+					setproperty(5, FIXES_gscMenuProperty, _:FIXES_gsCurrentMenu[playerid]);
+					new
+						ret = FIXES_OnPlayerExitedMenu(playerid);
+					if (!(FIXES_gsSettings & e_FIXES_SETTINGS_MENU_SET))
+					{
+						FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+					}
+					return ret;
+				}
+				else
+				{
+					new
+						setyet = _:(FIXES_gsSettings & e_FIXES_SETTINGS_MENU_SET),
+						Menu:cur = FIXES_gsCurrentMenu[playerid];
+					FIXES_gsCurrentMenu[playerid] = Menu:getproperty(5, FIXES_gscMenuProperty);
+					FIXES_gsSettings &= ~e_FIXES_SETTINGS_MENU_SET;
+					new
+						ret = FIXES_OnPlayerExitedMenu(playerid);
+					if (!(FIXES_gsSettings & e_FIXES_SETTINGS_MENU_SET))
+					{
+						if (setyet)
+						{
+							FIXES_gsCurrentMenu[playerid] = cur;
+						}
+						else
+						{
+			#endif
+							FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+			#if defined FIXES_OnPlayerExitedMenu
+						}
+					}
+					return ret;
+				}
+			#else
+				return 1;
+			#endif
+		#endif
+		// ======================
+		//  END:   GetPlayerMenu 
+		// ======================
+	}
+	
+	#if defined _ALS_OnPlayerExitedMenu
+		#undef OnPlayerExitedMenu
+	#else
+		#define _ALS_OnPlayerExitedMenu
+	#endif
+	#define OnPlayerExitedMenu FIXES_OnPlayerExitedMenu
+	
+	#if defined FIXES_OnPlayerExitedMenu
+		forward FIXES_OnPlayerExitedMenu(playerid);
+	#endif
+#endif
+
+/* 
+ * FIXES_IS_VALID_MENU(Menu:menuid)
+ * 
+ * FIXES:
+ *     Menus
+ */
+#if _FIX_Menus
+	#define FIXES_IS_VALID_MENU(%0) ((0 <= _:(%0) < MAX_MENUS) && (FIXES_gsValidMenus[_:(%0) >>> 5] & (1 << (_:(%0) & 0x1F))))
+#endif
+
+/* 
+ * Menu:FIXES_CreateMenu(const title[], columns, Float:x, Float:y, Float:col1width, Float:col2width = 0.0)
+ * 
+ * FIXES:
+ *     Menus
+ */
+#if _FIX_Menus
+	#if !FIXES_Single
+		forward _FIXES_CreateMenu(ret);
+		
+		public _FIXES_CreateMenu(ret)
+		{
+			FIXES_gsValidMenus[ret >>> 5] |= 1 << (ret & 0x1F);
+		}
+	#endif
+	
+	stock Menu:FIXES_CreateMenu(const title[], columns, Float:x, Float:y, Float:col1width, Float:col2width = 0.0)
+	{
+		new
+			Menu:ret = CreateMenu(title, columns, x, y, col1width, col2width);
+		if (Menu:0 <= ret < Menu:MAX_MENUS)
+		{
+			#if FIXES_Single
+				FIXES_gsValidMenus[_:ret >>> 5] |= 1 << (_:ret & 0x1F);
+			#else
+				CallRemoteFunction("_FIXES_CreateMenu", FIXES_gscSpec@i, _:ret);
+			#endif
+		}
+		return ret;
+	}
+	
+	#if defined _ALS_CreateMenu
+		#undef CreateMenu
+	#else
+		
+		native Menu:BAD_CreateMenu(const title[], columns, Float:x, Float:y, Float:col1width, Float:col2width = 0.0) = CreateMenu;
+		
+		#define _ALS_CreateMenu
+	#endif
+	#define CreateMenu FIXES_CreateMenu
+#endif
+
+/* 
+ * _FIXES_SetPlayerMenu(playerid, Menu:menuid)
+ * 
+ * FIXES:
+ *     GetPlayerMenu
+ */
+#if FIX_GetPlayerMenu && !FIXES_Single
+	forward _FIXES_SetPlayerMenu(playerid, Menu:menuid);
+	
+	public _FIXES_SetPlayerMenu(playerid, Menu:menuid)
+	{
+		FIXES_gsSettings |= e_FIXES_SETTINGS_MENU_SET;
+		FIXES_gsCurrentMenu[playerid] = menuid;
+	}
+#endif
+
+/* 
+ * _FIXES_ClearPlayerMenu(playerid)
+ * 
+ * FIXES:
+ *     GetPlayerMenu
+ */
+#if FIX_GetPlayerMenu && !FIXES_Single
+	forward _FIXES_ClearPlayerMenu(playerid);
+	
+	public _FIXES_ClearPlayerMenu(playerid)
+	{
+		FIXES_gsSettings &= ~e_FIXES_SETTINGS_MENU_SET;
+		FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+	}
+#endif
+
+/* 
+ * Menu:FIXES_DestroyMenu(Menu:menuid)
+ * 
+ * FIXES:
+ *     GetPlayerMenu
+ */
+#if _FIX_Menus || FIX_GetPlayerMenu
+	#if _FIX_Menus && !FIXES_Single
+		forward _FIXES_DestroyMenu(ret);
+		
+		public _FIXES_DestroyMenu(ret)
+		{
+			FIXES_gsValidMenus[ret >>> 5] &= ~(1 << (ret & 0x1F));
+		}
+	#endif
+	
+	stock FIXES_DestroyMenu(Menu:menuid)
+	{
+		#if _FIX_Menus
+			if (FIXES_IS_VALID_MENU(menuid))
+		#endif
+			{
+				if (DestroyMenu(Menu:menuid))
+				{
+					#if _FIX_Menus
+						#if FIXES_Single
+							FIXES_gsValidMenus[_:menuid >>> 5] &= ~(1 << (_:menuid & 0x1F));
+						#else
+							CallRemoteFunction("_FIXES_DestroyMenu", FIXES_gscSpec@i, _:menuid);
+						#endif
+					#endif
+					for (new playerid = 0; playerid != MAX_PLAYERS; ++playerid)
+					{
+						if (FIXES_gsCurrentMenu[playerid] == menuid)
+						{
+							if (HideMenuForPlayer(menuid, playerid))
+							{
+								#if FIXES_Single
+									FIXES_gsSettings &= ~e_FIXES_SETTINGS_MENU_SET;
+									FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+								#else
+									CallRemoteFunction(FIXES_gscSetPlayerMenu, FIXES_gscSpec@ii, playerid, INVALID_MENU);
+								#endif
+							}
+						}
+					}
+					return 1;
+				}
+			}
+		return 0;
+	}
+	
+	#if defined _ALS_DestroyMenu
+		#undef DestroyMenu
+	#else
+		
+		native BAD_DestroyMenu(Menu:menuid) = DestroyMenu;
+		
+		#define _ALS_DestroyMenu
+	#endif
+	#define DestroyMenu FIXES_DestroyMenu
+#endif
+
+/* 
+ * FIXES_AddMenuItem(Menu:menuid, column, const menutext[])
+ * 
+ * FIXES:
+ *     AddMenuItem
+ */
+#if FIX_AddMenuItem
+	stock FIXES_AddMenuItem(Menu:menuid, column, const menutext[])
+	{
+		if (FIXES_IS_VALID_MENU(menuid))
+		{
+			return AddMenuItem(menuid, column, menutext);
+		}
+		return 0;
+	}
+	
+	#if defined _ALS_AddMenuItem
+		#undef AddMenuItem
+	#else
+		
+		native BAD_AddMenuItem(Menu:menuid, column, const menutext[]) = AddMenuItem;
+		
+		#define _ALS_AddMenuItem
+	#endif
+	#define AddMenuItem FIXES_AddMenuItem
+#endif
+
+/* 
+ * FIXES_SetMenuColumnHeader(Menu:menuid, column, const columnheader[])
+ * 
+ * FIXES:
+ *     SetMenuColumnHeader
+ */
+#if FIX_SetMenuColumnHeader
+	stock FIXES_SetMenuColumnHeader(Menu:menuid, column, const columnheader[])
+	{
+		if (FIXES_IS_VALID_MENU(menuid))
+		{
+			return SetMenuColumnHeader(menuid, column, columnheader);
+		}
+		return 0;
+	}
+	
+	#if defined _ALS_SetMenuColumnHeader
+		#undef SetMenuColumnHeader
+	#else
+		
+		native BAD_SetMenuColumnHeader(Menu:menuid, column, const columnheader[]) = SetMenuColumnHeader;
+		
+		#define _ALS_SetMenuColumnHeader
+	#endif
+	#define SetMenuColumnHeader FIXES_SetMenuColumnHeader
+#endif
+
+/* 
+ * FIXES_ShowMenuForPlayer(Menu:menuid, playerid)
+ * 
+ * FIXES:
+ *     ShowMenuForPlayer
+ *     GetPlayerMenu
+ */
+#if FIX_ShowMenuForPlayer || FIX_GetPlayerMenu
+	stock FIXES_ShowMenuForPlayer(Menu:menuid, playerid)
+	{
+		#if FIX_ShowMenuForPlayer
+			if (FIXES_IS_VALID_MENU(menuid))
+		#endif
+			{
+				#if FIX_GetPlayerMenu
+					if (ShowMenuForPlayer(menuid, playerid))
+					{
+						#if FIXES_Single
+							FIXES_gsSettings |= ~e_FIXES_SETTINGS_MENU_SET;
+							FIXES_gsCurrentMenu[playerid] = menuid;
+						#else
+							CallRemoteFunction(FIXES_gscSetPlayerMenu, FIXES_gscSpec@ii, playerid, _:menuid);
+						#endif
+						return 1;
+					}
+				#else
+					return ShowMenuForPlayer(menuid, playerid);
+				#endif
+			}
+		return 0;
+	}
+	
+	#if defined _ALS_ShowMenuForPlayer
+		#undef ShowMenuForPlayer
+	#else
+		
+		native BAD_ShowMenuForPlayer(Menu:menuid, playerid) = ShowMenuForPlayer;
+		
+		#define _ALS_ShowMenuForPlayer
+	#endif
+	#define ShowMenuForPlayer FIXES_ShowMenuForPlayer
+#endif
+
+/* 
+ * FIXES_HideMenuForPlayer(Menu:menuid, playerid)
+ * 
+ * FIXES:
+ *     HideMenuForPlayer
+ *     HideMenuForPlayer_2
+ *     GetPlayerMenu
+ */
+#if FIX_HideMenuForPlayer || FIX_GetPlayerMenu
+	stock FIXES_HideMenuForPlayer(Menu:menuid, playerid)
+	{
+		#if FIX_HideMenuForPlayer
+			if (FIXES_IS_VALID_MENU(menuid))
+		#endif
+			{
+				#if FIX_GetPlayerMenu
+					#if FIX_HideMenuForPlayer_2
+						if (0 <= playerid < MAX_PLAYERS && FIXES_gsCurrentMenu[playerid] == menuid)
+					#else
+						if (FIXES_gsCurrentMenu[playerid] == menuid && HideMenuForPlayer(menuid, playerid))
+					#endif
+						{
+							#if FIXES_Single
+								FIXES_gsSettings &= ~e_FIXES_SETTINGS_MENU_SET;
+								FIXES_gsCurrentMenu[playerid] = Menu:INVALID_MENU;
+							#else
+								CallRemoteFunction(FIXES_gscSetPlayerMenu, FIXES_gscSpec@ii, playerid, INVALID_MENU);
+							#endif
+							#if FIX_HideMenuForPlayer_2
+								return HideMenuForPlayer(menuid, playerid);
+							#else
+								return 1;
+							#endif
+						}
+				#else
+					return HideMenuForPlayer(menuid, playerid);
+				#endif
+			}
+		return 0;
+	}
+	
+	#if defined _ALS_HideMenuForPlayer
+		#undef HideMenuForPlayer
+	#else
+		
+		native BAD_HideMenuForPlayer(Menu:menuid, playerid) = HideMenuForPlayer;
+		
+		#define _ALS_HideMenuForPlayer
+	#endif
+	#define HideMenuForPlayer FIXES_HideMenuForPlayer
+#endif
+
+/* 
+ * FIXES_DisableMenu(Menu:menuid)
+ * 
+ * FIXES:
+ *     DisableMenu
+ */
+#if FIX_DisableMenu
+	stock FIXES_DisableMenu(Menu:menuid)
+	{
+		if (FIXES_IS_VALID_MENU(menuid))
+		{
+			return DisableMenu(menuid);
+		}
+		return 0;
+	}
+	
+	#if defined _ALS_DisableMenu
+		#undef DisableMenu
+	#else
+		
+		native BAD_DisableMenu(Menu:menuid) = DisableMenu;
+		
+		#define _ALS_DisableMenu
+	#endif
+	#define DisableMenu FIXES_DisableMenu
+#endif
+
+/* 
+ * FIXES_DisableMenuRow(Menu:menuid, row)
+ * 
+ * FIXES:
+ *     DisableMenuRow
+ */
+#if FIX_DisableMenuRow
+	stock FIXES_DisableMenuRow(Menu:menuid, row)
+	{
+		if (FIXES_IS_VALID_MENU(menuid))
+		{
+			return DisableMenuRow(menuid, row);
+		}
+		return 0;
+	}
+	
+	#if defined _ALS_DisableMenuRow
+		#undef DisableMenuRow
+	#else
+		
+		native BAD_DisableMenuRow(Menu:menuid, row) = DisableMenuRow;
+		
+		#define _ALS_DisableMenuRow
+	#endif
+	#define DisableMenuRow FIXES_DisableMenuRow
+#endif
+
+/* 
+ * Menu:FIXES_GetPlayerMenu(playerid)
+ * 
+ * FIXES:
+ *     GetPlayerMenu
+ */
+#if FIX_GetPlayerMenu
+	stock Menu:FIXES_GetPlayerMenu(playerid)
+	{
+		if (0 <= playerid < MAX_PLAYERS)
+		{
+			return FIXES_gsCurrentMenu[playerid];
+		}
+		return Menu:INVALID_MENU;
+	}
+	
+	#if defined _ALS_GetPlayerMenu
+		#undef GetPlayerMenu
+	#else
+		
+		native BAD_GetPlayerMenu(playerid) = GetPlayerMenu;
+		
+		#define _ALS_GetPlayerMenu
+	#endif
+	#define GetPlayerMenu FIXES_GetPlayerMenu
 #endif
 
 /* 
@@ -2534,7 +3874,11 @@ forward OnGameModeInit();
 		#if !FIXES_Single
 			if (!(FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE))
 			{
-				return FIXES_CALL_CALLBACK_1(OnPlayerStateChange, 1, FIXES_gscSpec@iii, playerid, newstate, oldstate);
+				#if defined FIXES_OnPlayerStateChange
+					return FIXES_OnPlayerStateChange(playerid, newstate, oldstate);
+				#else
+					return 1;
+				#endif
 			}
 		#endif
 		
@@ -2557,20 +3901,17 @@ forward OnGameModeInit();
 							{
 								// Shouldn't be in this vehicle at all.
 								FIXES_BlockUpdate(playerid, true);
-								Kick(playerid);
 							}
 							else if (!(0 < seat <= model))
 							{
 								// In an out of range seat.
 								FIXES_BlockUpdate(playerid, true);
-								Kick(playerid);
 							}
 						}
 					}
 					else
 					{
 						FIXES_BlockUpdate(playerid, true);
-						Kick(playerid);
 					}
 				}
 				else if (newstate == PLAYER_STATE_DRIVER)
@@ -2586,14 +3927,12 @@ forward OnGameModeInit();
 								{
 									// In an invalid vehicle (one you can't drive).
 									FIXES_BlockUpdate(playerid, true);
-									Kick(playerid);
 								}
 							}
 							else
 							{
 								// They are a driver, but not in the driver's seat.
 								FIXES_BlockUpdate(playerid, true);
-								Kick(playerid);
 							}
 						}
 					#if FIX_HydraSniper
@@ -2673,7 +4012,7 @@ forward OnGameModeInit();
 					if (bools & e_FIXES_BOOLS_PUT_IN_TRAIN)
 					{
 						FIXES_PRINTF("OK");
-						SetCameraBehindPlayer(playerid);
+						SetCameraBehindPlayer(playerid),
 						bools &= ~e_FIXES_BOOLS_PUT_IN_TRAIN;
 					}
 				#endif
@@ -2682,7 +4021,7 @@ forward OnGameModeInit();
 				// ==================
 				
 				// ===========================
-				//  START: PutPlayerInVehicle 
+				//  BEGIN: PutPlayerInVehicle 
 				// ===========================
 				#if FIX_PutPlayerInVehicle
 					// Update their vehicle once we KNOW the client has done the
@@ -2692,7 +4031,7 @@ forward OnGameModeInit();
 						new
 							vid = FIXES_gsVehicleSeatData[playerid] & 0x00FFFFFF;
 						// Limited to "only" 16777216 vehicles and 256 seats.
-						PutPlayerInVehicle(playerid, vid, FIXES_gsVehicleSeatData[playerid] >>> 24);
+						PutPlayerInVehicle(playerid, vid, FIXES_gsVehicleSeatData[playerid] >>> 24),
 						bools &= ~e_FIXES_BOOLS_PUT_IN_VEHICLE;
 						#if FIX_TrainExit
 							switch (GetVehicleModel(vid))
@@ -2715,7 +4054,11 @@ forward OnGameModeInit();
 			}
 		#endif
 		
-		return FIXES_CALL_CALLBACK_1(OnPlayerStateChange, 1, FIXES_gscSpec@iii, playerid, newstate, oldstate);
+		#if defined FIXES_OnPlayerStateChange
+			return FIXES_OnPlayerStateChange(playerid, newstate, oldstate);
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnPlayerStateChange
@@ -2725,7 +4068,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerStateChange FIXES_OnPlayerStateChange
 	
-	forward OnPlayerStateChange(playerid, newstate, oldstate);
+	#if defined FIXES_OnPlayerStateChange
+		forward FIXES_OnPlayerStateChange(playerid, newstate, oldstate);
+	#endif
 #endif
 
 /* 
@@ -2744,7 +4089,7 @@ forward OnGameModeInit();
 			vid = GetVehicleModel(vid);
 			if (weaponid == 34 && (vid == 520 || vid == 425))
 			{
-				vid = GivePlayerWeapon(playerid, weaponid, ammo);
+				vid = GivePlayerWeapon(playerid, weaponid, ammo),
 				SetPlayerArmedWeapon(playerid, 0);
 				#if FIX_GetPlayerWeapon
 					#if FIXES_Single
@@ -2892,11 +4237,12 @@ forward OnGameModeInit();
 						Float:y,
 						Float:z;
 					// Remove them without the animation.
-					GetVehiclePos(vid, x, y, z);
-					SetPlayerPos(playerid, x, y, z);
-					FIXES_gsVehicleSeatData[playerid] = seatid << 24 | vehicleid;
-					FIXES_gsPlayerBools[playerid] |= e_FIXES_BOOLS_PUT_IN_VEHICLE;
-					return 1;
+					return
+						GetVehiclePos(vid, x, y, z),
+						SetPlayerPos(playerid, x, y, z),
+						FIXES_gsVehicleSeatData[playerid] = seatid << 24 | vehicleid,
+						FIXES_gsPlayerBools[playerid] |= e_FIXES_BOOLS_PUT_IN_VEHICLE,
+						1;
 				}
 			#endif
 			// ===========================
@@ -2923,11 +4269,13 @@ forward OnGameModeInit();
 						Float:y,
 						Float:z;
 					// Remove them without the animation.
-					GetVehiclePos(vid, x, y, z);
-					SetPlayerPos(playerid, x, y, z);
-					CallRemoteFunction(FIXES_gscPutPlayerInVehicle, FIXES_gscSpec@iiiii, playerid, vehicleid, seatid, 1, vid);
-					return 1;
+					return
+						GetVehiclePos(vid, x, y, z),
+						SetPlayerPos(playerid, x, y, z),
+						CallRemoteFunction(FIXES_gscPutPlayerInVehicle, FIXES_gscSpec@iiiii, playerid, vehicleid, seatid, 1, vid),
+						1;
 				}
+			#endif
 			// ===========================
 			//  END:   PutPlayerInVehicle 
 			// ===========================
@@ -2964,7 +4312,7 @@ forward OnGameModeInit();
 				#if FIX_PutPlayerInVehicle
 					if (from)
 					{
-						FIXES_gsVehicleSeatData[playerid] = seatid << 24 | vehicleid;
+						FIXES_gsVehicleSeatData[playerid] = seatid << 24 | vehicleid,
 						FIXES_gsPlayerBools[playerid] |= e_FIXES_BOOLS_PUT_IN_VEHICLE;
 					}
 				#endif
@@ -3019,8 +4367,9 @@ forward OnGameModeInit();
 #if FIX_SetPlayerCheckpoint
 	stock FIXES_SetPlayerCheckpoint(playerid, Float:x, Float:y, Float:z, Float:size)
 	{
-		DisablePlayerCheckpoint(playerid);
-		return SetPlayerCheckpoint(playerid, x, y, z, size);
+		return
+			DisablePlayerCheckpoint(playerid),
+			SetPlayerCheckpoint(playerid, x, y, z, size);
 	}
 	
 	#if defined _ALS_SetPlayerCheckpoint
@@ -3043,8 +4392,9 @@ forward OnGameModeInit();
 #if FIX_SetPlayerRaceCheckpoint
 	stock FIXES_SetPlayerRaceCheckpoint(playerid, type, Float:x, Float:y, Float:z, Float:nextx, Float:nexty, Float:nextz, Float:size)
 	{
-		DisablePlayerRaceCheckpoint(playerid);
-		return SetPlayerRaceCheckpoint(playerid, type, x, y, z, nextx, nexty, nextz, size);
+		return
+			DisablePlayerRaceCheckpoint(playerid),
+			SetPlayerRaceCheckpoint(playerid, type, x, y, z, nextx, nexty, nextz, size);
 	}
 	
 	#if defined _ALS_SetPlayerRaceCheckpoint
@@ -3222,7 +4572,11 @@ forward OnGameModeInit();
 		// ======================
 		//  END:   AllowTeleport 
 		// ======================
-		return FIXES_CALL_CALLBACK_2(OnPlayerClickMap, 1, FIXES_gscSpec@ifff, playerid, fX, fY, fZ);
+		#if defined FIXES_OnPlayerClickMap
+			return FIXES_OnPlayerClickMap(playerid, fX, fY, fZ);
+		#else
+			return 1;
+		#endif
 	}
 	
 	#if defined _ALS_OnPlayerClickMap
@@ -3232,7 +4586,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnPlayerClickMap FIXES_OnPlayerClickMap
 	
-	forward OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ);
+	#if defined FIXES_OnPlayerClickMap
+		forward FIXES_OnPlayerClickMap(playerid, Float:fX, Float:fY, Float:fZ);
+	#endif
 #endif
 
 /*
@@ -3263,7 +4619,7 @@ forward OnGameModeInit();
 		{
 			if (0 <= playerid < MAX_PLAYERS)
 			{
-				CallRemoteFunction(FIXES_gscAllowTeleport, FIXES_gscSpec@ii, playerid, allow)
+				CallRemoteFunction(FIXES_gscAllowTeleport, FIXES_gscSpec@ii, playerid, allow);
 			}
 			return 0;
 		}
@@ -3389,8 +4745,9 @@ forward OnGameModeInit();
  *
  * FIXES:
  *     OnDialogResponse
+ *     GetPlayerDialog
  */
-#if FIX_OnDialogResponse
+#if FIX_OnDialogResponse || FIX_GetPlayerDialog
 	stock FIXES_ShowPlayerDialog(playerid, dialog, style, title[], caption[], button1[], button2[])
 	{
 		if (0 <= playerid < MAX_PLAYERS)
@@ -3421,28 +4778,51 @@ forward OnGameModeInit();
  * 
  * FIXES:
  *     OnDialogResponse
+ *     GetPlayerDialog
  */
-#if FIX_OnDialogResponse
+#if FIX_OnDialogResponse || FIX_GetPlayerDialog
 	public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	{
 		// =========================
 		//  BEGIN: OnDialogResponse 
 		// =========================
-		#if FIX_OnDialogResponse
+		#if FIX_OnDialogResponse || FIX_GetPlayerDialog
+			#if FIXES_Single
+				#if FIX_OnDialogResponse
+					dialogid = FIXES_gsDialogID[playerid];
+				#endif
+				FIXES_gsDialogID[playerid] = INVALID_DIALOG_ID;
+			#elseif FIX_OnDialogResponse
+				if (FIXES_gsSettings & e_FIXES_SETTINGS_IN_CHARGE)
+				{
+					// If there are multiple scripts, we can't just wipe the
+					// current dialog data or subsequent scripts will display
+					// the wrong value.
+					dialogid = GetPVarInt(playerid, FIXES_pvarPlayerDialog),
+					SetPVarInt(playerid, FIXES_pvarCurrentDialog, dialogid),
+					SetPVarInt(playerid, FIXES_pvarPlayerDialog, INVALID_DIALOG_ID);
+				}
+				else
+				{
+					dialogid = GetPVarInt(playerid, FIXES_pvarCurrentDialog);
+				}
+			#else
+				SetPVarInt(playerid, FIXES_pvarPlayerDialog, INVALID_DIALOG_ID);
+			#endif
 			if (inputtext[0])
 			{
-				#if FIXES_Single
-					return FIXES_CALL_CALLBACK_2(OnDialogResponse, 1, FIXES_gscSpec@iiiis, playerid, FIXES_gsDialogID[playerid], response, listitem, inputtext);
+				#if defined FIXES_OnDialogResponse
+					return FIXES_OnDialogResponse(playerid, dialogid, response, listitem, inputtext);
 				#else
-					return FIXES_CALL_CALLBACK_2(OnDialogResponse, 1, FIXES_gscSpec@iiiis, playerid, GetPVarInt(playerid, FIXES_pvarPlayerDialog), response, listitem, inputtext);
+					return 1;
 				#endif
 			}
 			else
 			{
-				#if FIXES_Single
-					return FIXES_CALL_CALLBACK_2(OnDialogResponse, 1, FIXES_gscSpec@iiiis, playerid, FIXES_gsDialogID[playerid], response, listitem, FIXES_gscNULL);
+				#if defined FIXES_OnDialogResponse
+					return FIXES_OnDialogResponse(playerid, dialogid, response, listitem, FIXES_gscNULL);
 				#else
-					return FIXES_CALL_CALLBACK_2(OnDialogResponse, 1, FIXES_gscSpec@iiiis, playerid, GetPVarInt(playerid, FIXES_pvarPlayerDialog), response, listitem, FIXES_gscNULL);
+					return 1;
 				#endif
 			}
 		#endif
@@ -3458,7 +4838,9 @@ forward OnGameModeInit();
 	#endif
 	#define OnDialogResponse FIXES_OnDialogResponse
 	
-	forward OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
+	#if defined FIXES_OnDialogResponse
+		forward FIXES_OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
+	#endif
 #endif
 
 /*
@@ -3468,56 +4850,25 @@ forward OnGameModeInit();
  *     GetPlayerDialog
  */
 #if FIX_GetPlayerDialog
-	#if FIX_OnDialogResponse
-		stock FIXES_GetPlayerDialog(playerid)
-		{
-			if (0 <= playerid < MAX_PLAYERS)
-			{
-				#if FIXES_Single
-					return FIXES_gsDialogID[playerid];
-				#else
-					return GetPVarInt(playerid, FIXES_pvarPlayerDialog);
-				#endif
-			}
-			return -1;
-		}
-		
-		#if defined _ALS_GetPlayerDialog
-			#undef GetPlayerDialog
-		#else
-			#define _ALS_GetPlayerDialog
-		#endif
-		#define GetPlayerDialog FIXES_GetPlayerDialog
-	#else
-		#error FIX_GetPlayerDialog requires FIX_OnDialogResponse.
-	#endif
-#endif
-
-/*
- * FIXES_HideMenuForPlayer(Menu:menuid, playerid
- *
- * FIXES:
- *     HideMenuForPlayer
- */
-#if FIX_HideMenuForPlayer
-	stock FIXES_HideMenuForPlayer(Menu:menuid, playerid)
+	stock FIXES_GetPlayerDialog(playerid)
 	{
-		if (IsValidMenu(menuid))
+		if (0 <= playerid < MAX_PLAYERS)
 		{
-			return HideMenuForPlayer(menuid, playerid);
+			#if FIXES_Single
+				return FIXES_gsDialogID[playerid];
+			#else
+				return GetPVarInt(playerid, FIXES_pvarPlayerDialog);
+			#endif
 		}
-		return 0;
+		return -1;
 	}
 	
-	#if defined _ALS_HideMenuForPlayer
-		#undef HideMenuForPlayer
+	#if defined _ALS_GetPlayerDialog
+		#undef GetPlayerDialog
 	#else
-		
-		native BAD_HideMenuForPlayer(Menu:menuid, playerid) = HideMenuForPlayer;
-		
-		#define _ALS_HideMenuForPlayer
+		#define _ALS_GetPlayerDialog
 	#endif
-	#define HideMenuForPlayer FIXES_HideMenuForPlayer
+	#define GetPlayerDialog FIXES_GetPlayerDialog
 #endif
 
 /*
@@ -3538,7 +4889,7 @@ forward OnGameModeInit();
 		}
 		else
 		{
-			format(dest, 12, "%d", value);
+			format(dest, 12, "%d", value),
 			pack && strpack(dest, dest, 12);
 		}
 		return 0;
@@ -3649,7 +5000,7 @@ forward OnGameModeInit();
 		{
 			return fputchar(handle, value, utf8);
 		}
-	   return false;
+		return false;
 	}
 	
 	#if defined _ALS_fputchar
@@ -3813,17 +5164,31 @@ forward OnGameModeInit();
 		Kick(playerid);
 	}
 	
+	#if !FIXES_Single
+		forward @FIXES_Kick(playerid);
+		
+		public @FIXES_Kick(playerid)
+		{
+			FIXES_BlockUpdate(playerid, true, 0);
+		}
+	#endif
+	
 	stock FIXES_Kick(playerid)
 	{
 		if (FIXES_gsPlayerBools[playerid] & e_FIXES_BOOLS_ON_PLAYER_CONNECT)
 		{
 			// Disable as much of the server as possible quickly.
-			FIXES_BlockUpdate(playerid, true);
-			TogglePlayerSpectating(playerid, true);
-			TogglePlayerControllable(playerid, false);
-			SetPVarInt(playerid, FIXES_pvarKick, SetTimerEx(FIXES_gscKick, 1000, 0, FIXES_gscSpec@i, playerid));
-			FIXES_gsPlayerBools[playerid] |= e_FIXES_BOOLS_KICKED;
-			return 1;
+			#if FIXES_Single
+				FIXES_BlockUpdate(playerid, true, 0);
+			#else
+				CallRemoteFunction("@FIXES_Kick", "i", playerid);
+			#endif
+			return
+				TogglePlayerSpectating(playerid, true),
+				TogglePlayerControllable(playerid, false),
+				SetPVarInt(playerid, FIXES_pvarKick, SetTimerEx(FIXES_gscKick, 1000, 0, FIXES_gscSpec@i, playerid)),
+				FIXES_gsPlayerBools[playerid] |= e_FIXES_BOOLS_KICKED,
+				1;
 		}
 		else
 		{
@@ -3892,9 +5257,9 @@ forward OnGameModeInit();
  *     SetPlayerAttachedObject
  */
 #if FIX_IsPlayerAttachedObjSlotUsed || FIX_SetPlayerAttachedObject
-	stock FIXES_SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0)
+	stock FIXES_SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0, materialcolor1 = 0, materialcolor2 = 0)
 	{
-		if (SetPlayerAttachedObject(playerid, index, modelid, bone, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ))
+		if (SetPlayerAttachedObject(playerid, index, modelid, bone, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ, fScaleX, fScaleY, fScaleZ, materialcolor1, materialcolor2))
 		{
 			#if FIXES_Single
 				FIXES_gsObjectSlots[playerid / _FIXES_ATTACHMENTS] |= (1 << playerid % _FIXES_ATTACHMENTS * MAX_PLAYER_ATTACHED_OBJECTS + index);
@@ -3912,7 +5277,7 @@ forward OnGameModeInit();
 		#undef SetPlayerAttachedObject
 	#else
 		
-		native BAD_SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0) = SetPlayerAttachedObject;
+		native BAD_SetPlayerAttachedObject(playerid, index, modelid, bone, Float:fOffsetX = 0.0, Float:fOffsetY = 0.0, Float:fOffsetZ = 0.0, Float:fRotX = 0.0, Float:fRotY = 0.0, Float:fRotZ = 0.0, Float:fScaleX = 1.0, Float:fScaleY = 1.0, Float:fScaleZ = 1.0, materialcolor1 = 0, materialcolor2 = 0) = SetPlayerAttachedObject;
 		
 		#define _ALS_SetPlayerAttachedObject
 	#endif
@@ -4018,17 +5383,17 @@ forward OnGameModeInit();
 			}
 			// Make sure certain data is synced with what the GM thinks it is.
 			// =============================
-			//  START: AllowInteriorWeapons 
+			//  BEGIN: AllowInteriorWeapons 
 			// =============================
 			#if FIX_AllowInteriorWeapons
 				CallRemoteFunction(FIXES_gscAllowInteriorWeapons, FIXES_gscSpec@i, !(FIXES_gsSettings & e_FIXES_SETTINGS_INTERIOR));
 			#endif
 			// =============================
-			//  START: AllowInteriorWeapons 
+			//  END: AllowInteriorWeapons 
 			// =============================
 			
 			// ================================
-			//  START: SetPlayerAttachedObject 
+			//  BEGIN: SetPlayerAttachedObject 
 			// ================================
 			#if FIX_IsPlayerAttachedObjSlotUsed || FIX_SetPlayerAttachedObject
 				for (new i = 0; i != _FIXES_ATTACHMENTS; ++i)
@@ -4069,7 +5434,7 @@ forward OnGameModeInit();
 						if (IsPlayerConnected(i))
 						{
 							// =============================
-							//  START: SetPlayerWorldBounds 
+							//  BEGIN: SetPlayerWorldBounds 
 							// =============================
 							#if FIX_SetPlayerWorldBounds
 								//if (FIXES_gsPlayerBools[i] & e_FIXES_BOOLS_WORLDBOUNDS)
@@ -4088,7 +5453,7 @@ forward OnGameModeInit();
 							// =============================
 							
 							// =================================
-							//  START: TogglePlayerControllable 
+							//  BEGIN: TogglePlayerControllable 
 							// =================================
 							#if FIX_TogglePlayerControllable
 								CallRemoteFunction(FIXES_gscTogglePlayerControl, FIXES_gscSpec@ii, i, !(FIXES_gsPlayerBools[i] & e_FIXES_BOOLS_UNCONTROLLABLE));
@@ -4098,7 +5463,7 @@ forward OnGameModeInit();
 							// =================================
 							
 							// ===========================
-							//  START: PutPlayerInVehicle 
+							//  BEGIN: PutPlayerInVehicle 
 							// ===========================
 							#if FIX_PutPlayerInVehicle
 								if (FIXES_gsPlayerBools[i] & e_FIXES_BOOLS_PUT_IN_VEHICLE)
@@ -4165,9 +5530,10 @@ forward OnGameModeInit();
 			{
 				if (pos + sublength >= m4)
 				{
-					string{pos} = '\0';
-					// Hopefully this doesn't ignore maxlength and does packed.
-					return strcat(string, substr, maxlength);
+					return
+						string{pos} = '\0',
+						// Hopefully this doesn't ignore maxlength and does packed.
+						strcat(string, substr, maxlength);
 				}
 				else
 				{
@@ -4189,9 +5555,10 @@ forward OnGameModeInit();
 			{
 				if (pos + sublength >= maxlength)
 				{
-					string[pos] = '\0';
-					// Hopefully this doesn't ignore maxlength and does packed.
-					return strcat(string, substr, maxlength);
+					return
+						string[pos] = '\0',
+						// Hopefully this doesn't ignore maxlength and does packed.
+						strcat(string, substr, maxlength);
 				}
 				else
 				{
@@ -4220,12 +5587,79 @@ forward OnGameModeInit();
 	#define strins FIXES_strins
 #endif
 
+/*
+ * FIXES_random(max)
+ *
+ * FIXES:
+ *     random
+ */
+#if FIX_random
+	stock FIXES_random(max)
+	{
+		if (max < 0)
+		{
+			return -random(-max);
+		}
+		else
+		{
+			return random(max);
+		}
+	}
+	
+	#if defined _ALS_random
+		#undef random
+	#else
+		
+		native BAD_random(max) = random;
+		
+		#define _ALS_random
+	#endif
+	#define random FIXES_random
+#endif
+
+/*
+ * FIXES_sleep(const time)
+ *
+ * FIXES:
+ *     sleep
+ */
+#if FIX_sleep
+	stock FIXES_sleep(ms)
+	{
+		// Call a native function that does very little, but saves the current
+		// heap pointer.  Then return to save the accurate stack pointer.
+		return heapspace(), ms;
+	}
+	
+	#if defined _ALS_sleep
+		#undef sleep
+	#else
+		
+		// Uses a little trick to consume part of the line and thus not match
+		// our hooked version.
+		#define BAD_sleep%0\n%9 sleep%0
+		
+		#define _ALS_sleep
+	#endif
+	
+	#define sleep%0\n%9 sleep FIXES_sleep(%0)
+	// This fixes another BIZZARE bug.  Just doing:
+	//  
+	//  #define FIXES_sleep(%0;) FIXES_sleep(%0)
+	//  
+	// Results in:
+	//  
+	//  FIXES_sleep(n));
+	//  
+	// Which clearly it shouldn't.  I've stepped through the compilation and that
+	// extra bracket comes from nowhere!
+	#define FIXES_sleep(%0;) FIXES_sleep _FIXES_SLEEP_BRACKET %0);
+	#define _FIXES_SLEEP_BRACKET (
+#endif
+
 #undef _FIXES_CEILDIV
 #undef _FIXES_INFINITY
 #undef _FIXES_N_INFINITY
 #undef _FIXES_ATTACHMENTS
-#undef FIXES_DETECT_CALLBACK_1
-#undef FIXES_DETECT_CALLBACK_2
-#undef FIXES_CALL_CALLBACK_1
-#undef FIXES_CALL_CALLBACK_2
+#undef _FIXES_IS_UNSET
 #undef FIXES_PRINTF
